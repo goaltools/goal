@@ -5,13 +5,28 @@ import (
 )
 
 func TestNewType_IncorrectArgsNumber(t *testing.T) {
-	defer expectPanic("We are using odd number of arguments and thus expecting panic.")
-	NewType([]string{"run", "path/to/app", "smth"})
+	_, err := NewType([]string{})
+	if err != IncorrectArgsErr {
+		t.Error("Parameters' absence is not allowed, error expected.")
+	}
+
+	_, err = NewType([]string{"run", "path/to/app", "smth"})
+	if err != IncorrectArgsErr {
+		t.Error("Odd number of arguments is not allowed, error expected.")
+	}
 }
 
 func TestNewType(t *testing.T) {
-	typ := NewType([]string{"run", "path/to/app"})
-	_ = typ
+	typ, err := NewType([]string{"run", "path/to/app", "--smth", "cool"})
+	if err != nil {
+		t.Errorf("Error was not expected. Got %#v.", err)
+	}
+	if typ.params["run"] != "path/to/app" {
+		t.Error("Arguments were expected to be saved as dictionary.")
+	}
+	if typ.action != "run" {
+		t.Errorf("Action was expected to be 'run'. Instead it is '%s'.", typ.action)
+	}
 }
 
 // expectPanic is used to make sure there was a panic in program.
