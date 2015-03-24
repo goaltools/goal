@@ -1,0 +1,6 @@
+language: go
+go: 1.3.3
+install:
+  - export PATH=$PATH:${GOPATH%%:*}/bin:${GOPATH##:*}/bin
+
+  - go test github.com/anonx/ok/...
