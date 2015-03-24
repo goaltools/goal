@@ -3,5 +3,5 @@ go: 1.3.3
 install:
   - export PATH=$PATH:${GOPATH%%:*}/bin:${GOPATH##:*}/bin
 
-  - go get github.com/anonx/autoform # Getting the dependencies for the repo.
+  - go get github.com/anonx/ok/... # Getting the dependencies for the repo.
   - go test github.com/anonx/ok/...
