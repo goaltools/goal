@@ -45,7 +45,7 @@ func NewType(args []string) (*Type, error) {
 
 // Register gets a list of handlers and tries to call that one
 // which was requested by the user.
-// It returns ErrIncErrIncorrectArgs error if handler does not exist.
+// It returns ErrIncorrectArgs error if handler does not exist.
 func (t *Type) Register(handlers map[string]Handler) error {
 	handler, ok := handlers[t.action]
 	if !ok {
