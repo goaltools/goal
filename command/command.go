@@ -1,11 +1,16 @@
 // Package command is used for parsing input parameters.
 package command
 
-import ()
+import (
+	"errors"
+)
 
-// IncorrectArgsErr is returned every time a user is trying
+// ErrIncorrectArgs is returned every time a user is trying
 // to use input parameters we do not expect.
-var IncorrectArgsErr error
+var ErrIncorrectArgs = errors.New("incorrect arguments received")
+
+// Handler is an entry function of subprograms.
+type Handler func(map[string]string)
 
 // Type is a main type of command package.
 // It is used for storage of parsed parameters.
@@ -20,10 +25,10 @@ func NewType(args []string) (*Type, error) {
 	// Make sure the number of arguments is even number
 	// and it is more than zero.
 	if len(args) == 0 || len(args)%2 != 0 {
-		return nil, IncorrectArgsErr
+		return nil, ErrIncorrectArgs
 	}
 
-	// Save the arguments as dict.
+	// Save the arguments as a dict.
 	params := map[string]string{}
 	for i := 0; i < len(args); i += 2 {
 		params[args[i]] = args[i+1]
@@ -34,4 +39,16 @@ func NewType(args []string) (*Type, error) {
 		action: args[0],
 		params: params,
 	}, nil
+}
+
+// Register gets a list of handlers and tries to call that one
+// which was requested by the user.
+// It returns ErrIncErrIncorrectArgs error if handler does not exist.
+func (t *Type) Register(handlers map[string]Handler) error {
+	handler, ok := handlers[t.action]
+	if !ok {
+		return ErrIncorrectArgs
+	}
+	handler(t.params)
+	return nil
 }
