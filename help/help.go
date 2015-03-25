@@ -10,16 +10,19 @@ import (
 func Start(action string, params map[string]string) {
 	switch params[action] {
 	default:
-		log.Info.Println(info)
+		log.Info.Printf(info, action)
 	}
 }
 
-var info = `ok command argument [arguments]
+var info = `Ok is a toolkit for rapid web development in Go language.
+
+Usage:
+	ok command [arguments]
 
 The commands are:
+	generate    analize files, build handlers, routes, etc.
 	new         create a skeleton application
 	run         run a watcher / task runner
-	generate    analize files, build handlers, routes, etc.
 
-Use "ok help command" for more information.
+Use "ok %s [command]" for more information.
 `
