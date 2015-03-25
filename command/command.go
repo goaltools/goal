@@ -10,7 +10,9 @@ import (
 var ErrIncorrectArgs = errors.New("incorrect arguments received")
 
 // Handler is an entry function of subprograms.
-type Handler func(map[string]string)
+// It expects the command name as a first argument and a map of
+// all available parameters as a second one.
+type Handler func(string, map[string]string)
 
 // Type is a main type of command package.
 // It is used for storage of parsed parameters.
@@ -49,6 +51,6 @@ func (t *Type) Register(handlers map[string]Handler) error {
 	if !ok {
 		return ErrIncorrectArgs
 	}
-	handler(t.params)
+	handler(t.action, t.params)
 	return nil
 }

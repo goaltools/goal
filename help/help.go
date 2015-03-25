@@ -7,8 +7,8 @@ import (
 )
 
 // Start is an entry point of help command.
-func Start(params map[string]string) {
-	switch params["help"] {
+func Start(action string, params map[string]string) {
+	switch params[action] {
 	default:
 		log.Info.Println(info)
 	}

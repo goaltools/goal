@@ -32,7 +32,7 @@ func TestNewType(t *testing.T) {
 func TestRegister_IncorrectArgs(t *testing.T) {
 	typ, _ := NewType([]string{"run", "path/to/app"})
 	err := typ.Register(map[string]Handler{
-		"handlerX": func(params map[string]string) {
+		"handlerX": func(action string, params map[string]string) {
 			// ToDo
 		},
 	})
@@ -46,7 +46,7 @@ func TestRegister(t *testing.T) {
 
 	val := ""
 	err := typ.Register(map[string]Handler{
-		"run": func(params map[string]string) {
+		"run": func(action string, params map[string]string) {
 			val = params["run"]
 		},
 	})
