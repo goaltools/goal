@@ -1,5 +1,5 @@
 # ok
-Toolkit for high productivity web development in Go language.
+Toolkit for high productivity web development in Go language (WIP).
 
 [![GoDoc](https://godoc.org/github.com/anonx/ok?status.svg)](https://godoc.org/github.com/anonx/ok)
 [![Build Status](https://travis-ci.org/anonx/ok.svg?branch=master)](https://travis-ci.org/anonx/ok)
