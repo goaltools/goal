@@ -3,7 +3,7 @@ Toolkit for high productivity web development in Go language (WIP).
 
 [![GoDoc](https://godoc.org/github.com/anonx/ok?status.svg)](https://godoc.org/github.com/anonx/ok)
 [![Build Status](https://travis-ci.org/anonx/ok.svg?branch=master)](https://travis-ci.org/anonx/ok)
-[![Coverage](http://gocover.io/_badge/github.com/anonx/ok?0)](http://gocover.io/github.com/anonx/ok)
+[![Coverage](https://img.shields.io/coveralls/anonx/ok.svg)](https://coveralls.io/r/anonx/ok)
 [![Go Report Card](http://goreportcard.com/badge/anonx/ok?t=3)](http:/goreportcard.com/report/anonx/ok)
 
 ## Commands
