@@ -1,7 +1,13 @@
 language: go
 go: 1.3.3
+before_install:
+  - go get code.google.com/p/go.tools/cmd/cover golang.org/x/tools/cmd/cover
+  - go get github.com/axw/gocov/gocov github.com/mattn/goveralls
 install:
   - export PATH=$PATH:${GOPATH%%:*}/bin:${GOPATH##:*}/bin
 
   - go get github.com/anonx/ok/... # Getting the dependencies for the repo.
   - go test github.com/anonx/ok/...
+script:
+  - cd ${GOPATH%%:*}/src/github.com/anonx/ok
+  - COVERALLS="-repotoken $COVERALLS_TOKEN" sh ./coverage.sh
