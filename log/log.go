@@ -32,16 +32,28 @@ func (c *context) Write(p []byte) (n int, err error) {
 func init() {
 	// Initialize loggers.
 	Error = log.New(
-		&context{c: gocolorize.NewColor("red"), w: os.Stderr}, "", 0,
+		&context{
+			c: gocolorize.NewColor("red"),
+			w: os.Stderr,
+		}, "", 0,
 	)
 	Warn = log.New(
-		&context{c: gocolorize.NewColor("yellow"), w: os.Stderr}, "", 0,
+		&context{
+			c: gocolorize.NewColor("yellow"),
+			w: os.Stderr,
+		}, "", 0,
 	)
 	Info = log.New(
-		&context{c: gocolorize.NewColor("green"), w: os.Stderr}, "", 0,
+		&context{
+			c: gocolorize.NewColor("green"),
+			w: os.Stdout,
+		}, "", 0,
 	)
 	Trace = log.New(
-		&context{c: gocolorize.NewColor("blue"), w: os.Stderr}, "", 0,
+		&context{
+			c: gocolorize.NewColor("blue"),
+			w: os.Stdout,
+		}, "", 0,
 	)
 
 	// Do not use colorize when on windows.
