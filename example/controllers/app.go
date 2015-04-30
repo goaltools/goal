@@ -35,7 +35,3 @@ func (c *App) After() action.Result {
 func (c *App) Finally() action.Result {
 	return nil
 }
-
-// Init is a system method that will be called once during application's startup.
-func (c *App) Init() {
-}
