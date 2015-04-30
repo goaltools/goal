@@ -16,7 +16,7 @@ func (c *App) Before() action.Result {
 
 // Index is an action that is used for generation of a greeting form.
 func (c *App) Index() action.Result {
-	return c.Render()
+	return c.RenderTemplate("test.html")
 }
 
 // PostGreet prints received user fullname. If it is not valid,
