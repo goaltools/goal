@@ -10,6 +10,7 @@ import (
 	"github.com/anonx/ok/generation"
 	"github.com/anonx/ok/help"
 	"github.com/anonx/ok/log"
+	"github.com/anonx/ok/scan"
 )
 
 // Handlers is a map of registered commands
@@ -17,6 +18,7 @@ import (
 var Handlers = map[string]command.Handler{
 	"generate": generation.Start,
 	"help":     help.Start,
+	"scan":     scan.Start,
 }
 
 func main() {
