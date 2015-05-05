@@ -30,7 +30,7 @@ func (c *context) Write(p []byte) (n int, err error) {
 }
 
 func init() {
-	// Initialize loggers.
+	// Initialize default loggers.
 	Error = log.New(
 		&context{
 			c: gocolorize.NewColor("red"),
