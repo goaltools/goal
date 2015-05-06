@@ -6,6 +6,8 @@ package listing
 import (
 	"os"
 	"path/filepath"
+
+	"github.com/anonx/ok/log"
 )
 
 var files []string
@@ -49,6 +51,7 @@ func findFiles(path string) {
 func walkFunc(path string, info os.FileInfo, err error) error {
 	// Make sure there are no any errors.
 	if err != nil {
+		log.Error.Printf("While creating a listing an error occured: %s.", err)
 		return err
 	}
 
