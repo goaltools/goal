@@ -7,7 +7,7 @@ install:
   - export PATH=$PATH:${GOPATH%%:*}/bin:${GOPATH##:*}/bin
 
   - go get github.com/anonx/ok/... # Getting the dependencies for the repo.
-  - go test github.com/anonx/ok/...
+  - go test -v github.com/anonx/ok/...
 script:
   - cd ${GOPATH%%:*}/src/github.com/anonx/ok
   - COVERALLS="-repotoken $COVERALLS_TOKEN" sh ./coverage.sh
