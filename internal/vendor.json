@@ -1,0 +1,11 @@
+{
+	"Tool": "github.com/kardianos/vendor",
+	"Package": [
+		{
+			"Vendor": "github.com/agtorre/gocolorize",
+			"Local": "github.com/anonx/sunplate/internal/github.com/agtorre/gocolorize",
+			"Version": "f42b554bf7f006936130c9bb4f971afd2d87f671",
+			"VersionTime": "2014-09-21T15:56:20-07:00"
+		}
+	]
+}
