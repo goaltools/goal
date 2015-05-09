@@ -6,7 +6,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/agtorre/gocolorize"
+	"github.com/anonx/sunplate/internal/github.com/agtorre/gocolorize"
 )
 
 // A list of loggers that are used by "sunplate" packages.
