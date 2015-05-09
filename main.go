@@ -1,19 +1,19 @@
 // Package main is used as an entry point of
-// 'ok' toolkit. It validates user input parameters
+// 'sunplate' toolkit. It validates user input parameters
 // and runs subcommands.
 package main
 
 import (
 	"os"
 
-	"github.com/anonx/ok/command"
-	"github.com/anonx/ok/generation"
-	"github.com/anonx/ok/help"
-	"github.com/anonx/ok/log"
+	"github.com/anonx/sunplate/command"
+	"github.com/anonx/sunplate/generation"
+	"github.com/anonx/sunplate/help"
+	"github.com/anonx/sunplate/log"
 )
 
 // Handlers is a map of registered commands
-// 'ok' toolkit supports.
+// 'sunplate' toolkit supports.
 var Handlers = map[string]command.Handler{
 	"generate": generation.Start,
 	"help":     help.Start,
@@ -33,21 +33,19 @@ func main() {
 	err = ct.Register(Handlers)
 	if err != nil {
 		// Validation failed because requested handler does not exist.
-		log.Warn.Printf("Unknown command '%s'.\nRun 'ok help' for usage.", os.Args[1])
+		log.Warn.Printf("Unknown command '%s'.\nRun 'sunplate help' for usage.", os.Args[1])
 	}
 }
 
 var header = `~
-~ https://github.com/anonx/ok
+~ https://github.com/anonx/sunplate
 ~
-    /\  \         /\__\
-   /::\  \       /:/  /
-  /:/\:\  \     /:/__/
- /:/  \:\  \   /::\__\____
-/:/__/ \:\__\ /:/\:::::\__\
-\:\  \ /:/  / \/_|:|~~|~
- \:\  /:/  /     |:|  |
-  \:\/:/  /      |:|  |
-   \::/  /       |:|  |
-    \/__/         \|__|
+                        _       _
+                       | |     | |
+  ___ _   _ _ __  _ __ | | __ _| |_ ___
+ / __| | | | '_ \| '_ \| |/ _' | __/ _ \
+ \__ \ |_| | | | | |_) | | (_| | ||  __/
+ |___/\__,_|_| |_| .__/|_|\__,_|\__\___|
+                 | |
+                 |_|
 `

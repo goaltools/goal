@@ -3,7 +3,7 @@ package template
 import (
 	"net/http"
 
-	"github.com/anonx/ok/action"
+	"github.com/anonx/sunplate/action"
 )
 
 // HTML is a result that is returned from actions by default.

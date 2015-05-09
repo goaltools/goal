@@ -1,14 +1,13 @@
-# ok
+# sunplate
 Toolkit for high productivity web development in Go language (WIP).
 
-[![GoDoc](https://godoc.org/github.com/anonx/ok?status.svg)](https://godoc.org/github.com/anonx/ok)
-[![Build Status](https://travis-ci.org/anonx/ok.svg?branch=master)](https://travis-ci.org/anonx/ok)
-[![Coverage Status](https://coveralls.io/repos/anonx/ok/badge.svg)](https://coveralls.io/r/anonx/ok)
-[![Go Report Card](http://goreportcard.com/badge/anonx/ok?t=3)](http:/goreportcard.com/report/anonx/ok)
+[![GoDoc](https://godoc.org/github.com/anonx/sunplate?status.svg)](https://godoc.org/github.com/anonx/sunplate)
+[![Build Status](https://travis-ci.org/anonx/sunplate.svg?branch=master)](https://travis-ci.org/anonx/sunplate)
+[![Coverage Status](https://coveralls.io/repos/anonx/sunplate/badge.svg)](https://coveralls.io/r/anonx/sunplate)
+[![Go Report Card](http://goreportcard.com/badge/anonx/sunplate?t=3)](http:/goreportcard.com/report/anonx/sunplate)
 
 ## Commands
-* `ok run path/to/app` - Run a tool that watches the app files and rebuilds if necessary. It can be used as a task runner, too.
-* `ok generate handler -i path/to/app/controllers -o path/to/app/result/handlers` - Util that is used by `go:generate` to transform controllers into `handlers` package. Read more about [controllers](https://github.com/anonx/concept/blob/master/basics.md#basics).
+* `sunplate run path/to/app` - Run a tool that watches the app files and rebuilds if necessary. It can be used as a task runner, too.
 
 ## License
 Distributed under the BSD 2-clause "Simplified" License.

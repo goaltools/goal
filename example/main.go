@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"runtime"
 
-	"github.com/anonx/ok/log"
+	"github.com/anonx/sunplate/log"
 
 	"github.com/julienschmidt/httprouter"
 )

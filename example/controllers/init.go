@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/anonx/ok/middleware/template"
+	"github.com/anonx/sunplate/middleware/template"
 )
 
 // Controller is a struct that should be embedded into every controller

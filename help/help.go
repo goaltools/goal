@@ -1,9 +1,9 @@
 // Package help is a command that shows info
-// about the commands 'ok' toolkit supports.
+// about the commands 'sunplate' toolkit supports.
 package help
 
 import (
-	"github.com/anonx/ok/log"
+	"github.com/anonx/sunplate/log"
 )
 
 // Start is an entry point of help command.
@@ -14,15 +14,15 @@ func Start(action string, params map[string]string) {
 	}
 }
 
-var info = `Ok is a toolkit for rapid web development in Go language.
+var info = `Sunplate is a toolkit for rapid web development in Go language.
 
 Usage:
-	ok command [arguments]
+	sunplate command [arguments]
 
 The commands are:
 	generate    analize files, build handlers, routes, etc.
 	new         create a skeleton application
 	run         run a watcher / task runner
 
-Use "ok %s [command]" for more information.
+Use "sunplate %s [command]" for more information.
 `

@@ -3,9 +3,9 @@
 package generation
 
 import (
-	"github.com/anonx/ok/generation/handlers"
-	"github.com/anonx/ok/generation/listing"
-	"github.com/anonx/ok/log"
+	"github.com/anonx/sunplate/generation/handlers"
+	"github.com/anonx/sunplate/generation/listing"
+	"github.com/anonx/sunplate/log"
 )
 
 // Start is an entry point of generate command.
@@ -17,7 +17,7 @@ func Start(action string, params map[string]string) {
 		listing.Start(params)
 	default:
 		log.Warn.Printf(
-			"I do not know how to generate '%s'.\nRun 'ok help %s' for more information.",
+			"I do not know how to generate '%s'.\nRun 'sunplate help %s' for more information.",
 			params[action], action,
 		)
 	}
