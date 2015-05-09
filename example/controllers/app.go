@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/anonx/ok/action"
+	"github.com/anonx/sunplate/action"
 )
 
 // App is a sample controller that is used for demonstration purposes.

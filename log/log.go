@@ -9,7 +9,7 @@ import (
 	"github.com/agtorre/gocolorize"
 )
 
-// A list of loggers that are used by "ok" packages.
+// A list of loggers that are used by "sunplate" packages.
 var (
 	Error *log.Logger
 	Warn  *log.Logger

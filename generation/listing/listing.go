@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/anonx/ok/log"
+	"github.com/anonx/sunplate/log"
 )
 
 var files []string
