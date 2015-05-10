@@ -16,7 +16,7 @@ func Start(action string, params map[string]string) {
 	case "listing":
 		listing.Start(params)
 	default:
-		log.Warn.Printf(
+		log.Warn.Panicf(
 			"I do not know how to generate '%s'.\nRun 'sunplate help %s' for more information.",
 			params[action], action,
 		)
