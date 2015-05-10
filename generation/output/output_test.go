@@ -1,14 +1,11 @@
+// +build linux
+
 package output
 
 import (
 	"os"
 	"testing"
 )
-
-// We are using os.Chmod for some tests,
-// so it is expected to work on *nix based systems only.
-//
-//+build linux
 
 func TestNewType(t *testing.T) {
 	// We are making sure there are no any panics.
