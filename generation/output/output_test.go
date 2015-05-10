@@ -5,6 +5,11 @@ import (
 	"testing"
 )
 
+// We are using os.Chmod for some tests,
+// so it is expected to work on *nix based systems only.
+//
+//+build linux
+
 func TestNewType(t *testing.T) {
 	// We are making sure there are no any panics.
 	typ := NewType("test", "./output.go")
@@ -27,6 +32,9 @@ func TestCreateDir_ExistingDirectory(t *testing.T) {
 }
 
 func TestCreateDir_NoWritePrivileges(t *testing.T) {
+	// Prepare a readonly directory.
+	os.Chmod("./testdata/readonly", 0544)
+
 	typ := Type{}
 	defer expectPanic("we have no write privileges for './testdata/readonly', so panic expected")
 	typ.CreateDir("./testdata/readonly/something")
