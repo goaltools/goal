@@ -4,7 +4,9 @@ package output
 
 import (
 	"bytes"
+	"io/ioutil"
 	"os"
+	"path/filepath"
 	"text/template"
 
 	"github.com/anonx/sunplate/log"
@@ -24,7 +26,7 @@ type Type struct {
 
 	// Extension is added to the end of name of a generated file.
 	// So file will be saved to:
-	//	filepath.Join(Path, Package + Extension)
+	//	filepath.Join(Path, Package+Extension)
 	Extension string
 
 	// Template is a skeleton of file that has to be generated.
@@ -72,10 +74,23 @@ func (t *Type) CreateDir(path string) {
 func (t *Type) Generate() {
 	// Generate a template file.
 	var buffer bytes.Buffer
-	err := t.Template.Execute(&buffer, t.Context)
+	err := t.Template.Execute(&buffer, map[string]interface{}{
+		"context":   t.Context,
+		"extension": t.Extension,
+		"package":   t.Package,
+		"path":      t.Path,
+	})
 	if err != nil {
 		log.Error.Panicf("didn't manage to execute a template, error: '%s", err)
 	}
 
-	// TODO: write result to the file.
+	// Print debugging information.
+	path := filepath.Join(t.Path, t.Package+t.Extension)
+	log.Trace.Printf("saving generated %s file to %s", t.Package, path)
+
+	// Write result to the file.
+	err = ioutil.WriteFile(path, buffer.Bytes(), 0644)
+	if err != nil {
+		log.Error.Panicf("failed to save generated file, error: '%s'", err)
+	}
 }

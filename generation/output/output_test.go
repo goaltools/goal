@@ -3,7 +3,9 @@
 package output
 
 import (
+	"io/ioutil"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -57,6 +59,37 @@ func TestGenerate_IncorrectTemplate(t *testing.T) {
 	typ.Path = "./testdata"
 	defer expectPanic("template has errors and thus an error expected")
 	typ.Generate()
+}
+
+func TestGenerate_NoWritePrivileges(t *testing.T) {
+	// Prepare a readonly directory.
+	os.Chmod("./testdata/readonly", 0544)
+
+	typ := NewType("test", "./output.go")
+	typ.Path = "./testdata/readonly"
+	defer expectPanic("we do not have write access to the directory, thus panic expected")
+	typ.Generate()
+}
+
+func TestGenerate(t *testing.T) {
+	// Generate a new "test" package using "./testdata/test.html" template
+	// and save it to "./testdata/result/test.go".
+	typ := NewType("test", "./testdata/test.html")
+	typ.CreateDir("./testdata/result/")
+	typ.Extension = ".go"
+	typ.Generate()
+
+	// Read the file, make sure its content is valid.
+	c, err := ioutil.ReadFile("./testdata/result/test.go")
+	if err != nil {
+		t.Errorf("cannot read a generated file, error: '%s'", err)
+	}
+	if res := strings.Trim(string(c), " \r\n\t"); res != "package test" {
+		t.Errorf("generated file expected to contain 'package test', instead it is '%s'", res)
+	}
+
+	// Remove the directories we have created.
+	os.RemoveAll("./testdata/result")
 }
 
 func expectPanic(msg string) {
