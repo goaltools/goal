@@ -20,6 +20,9 @@ var Handlers = map[string]command.Handler{
 }
 
 func main() {
+	// Do not show stacktrace if something goes wrong.
+	defer catchPanic()
+
 	// Show header message.
 	log.Trace.Println(header)
 
@@ -35,6 +38,17 @@ func main() {
 		// Validation failed because requested handler does not exist.
 		log.Warn.Printf("Unknown command '%s'.\nRun 'sunplate help' for usage.", os.Args[1])
 	}
+}
+
+func catchPanic() {
+	if err := recover(); err != nil {
+		log.Error.Fatal(err)
+	}
+}
+
+func init() {
+	// Set a base path of 'generation' package's files.
+	generation.BasePath = "./generation"
 }
 
 var header = `~

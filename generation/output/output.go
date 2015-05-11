@@ -38,10 +38,11 @@ type Type struct {
 
 // NewType reads the requested template and returns an output.Type
 // with initialized Template field.
+// << and >> are used as delimiters.
 func NewType(pkg, templatePath string) Type {
-	t, err := template.ParseFiles(templatePath)
+	t, err := template.ParseFiles(templatePath) // Use << and >> as delimiters.
 	if err != nil {
-		log.Error.Panicf("didn't manage to open template '%s', error: '%s'", templatePath, err)
+		log.Error.Panicf("Didn't manage to open template '%s', error: '%s'.", templatePath, err)
 	}
 	return Type{
 		Package:  pkg,
@@ -63,7 +64,7 @@ func (t *Type) CreateDir(path string) {
 	// If not, try to create it.
 	err := os.MkdirAll(path, 0755)
 	if err != nil {
-		log.Error.Panicf("cannot create directory '%s', error: '%s'", path, err)
+		log.Error.Panicf("Cannot create directory '%s', error: '%s'.", path, err)
 	}
 }
 
@@ -81,16 +82,16 @@ func (t *Type) Generate() {
 		"path":      t.Path,
 	})
 	if err != nil {
-		log.Error.Panicf("didn't manage to execute a template, error: '%s", err)
+		log.Error.Panicf("Didn't manage to execute a template, error: '%s'.", err)
 	}
 
 	// Print debugging information.
 	path := filepath.Join(t.Path, t.Package+t.Extension)
-	log.Trace.Printf("saving generated %s file to %s", t.Package, path)
+	log.Info.Printf("Saving generated '%s' file to '%s'.", t.Package, path)
 
 	// Write result to the file.
 	err = ioutil.WriteFile(path, buffer.Bytes(), 0644)
 	if err != nil {
-		log.Error.Panicf("failed to save generated file, error: '%s'", err)
+		log.Error.Panicf("Failed to save generated file, error: '%s'.", err)
 	}
 }

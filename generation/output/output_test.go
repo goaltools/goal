@@ -18,7 +18,7 @@ func TestNewType(t *testing.T) {
 }
 
 func TestNewType_IncorrectPath(t *testing.T) {
-	defer expectPanic("when we are not able to read template file, a panic must occur")
+	defer expectPanic("When we are not able to read template file, a panic must occur.")
 	NewType("test", "./pathThatDoesNotExist")
 }
 
@@ -26,7 +26,7 @@ func TestCreateDir_ExistingDirectory(t *testing.T) {
 	typ := Type{}
 	typ.CreateDir("./testdata")
 	if typ.Path != "./testdata" {
-		t.Error("Type.Path is expected to be initialized")
+		t.Error("Type.Path is expected to be initialized.")
 	}
 }
 
@@ -35,7 +35,7 @@ func TestCreateDir_NoWritePrivileges(t *testing.T) {
 	os.Chmod("./testdata/readonly", 0544)
 
 	typ := Type{}
-	defer expectPanic("we have no write privileges for './testdata/readonly', so panic expected")
+	defer expectPanic("We have no write privileges for './testdata/readonly', so panic expected.")
 	typ.CreateDir("./testdata/readonly/something")
 }
 
@@ -55,9 +55,9 @@ func TestCreateDir(t *testing.T) {
 }
 
 func TestGenerate_IncorrectTemplate(t *testing.T) {
-	typ := NewType("test", "./testdata/incorrect_template.html")
+	typ := NewType("test", "./testdata/incorrect.template")
 	typ.Path = "./testdata"
-	defer expectPanic("template has errors and thus an error expected")
+	defer expectPanic("Template has errors and thus an error expected.")
 	typ.Generate()
 }
 
@@ -67,14 +67,14 @@ func TestGenerate_NoWritePrivileges(t *testing.T) {
 
 	typ := NewType("test", "./output.go")
 	typ.Path = "./testdata/readonly"
-	defer expectPanic("we do not have write access to the directory, thus panic expected")
+	defer expectPanic("We do not have write access to the directory, thus panic expected.")
 	typ.Generate()
 }
 
 func TestGenerate(t *testing.T) {
-	// Generate a new "test" package using "./testdata/test.html" template
+	// Generate a new "test" package using "./testdata/test.template" template
 	// and save it to "./testdata/result/test.go".
-	typ := NewType("test", "./testdata/test.html")
+	typ := NewType("test", "./testdata/test.template")
 	typ.CreateDir("./testdata/result/")
 	typ.Extension = ".go"
 	typ.Generate()
@@ -82,10 +82,10 @@ func TestGenerate(t *testing.T) {
 	// Read the file, make sure its content is valid.
 	c, err := ioutil.ReadFile("./testdata/result/test.go")
 	if err != nil {
-		t.Errorf("cannot read a generated file, error: '%s'", err)
+		t.Errorf("Cannot read a generated file, error: '%s'.", err)
 	}
 	if res := strings.Trim(string(c), " \r\n\t"); res != "package test" {
-		t.Errorf("generated file expected to contain 'package test', instead it is '%s'", res)
+		t.Errorf("Generated file expected to contain 'package test', instead it is '%s'.", res)
 	}
 
 	// Remove the directories we have created.

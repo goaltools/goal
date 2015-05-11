@@ -3,21 +3,25 @@ package listing
 import (
 	"errors"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 )
 
 func TestStart(t *testing.T) {
-	Start(map[string]string{})
+	Start("./", map[string]string{})
+
+	// Remove the directory we have created.
+	os.RemoveAll(filepath.Join(expectedParams["--output"], "../"))
 }
 
 func TestInitDefaults(t *testing.T) {
 	params := map[string]string{}
 	initDefaults(params)
 
-	for k, v := range expectedPaths {
+	for k, v := range expectedParams {
 		if params[k] != v {
-			t.Errorf("default parameter '%s' is not set, expected '%s' got '%s'", k, v, params[k])
+			t.Errorf("Default parameter '%s' is not set, expected '%s' got '%s'.", k, v, params[k])
 		}
 	}
 }
@@ -25,21 +29,21 @@ func TestInitDefaults(t *testing.T) {
 func TestWalkFunc(t *testing.T) {
 	TestError := errors.New("this is a test error")
 	if err := walkFunc("", nil, TestError); err != TestError {
-		t.Errorf("walkFunc expected to return TestError, returned '%s'", err)
+		t.Errorf("walkFunc expected to return TestError, returned '%s'.", err)
 	}
 	walkFunc("/myfile", testFile{}, nil)
 	if len(files) == 0 || files[0] != "/myfile" {
-		t.Error("failed to add path to files list")
+		t.Error("Failed to add path to files list.")
 	}
 	err := walkFunc("", testFile{dir: true}, nil)
 	if err != nil {
-		t.Errorf("error expected to be nil, '%s' received instead", err)
+		t.Errorf("Error expected to be nil, '%s' received instead.", err)
 	}
 }
 
-var expectedPaths = map[string]string{
+var expectedParams = map[string]string{
 	"--path":    "./views",
-	"--output":  "./assets/",
+	"--output":  "./assets/views/",
 	"--package": "views",
 }
 
