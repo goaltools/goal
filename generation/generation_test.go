@@ -2,6 +2,7 @@ package generation
 
 import (
 	"os"
+	"os/exec"
 	"path/filepath"
 	"testing"
 )
@@ -27,8 +28,17 @@ func TestStart_Handlers(t *testing.T) {
 
 func TestStart_Listing(t *testing.T) {
 	Start("generate", map[string]string{
-		"generate": "listing",
+		"generate":  "listing",
+		"--path":    "./testdata/views",
+		"--output":  "./testdata/assets/views",
+		"--package": "views",
 	})
+
+	cmd := exec.Command("go", "run", "testdata/listing/main.go")
+	cmd.Stderr = os.Stderr // Show the output of the program we run.
+	if err := cmd.Run(); err != nil {
+		t.Errorf("There are problems with generated listing, error: '%s'.", err)
+	}
 
 	// Remove the directory we have created.
 	os.RemoveAll(filepath.Join("./assets"))
