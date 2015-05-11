@@ -41,7 +41,7 @@ func TestStart_Listing(t *testing.T) {
 	}
 
 	// Remove the directory we have created.
-	os.RemoveAll(filepath.Join("./assets"))
+	os.RemoveAll(filepath.Join("./testdata/assets"))
 }
 
 func expectPanic(msg string) {
