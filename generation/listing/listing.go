@@ -7,18 +7,34 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/anonx/sunplate/generation/output"
 	"github.com/anonx/sunplate/log"
 )
 
 var files []string
 
 // Start is an entry point of listing subcommand.
-func Start(params map[string]string) {
+// It expects two parameters.
+// basePath is where to find files necessary for generation of listing.
+// params is a map with the following keys:
+// --path defines what directory to analyze ("./views" by-default).
+// --output is a path to directory where to create a new package ("./assets" by-default).
+// --package is what package should be created as a result ("views" by-default).
+func Start(basePath string, params map[string]string) {
 	// Initialize missed parameters.
 	initDefaults(params)
 
 	// Start search of files.
 	findFiles(params["--path"])
+
+	// Generate and save a new package.
+	t := output.NewType(params["--package"], filepath.Join(basePath, "./views.go.template"))
+	t.CreateDir(params["--output"])
+	t.Extension = ".go" // Save generated file as a .go source.
+	t.Context = map[string]interface{}{
+		"files": files,
+	}
+	t.Generate()
 }
 
 // initDefaults makes sure required parameters are not empty.
@@ -31,7 +47,7 @@ func initDefaults(params map[string]string) {
 
 	// Identify the dir where output will be stored.
 	if params["--output"] == "" {
-		params["--output"] = "./assets/"
+		params["--output"] = "./assets/views/"
 	}
 
 	// Define the package name of the output.
@@ -51,7 +67,7 @@ func findFiles(path string) {
 func walkFunc(path string, info os.FileInfo, err error) error {
 	// Make sure there are no any errors.
 	if err != nil {
-		log.Error.Printf("While creating a listing an error occured: %s.", err)
+		log.Warn.Printf("An error occured while creating a listing: '%s'.", err)
 		return err
 	}
 
@@ -61,6 +77,7 @@ func walkFunc(path string, info os.FileInfo, err error) error {
 	}
 
 	// Add files to the global files varible.
+	log.Trace.Printf("Path '%s' discovered.", path)
 	files = append(files, path)
 	return nil
 }

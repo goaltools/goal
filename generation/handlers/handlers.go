@@ -3,5 +3,5 @@
 package handlers
 
 // Start is an entry point of the generate handlers command.
-func Start(params map[string]string) {
+func Start(basePath string, params map[string]string) {
 }
