@@ -6,12 +6,16 @@ package listing
 import (
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/anonx/sunplate/generation/output"
 	"github.com/anonx/sunplate/log"
 )
 
-var files []string
+var (
+	rootPath string
+	files    map[string]string
+)
 
 // Start is an entry point of listing subcommand.
 // It expects two parameters.
@@ -32,7 +36,8 @@ func Start(basePath string, params map[string]string) {
 	t.CreateDir(params["--output"])
 	t.Extension = ".go" // Save generated file as a .go source.
 	t.Context = map[string]interface{}{
-		"files": files,
+		"files":    files,
+		"rootPath": params["--path"],
 	}
 	t.Generate()
 }
@@ -59,6 +64,7 @@ func initDefaults(params map[string]string) {
 // findFiles starts a search of files. The result will be stored
 // to global files variable.
 func findFiles(path string) {
+	rootPath = path
 	filepath.Walk(path, walkFunc)
 }
 
@@ -76,8 +82,17 @@ func walkFunc(path string, info os.FileInfo, err error) error {
 		return nil
 	}
 
+	// Get a file path without root path. So, path like "./views/accounts/index.html"
+	// will be transformed into "accounts/index.html" if our root path is "./views".
+	relPath := strings.TrimPrefix(path, rootPath)
+	relPath = filepath.Clean(relPath)
+
 	// Add files to the global files varible.
 	log.Trace.Printf("Path '%s' discovered.", path)
-	files = append(files, path)
+	files[relPath] = path
 	return nil
+}
+
+func init() {
+	files = map[string]string{}
 }
