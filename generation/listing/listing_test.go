@@ -32,7 +32,7 @@ func TestWalkFunc(t *testing.T) {
 		t.Errorf("walkFunc expected to return TestError, returned '%s'.", err)
 	}
 	walkFunc("/myfile", testFile{}, nil)
-	if len(files) == 0 || files[0] != "/myfile" {
+	if len(files) == 0 || files["/myfile"] != "/myfile" {
 		t.Error("Failed to add path to files list.")
 	}
 	err := walkFunc("", testFile{dir: true}, nil)
