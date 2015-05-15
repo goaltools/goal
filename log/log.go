@@ -1,3 +1,7 @@
+// Package log is a simple wrapper under golang standard log
+// package and agtorre/gocolorize (that colorizes the result on *nix systems).
+// There are four predefined loggers.
+// They are Error, Warn, Trace, and Info.
 package log
 
 import (
