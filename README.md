@@ -10,4 +10,4 @@ Toolkit for high productivity web development in Go language (WIP).
 * `sunplate run path/to/app` - Run a tool that watches the app files and rebuilds if necessary. It can be used as a task runner, too.
 
 ## License
-Distributed under the BSD 2-clause "Simplified" License.
+Distributed under the BSD 2-clause "Simplified" License unless otherwise noted.
