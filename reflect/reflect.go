@@ -9,19 +9,6 @@ import (
 	"github.com/anonx/sunplate/log"
 )
 
-// Struct is a type that represents information about a specific struct,
-// its methods, etc.
-type Struct struct {
-	Comments      []string // Comments right above the struct declaration.
-	EmbeddedTypes []Struct // Types that are embedded into the struct.
-	Fields        []Arg    // A list of fields that belong to this struct.
-	File          string   // Name of the file where the struct is located.
-	Import        string   // Import path of the struct, e.g. "github.com/anonx/sunplate".
-	Methods       []Func   // A list of methods this struct has.
-	Name          string   // Name of the struct, e.g. "Application".
-	Package       string   // Package name, for example "controllers".
-}
-
 // Func is a type that represents information about a function or method.
 type Func struct {
 	Args     []Arg    // A list of arguments this function receives.
@@ -29,14 +16,6 @@ type Func struct {
 	Line     int      // Line of code where this function has been found.
 	Name     string   // Name of the function, e.g. "Index" or "About".
 	Return   []Arg    // A list of arguments the function returns.
-}
-
-// Arg is used to describe arguments of methods and fields of structures.
-type Arg struct {
-	Import string // If the argument is of an imported type, this is the import path.
-	Name   string // Name of the argument, e.g. "name" or "age".
-	Tag    string // Tag is a field tag that may be presented.
-	Type   *Type  // Type represents a type of argument.
 }
 
 // ParseDir ...
@@ -65,10 +44,10 @@ func ParseDir(path string) {
 	ast.Print(fset, pkgs)
 }
 
-// processStruct receives an ast declaration, checks whether it is
+// processDecl receives an ast declaration, checks whether it is
 // of general type and represents a structure.
 // If so, it returns a *Struct. Otherwise, nil is returned.
-func processStruct(decl ast.Decl) *Struct {
+func processDecl(decl ast.Decl) *Struct {
 	// Make sure the type is of general type.
 	genDecl, ok := decl.(*ast.GenDecl)
 	if !ok {
@@ -85,11 +64,6 @@ func processStruct(decl ast.Decl) *Struct {
 		_ = spec
 	}
 
-	return nil
-}
-
-// processField receives an ast field structure
-func processField(field *ast.Field) *Arg {
 	return nil
 }
 

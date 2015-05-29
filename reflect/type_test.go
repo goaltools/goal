@@ -1,7 +1,6 @@
 package reflect
 
 import (
-	"go/ast"
 	"testing"
 )
 
@@ -30,8 +29,7 @@ func TestProcessType(t *testing.T) {
 			}
 		`,
 	)
-
-	f := getFields(t, pkg)
+	f := getFields(t, pkg).List
 
 	typ := processType(f[0].Type)
 	if typ == nil || typ.Name != "Cool" || typ.Package != "something" || !typ.Star {
@@ -52,27 +50,6 @@ func TestProcessType(t *testing.T) {
 	if typ == nil || typ.Name != "Type" || typ.Package != "grade" || typ.Star {
 		t.Errorf("Field of type grade.Type expected, got '%v'.", typ)
 	}
-}
-
-// getFields is a test function that receives test package file and
-// returns a list of fields of the first struct having been found there.
-func getFields(t *testing.T, pkg *ast.File) []*ast.Field {
-	decl, ok := pkg.Decls[0].(*ast.GenDecl)
-	if !ok {
-		t.Error("Incorrect test package, cannot found general declaration.")
-	}
-
-	spec, ok := decl.Specs[0].(*ast.TypeSpec)
-	if !ok {
-		t.Error("Incorrect test package, cannot find spec.")
-	}
-
-	s, ok := spec.Type.(*ast.StructType)
-	if !ok {
-		t.Error("Incorrect test package, cannot find a struct.")
-	}
-
-	return s.Fields.List
 }
 
 var testData = map[string]Type{
