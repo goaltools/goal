@@ -13,6 +13,9 @@ func TestParseDir(t *testing.T) {
 }
 
 func TestProcessStructs(t *testing.T) {
+	pkg := getTestPackage(t, testPackage)
+	fset := token.NewFileSet() // Positions are relative to fset.
+	ast.Print(fset, pkg)
 }
 
 // getTestPackage is a function that returns test package file.
@@ -36,6 +39,9 @@ import (
 type Application struct {
 	Test struct {
 		HelloWorld string "testtag:'helloworld'"
+		Smth struct {
+			Yahoo string
+		}
 	}
 	Name string "testtag:'name'"
 	Age  int    "testtag:'age'"

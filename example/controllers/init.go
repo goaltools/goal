@@ -3,12 +3,29 @@ package controllers
 import (
 	"github.com/anonx/sunplate/example/assets/views"
 	"github.com/anonx/sunplate/middleware/template"
+
+	r "github.com/revel/revel"
 )
 
 // Controller is a struct that should be embedded into every controller
 // of your app to make methods provided by middlewares available.
 type Controller struct {
 	template.Middleware
+
+	*r.Controller
+
+	HeyWorld   TestType `tag:"smth_cool=xxx"`
+	Bullshit   *string
+	GPA, Grade float64
+}
+
+// TestType ...
+type TestType struct {
+}
+
+// Yahooooooo is cool...
+func (c *Controller) Yahooooooo(ctx1 *Controller, ctx2 Controller, name, lastname string, age int) bool {
+	return true
 }
 
 func init() {
