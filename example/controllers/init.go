@@ -4,7 +4,7 @@ import (
 	"github.com/anonx/sunplate/example/assets/views"
 	"github.com/anonx/sunplate/middleware/template"
 
-	r "github.com/revel/revel"
+	t "github.com/revel/revel/testing"
 )
 
 // Controller is a struct that should be embedded into every controller
@@ -12,7 +12,7 @@ import (
 type Controller struct {
 	template.Middleware
 
-	*r.Controller
+	*t.TestSuite
 
 	HeyWorld   TestType `tag:"smth_cool=xxx"`
 	Bullshit   *string
