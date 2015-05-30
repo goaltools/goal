@@ -6,7 +6,7 @@ import (
 )
 
 func TestTypeString(t *testing.T) {
-	expectedResults := map[string]Type{
+	expRes := map[string]Type{
 		"int64": Type{
 			Name: "int64",
 		},
@@ -24,7 +24,7 @@ func TestTypeString(t *testing.T) {
 			Star: true,
 		},
 	}
-	for exp, typ := range expectedResults {
+	for exp, typ := range expRes {
 		if got := typ.String(); got != exp {
 			t.Errorf("Incorrect output of Type.String() for %#v. Got '%s', expected '%s'.", typ, got, exp)
 		}
@@ -39,7 +39,7 @@ func TestProcessType_IncorrectInput(t *testing.T) {
 }
 
 func TestProcessType(t *testing.T) {
-	testPackage := `package test
+	pkg := getTestPackage(t, `package test
 		type Sample struct {
 			Something *something.Cool
 			Fullname  *Name
@@ -50,8 +50,8 @@ func TestProcessType(t *testing.T) {
 				Phone int64
 			}
 		}
-	`
-	expectedResults := []Type{
+	`)
+	expRes := []Type{
 		Type{
 			Name:    "Cool",
 			Package: "something",
@@ -77,16 +77,13 @@ func TestProcessType(t *testing.T) {
 			},
 		},
 	}
-	pkg := getTestPackage(t, testPackage)
-	f := getFields(t, pkg).List
 
-	for i, v := range f {
+	for i, v := range getFields(t, pkg).List {
 		typ := processType(v.Type)
-		if typ == nil || !reflect.DeepEqual(typ.Decl, expectedResults[i].Decl) ||
-			typ.Name != expectedResults[i].Name || typ.Package != expectedResults[i].Package ||
-			typ.Star != expectedResults[i].Star {
+		if typ == nil || !reflect.DeepEqual(typ.Decl, expRes[i].Decl) ||
+			typ.Name != expRes[i].Name || typ.Package != expRes[i].Package || typ.Star != expRes[i].Star {
 
-			t.Errorf("Field of type %#v expected, got '%#v'.", expectedResults[i], typ)
+			t.Errorf("Field of type %#v expected, got '%#v'.", expRes[i], typ)
 		}
 	}
 }
