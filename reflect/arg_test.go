@@ -2,6 +2,7 @@ package reflect
 
 import (
 	"go/ast"
+	"reflect"
 	"testing"
 )
 
@@ -10,29 +11,52 @@ func TestProcessFieldList(t *testing.T) {
 			type Sample struct {
 				Something            *something.Cool
 				FirstName, LastName  *Name
-				GPA                  int
+				GPA                  float64
 			}
 		`,
 	)
+	expRes := []Arg{
+		Arg{
+			Name: "Something",
+			Type: &Type{
+				Name:    "Cool",
+				Package: "something",
+				Star:    true,
+			},
+		},
+		Arg{
+			Name: "FirstName",
+			Type: &Type{
+				Name: "Name",
+				Star: true,
+			},
+		},
+		Arg{
+			Name: "LastName",
+			Type: &Type{
+				Name: "Name",
+				Star: true,
+			},
+		},
+		Arg{
+			Name: "GPA",
+			Type: &Type{
+				Name: "float64",
+			},
+		},
+	}
 	f := getFields(t, pkg)
 
-	res := processFieldList(f)
-	if l := len(res); l != 4 {
-		t.Errorf("Expected to get 4 elements, got %d instead.", l)
-	}
+	args := processFieldList(f)
+	for i, exp := range expRes {
+		if args[i].Name != exp.Name || args[i].Tag != exp.Tag ||
+			!deepEqualType(args[i].Type, exp.Type) {
 
-	if res[0].Name != "Something" || res[0].Type.String() != "*something.Cool" {
-		t.Errorf("Cannot process 'Something' field, received: %#v.", res[0])
-	}
-
-	if res[1].Name != "FirstName" || res[2].Name != "LastName" ||
-		res[1].Type.String() != "*Name" || res[2].Type.String() != "*Name" {
-
-		t.Errorf("Cannot process 'FirstName' and  'LastName' fields, received: %#v.", res[1])
-	}
-
-	if res[3].Name != "GPA" || res[3].Type.String() != "int" {
-		t.Errorf("Cannot process 'GPA' field, received: %#v.", res[2])
+			t.Errorf(
+				"Cannot process '%s' field. Expected %#v of type %#v, received: %#v of type %#v.",
+				exp.Name, exp, exp.Type, args[i], args[i].Type,
+			)
+		}
 	}
 }
 
@@ -41,28 +65,69 @@ func TestProcessField(t *testing.T) {
 			type Sample struct {
 				Something            *something.Cool
 				FirstName, LastName  *Name
-				GPA                  int
+				GPA                  float64
 			}
 		`,
 	)
-	f := getFields(t, pkg).List
-
-	args := processField(f[0])
-	if len(args) != 1 || args[0].Name != "Something" || args[0].Type.String() != "*something.Cool" {
-		t.Errorf("Cannot process 'Something' field, received: %#v.", args)
+	expRes := [][]Arg{
+		[]Arg{
+			Arg{
+				Name: "Something",
+				Type: &Type{
+					Name:    "Cool",
+					Package: "something",
+					Star:    true,
+				},
+			},
+		},
+		[]Arg{
+			Arg{
+				Name: "FirstName",
+				Type: &Type{
+					Name: "Name",
+					Star: true,
+				},
+			},
+			Arg{
+				Name: "LastName",
+				Type: &Type{
+					Name: "Name",
+					Star: true,
+				},
+			},
+		},
+		[]Arg{
+			Arg{
+				Name: "GPA",
+				Type: &Type{
+					Name: "float64",
+				},
+			},
+		},
 	}
 
-	args = processField(f[1])
-	if len(args) != 2 || args[0].Name != "FirstName" || args[1].Name != "LastName" ||
-		args[0].Type.String() != "*Name" || args[1].Type.String() != "*Name" {
-
-		t.Errorf("Cannot process 'FirstName' and  'LastName' fields, received: %#v.", args)
+	for i, v := range getFields(t, pkg).List {
+		args := processField(v)
+		if len(args) == 0 {
+			t.Error("Arguments expected, nothing is returned.")
+		}
+		for j, arg := range args {
+			if arg.Name != expRes[i][j].Name || !deepEqualType(arg.Type, expRes[i][j].Type) {
+				t.Errorf(
+					"Cannot process '%s' field. Expected %#v of type %#v, received: %#v of type %#v.",
+					arg.Name, expRes[i][j], expRes[i][j].Type, arg, arg.Type,
+				)
+			}
+		}
 	}
+}
 
-	args = processField(f[2])
-	if len(args) != 1 || args[0].Name != "GPA" || args[0].Type.String() != "int" {
-		t.Errorf("Cannot process 'GPA' field, received: %#v.", args)
+// deepEqualType is used by tests to ensure two types are equal.
+func deepEqualType(t1, t2 *Type) bool {
+	if t1.Name == t2.Name && t1.String() == t2.String() && reflect.DeepEqual(t1.Decl, t2.Decl) {
+		return true
 	}
+	return false
 }
 
 // getFields is a test function that receives test package file and
