@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
-func TestProcessStructTypeSpec(t *testing.T) {
+func TestProcessTypeSpec_IncorrectType(t *testing.T) {
+	s := processTypeSpec(&ast.TypeSpec{
+		Type: &ast.InterfaceType{},
+	})
+	if s != nil {
+		t.Errorf("StructType is the only supported type and thus nil expected, got %#v.", s)
+	}
+}
+
+func TestProcessTypeSpec(t *testing.T) {
 	pkg := getPackage(t, `package test
 			type Sample struct {
 				Something *something.Cool "something"
@@ -34,11 +43,39 @@ func TestProcessStructTypeSpec(t *testing.T) {
 	}
 	genDecl, _ := pkg.Decls[0].(*ast.GenDecl)
 	typeSpec, _ := genDecl.Specs[0].(*ast.TypeSpec)
-	res := processStructTypeSpec(typeSpec)
+	res := processTypeSpec(typeSpec)
 	if !deepEqualStruct(expRes, res) {
 		fset := token.NewFileSet()
 		ast.Print(fset, typeSpec)
 		t.Errorf("Incorrect processStructTypeSpec result. Expected %#v, got %#v.", expRes, res)
+	}
+}
+
+func TestProcessImportSpec(t *testing.T) {
+	pkg := getPackage(t, `package test
+			import(
+				"github.com/anonx/sunplate"
+				l "github.com/anonx/sunplate/log"
+				"./example"
+				"strings"
+			)
+		`,
+	)
+	expRes := map[string]string{
+		"sunplate": "github.com/anonx/sunplate",
+		"l":        "github.com/anonx/sunplate/log",
+		"example":  "./example",
+		"strings":  "strings",
+	}
+	genDecl, _ := pkg.Decls[0].(*ast.GenDecl)
+	for _, st := range genDecl.Specs { // Iterating over specs.
+		k, v := processImportSpec(st.(*ast.ImportSpec))
+		if expRes[k] != v {
+			t.Errorf(
+				"Incorrect import key-value pair. Expected %s=%s, got %s=%s.",
+				k, expRes[k], k, v,
+			)
+		}
 	}
 }
 

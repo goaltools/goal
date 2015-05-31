@@ -60,7 +60,7 @@ var testPackage = `package controllers
 
 import (
 	"github.com/anonx/sunplate/action"
-	"github.com/anonx/sunplate/middleware/template"
+	t "github.com/anonx/sunplate/middleware/template"
 )
 
 // Application is a test struct.
@@ -73,7 +73,7 @@ type Application struct {
 	}
 	Name string "testtag:'name'"
 	Age  int    "testtag:'age'"
-	*template.Middleware
+	*t.Middleware
 }
 
 // Index comment is here.
