@@ -5,6 +5,13 @@ import (
 	"testing"
 )
 
+func TestProcessFieldList_EmptyInput(t *testing.T) {
+	args := processFieldList(nil)
+	if len(args) != 0 {
+		t.Errorf("Empty arguments list expected, got %#v instead.", args)
+	}
+}
+
 func TestProcessFieldList(t *testing.T) {
 	pkg := getPackage(t, `package test
 			type Sample struct {
