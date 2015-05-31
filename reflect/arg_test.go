@@ -2,12 +2,11 @@ package reflect
 
 import (
 	"go/ast"
-	"reflect"
 	"testing"
 )
 
 func TestProcessFieldList(t *testing.T) {
-	pkg := getTestPackage(t, `package test
+	pkg := getPackage(t, `package test
 			type Sample struct {
 				Something            *something.Cool
 				FirstName, LastName  *Name
@@ -60,8 +59,25 @@ func TestProcessFieldList(t *testing.T) {
 	}
 }
 
+func TestProcessField_UnknownType(t *testing.T) {
+	pkg := getPackage(t, `package test
+			type Sample struct {
+				Smth struct {
+					Field1 string
+					Field2 string
+				}
+			}
+		`,
+	)
+	f := getFields(t, pkg).List
+	args := processField(f[0])
+	if len(args) != 0 {
+		t.Errorf("Fields of anonymous struct type should be skipped. Instead received %#v.", args)
+	}
+}
+
 func TestProcessField(t *testing.T) {
-	pkg := getTestPackage(t, `package test
+	pkg := getPackage(t, `package test
 			type Sample struct {
 				Something            *something.Cool
 				FirstName, LastName  *Name
@@ -122,14 +138,6 @@ func TestProcessField(t *testing.T) {
 	}
 }
 
-// deepEqualType is used by tests to ensure two types are equal.
-func deepEqualType(t1, t2 *Type) bool {
-	if t1.Name == t2.Name && t1.String() == t2.String() && reflect.DeepEqual(t1.Decl, t2.Decl) {
-		return true
-	}
-	return false
-}
-
 // getFields is a test function that receives test package file and
 // returns a list of fields of the first struct having been found there.
 func getFields(t *testing.T, pkg *ast.File) *ast.FieldList {
@@ -149,4 +157,18 @@ func getFields(t *testing.T, pkg *ast.File) *ast.FieldList {
 	}
 
 	return s.Fields
+}
+
+// deepEqualArg is a function that is used by tests to compare two arguments.
+func deepEqualArg(a1, a2 *Arg) bool {
+	if a1 == nil || a2 == nil {
+		if a1 == a2 {
+			return true
+		}
+		return false
+	}
+	if a1.Name == a2.Name && a1.Tag == a2.Tag && deepEqualType(a1.Type, a2.Type) {
+		return true
+	}
+	return false
 }
