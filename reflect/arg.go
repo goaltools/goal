@@ -34,6 +34,9 @@ func processFieldList(fields *ast.FieldList) (list []Arg) {
 func processField(field *ast.Field) (list []Arg) {
 	// All names of the same field have the same type.
 	t := processType(field.Type)
+	if t == nil { // Skip fields that we don't know how to process.
+		return
+	}
 
 	// Check whether tag is presented.
 	tag := ""

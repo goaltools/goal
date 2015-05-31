@@ -67,6 +67,21 @@ func processDecl(decl ast.Decl) *Struct {
 	return nil
 }
 
+// processCommentGroup is a simple function that transforms *ast.CommentGroup
+// into a slice of strings.
+func processCommentGroup(group *ast.CommentGroup) (list []string) {
+	// Make sure comments do exist at all.
+	if group == nil {
+		return
+	}
+
+	// If they are, add them to the list and return it.
+	for _, comment := range group.List {
+		list = append(list, comment.Text)
+	}
+	return
+}
+
 // getFuncName returns a name for this func or method declaration.
 // e.g. "(*Application).SayHello" for a method, "SayHello" for a func.
 func getFuncName(funcDecl *ast.FuncDecl) string {

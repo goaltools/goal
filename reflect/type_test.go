@@ -1,7 +1,6 @@
 package reflect
 
 import (
-	"reflect"
 	"testing"
 )
 
@@ -39,7 +38,7 @@ func TestProcessType_IncorrectInput(t *testing.T) {
 }
 
 func TestProcessType(t *testing.T) {
-	pkg := getTestPackage(t, `package test
+	pkg := getPackage(t, `package test
 		type Sample struct {
 			Something *something.Cool
 			Fullname  *Name
@@ -68,22 +67,28 @@ func TestProcessType(t *testing.T) {
 			Name:    "Type",
 			Package: "grade",
 		},
-		Type{
-			Decl: &Struct{
-				Fields: []Arg{
-					Arg{Name: "Email", Type: &Type{Name: "string"}, Tag: "\"email\""},
-					Arg{Name: "Phone", Type: &Type{Name: "int64"}},
-				},
-			},
-		},
 	}
 
 	for i, v := range getFields(t, pkg).List {
+		if len(expRes) > i { // Anonymous struct should be skipped.
+			break
+		}
 		typ := processType(v.Type)
-		if typ == nil || !reflect.DeepEqual(typ.Decl, expRes[i].Decl) ||
-			typ.Name != expRes[i].Name || typ.Package != expRes[i].Package || typ.Star != expRes[i].Star {
+		if typ == nil || typ.Name != expRes[i].Name ||
+			typ.Package != expRes[i].Package || typ.Star != expRes[i].Star {
 
 			t.Errorf("Field of type %#v expected, got '%#v'.", expRes[i], typ)
 		}
 	}
+}
+
+// deepEqualType is a function that is used by tests to compare types.
+func deepEqualType(t1, t2 *Type) bool {
+	if t1 == nil || t2 == nil {
+		if t1 == t2 {
+			return true
+		}
+		return false
+	}
+	return t1.String() == t2.String()
 }

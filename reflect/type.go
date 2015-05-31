@@ -6,10 +6,9 @@ import (
 
 // Type represents a type of argument.
 type Type struct {
-	Name    string  // Name of the type, e.g. "URL". It is empty if Decl is not nil.
-	Package string  // Package name, e.g. "template" in case of "html/template".
-	Star    bool    // Star indicates whether it is a pointer.
-	Decl    *Struct // Decl is either nil or a description of this type.
+	Name    string // Name of the type, e.g. "URL". It is empty if Decl is not nil.
+	Package string // Package name, e.g. "template" in case of "html/template".
+	Star    bool   // Star indicates whether it is a pointer.
 }
 
 // String prints a type name, e.g. "*template.URL", "template.Template",
@@ -47,13 +46,6 @@ func processType(typ interface{}) *Type {
 		return &Type{
 			Name:    v.Sel.Name,
 			Package: t.Name,
-		}
-	case *ast.StructType:
-		return &Type{
-			// Add description of the embedded anonymous structure.
-			Decl: &Struct{
-				Fields: processFieldList(v.Fields),
-			},
 		}
 	}
 	return nil

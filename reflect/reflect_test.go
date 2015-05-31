@@ -1,11 +1,11 @@
 package reflect
 
 import (
-	"testing"
-
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"reflect"
+	"testing"
 )
 
 func TestParseDir(t *testing.T) {
@@ -13,13 +13,41 @@ func TestParseDir(t *testing.T) {
 }
 
 func TestProcessStructs(t *testing.T) {
-	pkg := getTestPackage(t, testPackage)
+	pkg := getPackage(t, testPackage)
 	fset := token.NewFileSet() // Positions are relative to fset.
 	ast.Print(fset, pkg)
 }
 
-// getTestPackage is a function that returns test package file.
-func getTestPackage(t *testing.T, src string) *ast.File {
+func TestProcessCommentGroup_EmptyGroup(t *testing.T) {
+	if c := processCommentGroup(nil); len(c) != 0 {
+		t.Errorf("Zero length slice expected. Gor %#v instead.", c)
+	}
+}
+
+func TestProcessCommentGroup(t *testing.T) {
+	c := processCommentGroup(&ast.CommentGroup{
+		List: []*ast.Comment{
+			&ast.Comment{
+				Text: "// This is line 1",
+			},
+			&ast.Comment{
+				Text: "// This is line 2",
+			},
+			&ast.Comment{
+				Text: "// This is line 3",
+			},
+		},
+	})
+	expRes := []string{
+		"// This is line 1", "// This is line 2", "// This is line 3",
+	}
+	if !reflect.DeepEqual(c, expRes) {
+		t.Errorf("Incorrect result of processCommentGroup. Expected %#v, got %#v.", expRes, c)
+	}
+}
+
+// getPackage is a function that parses input go source and returns ast tree.
+func getPackage(t *testing.T, src string) *ast.File {
 	fset := token.NewFileSet() // Positions are relative to fset.
 	pkg, err := parser.ParseFile(fset, "", src, parser.ParseComments)
 	if err != nil {
