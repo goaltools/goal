@@ -7,7 +7,7 @@ import (
 )
 
 // Struct is a type that represents information about a specific struct,
-// its methods, etc.
+// its fields, and comments group.
 type Struct struct {
 	Comments []string // Comments right above the struct declaration.
 	Fields   []Arg    // A list of fields that belong to this struct.

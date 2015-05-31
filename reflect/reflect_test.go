@@ -4,7 +4,6 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"reflect"
 	"testing"
 )
 
@@ -16,34 +15,6 @@ func TestProcessStructs(t *testing.T) {
 	pkg := getPackage(t, testPackage)
 	fset := token.NewFileSet() // Positions are relative to fset.
 	ast.Print(fset, pkg)
-}
-
-func TestProcessCommentGroup_EmptyGroup(t *testing.T) {
-	if c := processCommentGroup(nil); len(c) != 0 {
-		t.Errorf("Zero length slice expected. Gor %#v instead.", c)
-	}
-}
-
-func TestProcessCommentGroup(t *testing.T) {
-	c := processCommentGroup(&ast.CommentGroup{
-		List: []*ast.Comment{
-			{
-				Text: "// This is line 1",
-			},
-			{
-				Text: "// This is line 2",
-			},
-			{
-				Text: "// This is line 3",
-			},
-		},
-	})
-	expRes := []string{
-		"// This is line 1", "// This is line 2", "// This is line 3",
-	}
-	if !reflect.DeepEqual(c, expRes) {
-		t.Errorf("Incorrect result of processCommentGroup. Expected %#v, got %#v.", expRes, c)
-	}
 }
 
 // getPackage is a function that parses input go source and returns ast tree.
