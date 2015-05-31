@@ -20,7 +20,7 @@ func TestProcessStructTypeSpec(t *testing.T) {
 	)
 	expRes := &Struct{
 		Fields: []Arg{
-			Arg{
+			{
 				Name: "Something",
 				Tag:  "\"something\"",
 				Type: &Type{

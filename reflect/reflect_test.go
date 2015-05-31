@@ -27,13 +27,13 @@ func TestProcessCommentGroup_EmptyGroup(t *testing.T) {
 func TestProcessCommentGroup(t *testing.T) {
 	c := processCommentGroup(&ast.CommentGroup{
 		List: []*ast.Comment{
-			&ast.Comment{
+			{
 				Text: "// This is line 1",
 			},
-			&ast.Comment{
+			{
 				Text: "// This is line 2",
 			},
-			&ast.Comment{
+			{
 				Text: "// This is line 3",
 			},
 		},

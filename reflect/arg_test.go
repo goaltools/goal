@@ -15,7 +15,7 @@ func TestProcessFieldList(t *testing.T) {
 		`,
 	)
 	expRes := []Arg{
-		Arg{
+		{
 			Name: "Something",
 			Type: &Type{
 				Name:    "Cool",
@@ -23,21 +23,21 @@ func TestProcessFieldList(t *testing.T) {
 				Star:    true,
 			},
 		},
-		Arg{
+		{
 			Name: "FirstName",
 			Type: &Type{
 				Name: "Name",
 				Star: true,
 			},
 		},
-		Arg{
+		{
 			Name: "LastName",
 			Type: &Type{
 				Name: "Name",
 				Star: true,
 			},
 		},
-		Arg{
+		{
 			Name: "GPA",
 			Type: &Type{
 				Name: "float64",
@@ -86,8 +86,8 @@ func TestProcessField(t *testing.T) {
 		`,
 	)
 	expRes := [][]Arg{
-		[]Arg{
-			Arg{
+		{
+			{
 				Name: "Something",
 				Type: &Type{
 					Name:    "Cool",
@@ -96,15 +96,15 @@ func TestProcessField(t *testing.T) {
 				},
 			},
 		},
-		[]Arg{
-			Arg{
+		{
+			{
 				Name: "FirstName",
 				Type: &Type{
 					Name: "Name",
 					Star: true,
 				},
 			},
-			Arg{
+			{
 				Name: "LastName",
 				Type: &Type{
 					Name: "Name",
@@ -112,8 +112,8 @@ func TestProcessField(t *testing.T) {
 				},
 			},
 		},
-		[]Arg{
-			Arg{
+		{
+			{
 				Name: "GPA",
 				Type: &Type{
 					Name: "float64",
