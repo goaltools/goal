@@ -6,19 +6,19 @@ import (
 
 func TestTypeString(t *testing.T) {
 	expRes := map[string]Type{
-		"int64": Type{
+		"int64": {
 			Name: "int64",
 		},
-		"template.Template": Type{
+		"template.Template": {
 			Name:    "Template",
 			Package: "template",
 		},
-		"*template.URL": Type{
+		"*template.URL": {
 			Name:    "URL",
 			Package: "template",
 			Star:    true,
 		},
-		"*Controller": Type{
+		"*Controller": {
 			Name: "Controller",
 			Star: true,
 		},
@@ -51,19 +51,19 @@ func TestProcessType(t *testing.T) {
 		}
 	`)
 	expRes := []Type{
-		Type{
+		{
 			Name:    "Cool",
 			Package: "something",
 			Star:    true,
 		},
-		Type{
+		{
 			Name: "Name",
 			Star: true,
 		},
-		Type{
+		{
 			Name: "float64",
 		},
-		Type{
+		{
 			Name:    "Type",
 			Package: "grade",
 		},
