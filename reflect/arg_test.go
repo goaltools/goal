@@ -81,6 +81,25 @@ func TestProcessField_UnknownType(t *testing.T) {
 	}
 }
 
+func TestProcessField_EmptyName(t *testing.T) {
+	pkg := getPackage(t, `package test
+			func Test() string {
+				return ""
+			}
+		`,
+	)
+	expRes := Arg{
+		Type: &Type{
+			Name: "string",
+		},
+	}
+	funcDecl := pkg.Decls[0].(*ast.FuncDecl)
+	l := processFieldList(funcDecl.Type.Results)
+	if !deepEqualArg(&expRes, &l[0]) {
+		t.Errorf("Incorrect fieldList result. Expected field %#v, got %#v.", expRes, l[0])
+	}
+}
+
 func TestProcessField(t *testing.T) {
 	pkg := getPackage(t, `package test
 			type Sample struct {
