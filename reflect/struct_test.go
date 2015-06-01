@@ -60,6 +60,49 @@ func TestProcessStructDecl(t *testing.T) {
 	}
 }
 
+func TestProcessImportDecl_IncorrectTok(t *testing.T) {
+	s := processStructDecl(&ast.GenDecl{
+		Tok: token.TYPE,
+	})
+	if s != nil {
+		t.Errorf("Nil should be returned in case genDecl's Tok != token.IMPORT, %#v is returned.", s)
+	}
+}
+
+func TestProcessImportDecl_EmptySpec(t *testing.T) {
+	s := processImportDecl(&ast.GenDecl{
+		Tok: token.IMPORT,
+	})
+	if s == nil || len(s) > 0 {
+		t.Errorf("In case of empty Specs, initialized but empty map is expected. Got %#v.", s)
+	}
+}
+
+func TestProcessImportDecl(t *testing.T) {
+	pkg := getPackage(t, `package test
+			import (
+				"strings"
+
+				"./example"
+
+				"github.com/anonx/sunplate"
+				l "github.com/anonx/sunplate/log"
+			)
+		`,
+	)
+	expRes := map[string]string{
+		"strings":  "strings",
+		"example":  "./example",
+		"sunplate": "github.com/anonx/sunplate",
+		"l":        "github.com/anonx/sunplate/log",
+	}
+	genDecl, _ := pkg.Decls[0].(*ast.GenDecl)
+	imps := processImportDecl(genDecl)
+	if !reflect.DeepEqual(expRes, imps) {
+		t.Errorf("Incorrect result returned. Expected %#v, got %#v.", expRes, imps)
+	}
+}
+
 func TestProcessTypeSpec_IncorrectType(t *testing.T) {
 	s := processTypeSpec(&ast.TypeSpec{
 		Type: &ast.InterfaceType{},
