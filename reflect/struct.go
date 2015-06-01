@@ -2,6 +2,7 @@ package reflect
 
 import (
 	"go/ast"
+	"go/token"
 	"path/filepath"
 	"strings"
 )
@@ -14,7 +15,28 @@ type Struct struct {
 	Name     string   // Name of the struct, e.g. "Application".
 }
 
-// processStructTypeSpec expects ast type spec as input parameter
+// processStructDecl ensures that received ast gen declaration
+// represents a structure, parses it, and returns.
+// If input data is not correct, nil will be returned.
+func processStructDecl(decl *ast.GenDecl) *Struct {
+	// Make sure it is a type declaration.
+	if decl.Tok != token.TYPE {
+		return nil
+	}
+
+	// Compose a structure and return it.
+	for _, spec := range decl.Specs {
+		ts, _ := spec.(*ast.TypeSpec)              // TypeSpec is the only possible value, so ignoring second arg.
+		s := processTypeSpec(ts)                   // Composing a structure.
+		s.Comments = processCommentGroup(decl.Doc) // Adding comments block.
+		return s                                   // There is just one spec in the Specs anyway, so returning.
+	}
+
+	// No specs have been found.
+	return nil
+}
+
+// processTypeSpec expects ast type spec as input parameter
 // that is transformed into *Struct representation and returned.
 func processTypeSpec(spec *ast.TypeSpec) *Struct {
 	// Make sure it is a structure type. Return nil if not.

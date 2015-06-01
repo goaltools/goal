@@ -7,6 +7,59 @@ import (
 	"testing"
 )
 
+func TestProcessStructDecl_IncorrectTok(t *testing.T) {
+	s := processStructDecl(&ast.GenDecl{
+		Tok: token.IMPORT,
+	})
+	if s != nil {
+		t.Errorf("Nil should be returned in case genDecl's Tok != token.TYPE, %#v is returned.", s)
+	}
+}
+
+func TestProcessStructDecl_EmptySpec(t *testing.T) {
+	s := processStructDecl(&ast.GenDecl{
+		Tok: token.TYPE,
+	})
+	if s != nil {
+		t.Errorf("In case of empty Specs, nil is expected. Got %#v.", s)
+	}
+}
+
+func TestProcessStructDecl(t *testing.T) {
+	pkg := getPackage(t, `package test
+			// Sample ...
+			// Line 2
+			type Sample struct {
+				Something *something.Cool "something"
+
+				Name struct {
+					First, Last string
+				}
+			}
+		`,
+	)
+	expRes := Struct{
+		Comments: []string{"// Sample ...", "// Line 2"},
+		Name:     "Sample",
+		Fields: []Arg{
+			{
+				Name: "Something",
+				Tag:  "something",
+				Type: &Type{
+					Name:    "Cool",
+					Package: "something",
+					Star:    true,
+				},
+			},
+		},
+	}
+	genDecl, _ := pkg.Decls[0].(*ast.GenDecl)
+	r := processStructDecl(genDecl)
+	if !deepEqualStruct(&expRes, r) {
+		t.Errorf("Error: %#v != %#v.", expRes, r)
+	}
+}
+
 func TestProcessTypeSpec_IncorrectType(t *testing.T) {
 	s := processTypeSpec(&ast.TypeSpec{
 		Type: &ast.InterfaceType{},
@@ -31,7 +84,7 @@ func TestProcessTypeSpec(t *testing.T) {
 		Fields: []Arg{
 			{
 				Name: "Something",
-				Tag:  "\"something\"",
+				Tag:  "something",
 				Type: &Type{
 					Name:    "Cool",
 					Package: "something",

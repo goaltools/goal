@@ -2,6 +2,7 @@ package reflect
 
 import (
 	"go/ast"
+	"strings"
 )
 
 // Arg is used to describe arguments of functions and fields of structures.
@@ -41,7 +42,7 @@ func processField(field *ast.Field) (list []Arg) {
 	// Check whether tag is presented.
 	tag := ""
 	if field.Tag != nil {
-		tag = field.Tag.Value
+		tag = strings.Trim(field.Tag.Value, "\"`") // Remove quote signs from the left & right sides.
 	}
 
 	// Iterate through all the names of this field.
