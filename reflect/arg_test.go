@@ -55,9 +55,7 @@ func TestProcessFieldList(t *testing.T) {
 
 	args := processFieldList(f)
 	for i, exp := range expRes {
-		if args[i].Name != exp.Name || args[i].Tag != exp.Tag ||
-			!deepEqualType(args[i].Type, exp.Type) {
-
+		if !deepEqualArg(&exp, &args[i]) {
 			t.Errorf(
 				"Cannot process '%s' field. Expected %#v of type %#v, received: %#v of type %#v.",
 				exp.Name, exp, exp.Type, args[i], args[i].Type,
@@ -86,7 +84,7 @@ func TestProcessField_UnknownType(t *testing.T) {
 func TestProcessField(t *testing.T) {
 	pkg := getPackage(t, `package test
 			type Sample struct {
-				Something            *something.Cool
+				Something            *something.Cool "tag:something"
 				FirstName, LastName  *Name
 				GPA                  float64
 			}
@@ -96,6 +94,7 @@ func TestProcessField(t *testing.T) {
 		{
 			{
 				Name: "Something",
+				Tag:  "tag:something",
 				Type: &Type{
 					Name:    "Cool",
 					Package: "something",
