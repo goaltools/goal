@@ -9,6 +9,10 @@ import (
 	"github.com/anonx/sunplate/log"
 )
 
+// Package is a type that is
+type Package struct {
+}
+
 // ParseDir ...
 func ParseDir(path string) {
 	fset := token.NewFileSet() // Positions are relative to fset.

@@ -45,7 +45,17 @@ func processField(field *ast.Field) (list []Arg) {
 		tag = strings.Trim(field.Tag.Value, "\"`") // Remove quote signs from the left & right sides.
 	}
 
-	// Iterate through all the names of this field.
+	// If there are no names, return without them.
+	if len(field.Names) == 0 {
+		return []Arg{
+			{
+				Tag:  tag,
+				Type: t,
+			},
+		}
+	}
+
+	// Otherwise, iterate through all the names of this field.
 	for _, name := range field.Names {
 		// Add current argument to the list.
 		list = append(list, Arg{
