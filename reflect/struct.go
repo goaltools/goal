@@ -36,6 +36,25 @@ func processStructDecl(decl *ast.GenDecl) *Struct {
 	return nil
 }
 
+// processImportDecl returns a name - value pairs of imports if
+// genDecl's Tok is IMPORT.
+// Otherwise, nil is returned.
+func processImportDecl(decl *ast.GenDecl) map[string]string {
+	// Make sure it is an import declaration.
+	if decl.Tok != token.IMPORT {
+		return nil
+	}
+
+	// Generate a map and return it.
+	list := make(map[string]string, len(decl.Specs))
+	for _, spec := range decl.Specs {
+		is, _ := spec.(*ast.ImportSpec) // ImportSpec is the only possible value, so ignoring second arg.
+		k, v := processImportSpec(is)
+		list[k] = v
+	}
+	return list
+}
+
 // processTypeSpec expects ast type spec as input parameter
 // that is transformed into *Struct representation and returned.
 func processTypeSpec(spec *ast.TypeSpec) *Struct {
