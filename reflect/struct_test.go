@@ -61,7 +61,7 @@ func TestProcessStructDecl(t *testing.T) {
 }
 
 func TestProcessImportDecl_IncorrectTok(t *testing.T) {
-	s := processStructDecl(&ast.GenDecl{
+	s := processImportDecl(&ast.GenDecl{
 		Tok: token.TYPE,
 	})
 	if s != nil {
