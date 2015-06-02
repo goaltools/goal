@@ -5,6 +5,8 @@ import (
 	"go/token"
 	"reflect"
 	"testing"
+
+	"github.com/anonx/sunplate/log"
 )
 
 func TestProcessStructDecl_IncorrectTok(t *testing.T) {
@@ -55,9 +57,7 @@ func TestProcessStructDecl(t *testing.T) {
 	}
 	genDecl, _ := pkg.Decls[0].(*ast.GenDecl)
 	r := processStructDecl(genDecl)
-	if !deepEqualStruct(&expRes, r) {
-		t.Errorf("Error: %#v != %#v.", expRes, r)
-	}
+	assertDeepEqualStruct(&expRes, r)
 }
 
 func TestProcessImportDecl_IncorrectTok(t *testing.T) {
@@ -140,11 +140,7 @@ func TestProcessTypeSpec(t *testing.T) {
 	genDecl, _ := pkg.Decls[0].(*ast.GenDecl)
 	typeSpec, _ := genDecl.Specs[0].(*ast.TypeSpec)
 	res := processTypeSpec(typeSpec)
-	if !deepEqualStruct(expRes, res) {
-		fset := token.NewFileSet()
-		ast.Print(fset, typeSpec)
-		t.Errorf("Incorrect processStructTypeSpec result. Expected %#v, got %#v.", expRes, res)
-	}
+	assertDeepEqualStruct(expRes, res)
 }
 
 func TestProcessImportSpec(t *testing.T) {
@@ -175,33 +171,34 @@ func TestProcessImportSpec(t *testing.T) {
 	}
 }
 
-// deepEqualStruct is used by tests to compare two structures.
-func deepEqualStruct(s1, s2 *Struct) bool {
+// assertDeepEqualStruct is used by tests to compare two structures.
+func assertDeepEqualStruct(s1, s2 *Struct) {
 	if s1 == nil || s2 == nil {
-		if s1 == s2 {
-			return true
+		if s1 != s2 {
+			log.Error.Panicf("One of the structs is nil while another is not: %#v != %#v.", s1, s2)
 		}
-		return false
+		return
 	}
-	if !reflect.DeepEqual(s1.Comments, s2.Comments) || s1.Name != s2.Name || s1.File != s2.File {
-		return false
+	assertDeepEqualArgSlice(s1.Fields, s2.Fields)
+	if !reflect.DeepEqual(s1.Comments, s2.Comments) {
+		log.Error.Panicf("Comments of structs are not equal: %#v != %#v.", s1.Comments, s2.Comments)
 	}
-	if !deepEqualArgSlice(s1.Fields, s2.Fields) {
-		return false
+	if s1.Name != s2.Name || s1.File != s2.File {
+		log.Error.Panicf("Structs are not equal: %#v != %#v.", s1, s2)
 	}
-	return true
 }
 
-// deepEqualStructSlice is a function that is used in tests for
+// assertDeepEqualStructSlice is a function that is used in tests for
 // comparison of struct slices.
-func deepEqualStructSlice(s1, s2 []Struct) bool {
+func assertDeepEqualStructSlice(s1, s2 []Struct) {
 	if len(s1) != len(s2) {
-		return false
+		log.Error.Panicf(
+			"Struct slices %#v and %#v have different length: %d and %d.",
+			s1, s2, len(s1), len(s2),
+		)
+		return
 	}
 	for i, st := range s1 {
-		if !deepEqualStruct(&st, &s2[i]) {
-			return false
-		}
+		assertDeepEqualStruct(&st, &s2[i])
 	}
-	return true
 }

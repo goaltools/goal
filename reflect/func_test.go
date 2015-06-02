@@ -4,6 +4,8 @@ import (
 	"go/ast"
 	"reflect"
 	"testing"
+
+	"github.com/anonx/sunplate/log"
 )
 
 func TestProcessFuncDecl(t *testing.T) {
@@ -126,43 +128,41 @@ func TestProcessFuncDecl(t *testing.T) {
 	for i, decl := range pkg.Decls {
 		funcDecl := decl.(*ast.FuncDecl)
 		f := processFuncDecl(funcDecl)
-		if !deepEqualFunc(f, &expRes[i]) {
-			t.Errorf("Incorrect func value. Expected %#v, got %#v.", expRes[i], f)
-		}
+		assertDeepEqualFunc(f, &expRes[i])
 	}
 }
 
-// deepEqualFunc is used by tests to check whether two Func structs are
+// assertDeepEqualFunc is used by tests to check whether two Func structs are
 // equal or not.
-func deepEqualFunc(f1, f2 *Func) bool {
+func assertDeepEqualFunc(f1, f2 *Func) {
 	if f1 == nil || f2 == nil {
-		if f1 == f2 {
-			return true
+		if f1 != f2 {
+			log.Error.Panicf("One of the funcs is nil while another is not: %#v != %#v.", f1, f2)
 		}
-		return false
+		return
 	}
-	if f1.Name != f2.Name || f1.File != f2.File ||
-		!reflect.DeepEqual(f1.Comments, f2.Comments) || !deepEqualArg(f1.Recv, f2.Recv) ||
-		len(f1.Params) != len(f2.Params) || len(f1.Results) != len(f2.Results) {
-
-		return false
+	assertDeepEqualArg(f1.Recv, f2.Recv)
+	assertDeepEqualArgSlice(f1.Params, f2.Params)
+	assertDeepEqualArgSlice(f1.Results, f2.Results)
+	if !reflect.DeepEqual(f1.Comments, f2.Comments) {
+		log.Error.Panicf("Comments of funcs are not equal: %#v != %#v.", f1.Comments, f2.Comments)
 	}
-	if !deepEqualArgSlice(f1.Params, f2.Params) || !deepEqualArgSlice(f1.Results, f2.Results) {
-		return false
+	if f1.Name != f2.Name || f1.File != f2.File {
+		log.Error.Panicf("Funcs are not equal: %#v != %#v.", f1, f2)
 	}
-	return true
 }
 
-// deepEqualFuncSlice is a function that is used in tests for
+// assertDeepEqualFuncSlice is a function that is used in tests for
 // comparison of func slices.
-func deepEqualFuncSlice(f1, f2 []Func) bool {
+func assertDeepEqualFuncSlice(f1, f2 []Func) {
 	if len(f1) != len(f2) {
-		return false
+		log.Error.Panicf(
+			"Func slices %#v and %#v have different length: %d and %d.",
+			f1, f2, len(f1), len(f2),
+		)
+		return
 	}
 	for i, fn := range f1 {
-		if !deepEqualFunc(&fn, &f2[i]) {
-			return false
-		}
+		assertDeepEqualFunc(&fn, &f2[i])
 	}
-	return true
 }
