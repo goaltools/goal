@@ -2,10 +2,45 @@ package reflect
 
 import (
 	"go/ast"
+	"strings"
 	"testing"
 
 	"github.com/anonx/sunplate/log"
 )
+
+func TestArgsFilter(t *testing.T) {
+	t1 := Args{
+		{
+			Name: "arg1",
+		},
+		{
+			Name: "arg2",
+		},
+		{
+			Name: "arg12",
+		},
+	}
+	expRes := Args{
+		{
+			Name: "arg2",
+		},
+		{
+			Name: "arg12",
+		},
+	}
+	r := t1.Filter(func(a *Arg) bool {
+		return true
+	})
+	assertDeepEqualArgs(t1, r)
+
+	r = t1.Filter(func(a *Arg) bool {
+		if strings.HasSuffix(a.Name, "2") {
+			return true
+		}
+		return false
+	})
+	assertDeepEqualArgs(expRes, r)
+}
 
 func TestProcessFieldList_EmptyInput(t *testing.T) {
 	args := processFieldList(nil)
@@ -144,7 +179,7 @@ func TestProcessField(t *testing.T) {
 
 	for i, v := range getFields(t, pkg).List {
 		args := processField(v)
-		assertDeepEqualArgSlice(expRes[i], args)
+		assertDeepEqualArgs(expRes[i], args)
 	}
 }
 
@@ -183,17 +218,17 @@ func assertDeepEqualArg(a1, a2 *Arg) {
 	}
 }
 
-// assertDeepEqualArgSlice is a function that is used in tests for
-// comparison of struct slices.
-func assertDeepEqualArgSlice(a1, a2 []Arg) {
-	if len(a1) != len(a2) {
+// assertDeepEqualArgs is a function that is used in tests for
+// comparison of arguments.
+func assertDeepEqualArgs(as1, as2 Args) {
+	if len(as1) != len(as2) {
 		log.Error.Panicf(
 			"Argument slices %#v and %#v have different length: %d and %d.",
-			a1, a2, len(a1), len(a2),
+			as1, as2, len(as1), len(as2),
 		)
 		return
 	}
-	for i, a := range a1 {
-		assertDeepEqualArg(&a, &a2[i])
+	for i, a := range as1 {
+		assertDeepEqualArg(&a, &as2[i])
 	}
 }

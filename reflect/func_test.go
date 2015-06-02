@@ -3,10 +3,45 @@ package reflect
 import (
 	"go/ast"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/anonx/sunplate/log"
 )
+
+func TestFuncsFilter(t *testing.T) {
+	t1 := Funcs{
+		{
+			Name: "Func1",
+		},
+		{
+			Name: "Func2",
+		},
+		{
+			Name: "Func32",
+		},
+	}
+	expRes := Funcs{
+		{
+			Name: "Func2",
+		},
+		{
+			Name: "Func32",
+		},
+	}
+	r := t1.Filter(func(f *Func) bool {
+		return true
+	})
+	assertDeepEqualFuncs(t1, r)
+
+	r = t1.Filter(func(f *Func) bool {
+		if strings.HasSuffix(f.Name, "2") {
+			return true
+		}
+		return false
+	})
+	assertDeepEqualFuncs(expRes, r)
+}
 
 func TestProcessFuncDecl(t *testing.T) {
 	pkg := getPackage(t, `package test
@@ -142,8 +177,8 @@ func assertDeepEqualFunc(f1, f2 *Func) {
 		return
 	}
 	assertDeepEqualArg(f1.Recv, f2.Recv)
-	assertDeepEqualArgSlice(f1.Params, f2.Params)
-	assertDeepEqualArgSlice(f1.Results, f2.Results)
+	assertDeepEqualArgs(f1.Params, f2.Params)
+	assertDeepEqualArgs(f1.Results, f2.Results)
 	if !reflect.DeepEqual(f1.Comments, f2.Comments) {
 		log.Error.Panicf("Comments of funcs are not equal: %#v != %#v.", f1.Comments, f2.Comments)
 	}
@@ -152,9 +187,9 @@ func assertDeepEqualFunc(f1, f2 *Func) {
 	}
 }
 
-// assertDeepEqualFuncSlice is a function that is used in tests for
-// comparison of func slices.
-func assertDeepEqualFuncSlice(f1, f2 []Func) {
+// assertDeepEqualFuncs is a function that is used in tests for
+// comparison of functions.
+func assertDeepEqualFuncs(f1, f2 Funcs) {
 	if len(f1) != len(f2) {
 		log.Error.Panicf(
 			"Func slices %#v and %#v have different length: %d and %d.",

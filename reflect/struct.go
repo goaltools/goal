@@ -7,6 +7,9 @@ import (
 	"strings"
 )
 
+// Structs is a type that represents a list of structures.
+type Structs []Struct
+
 // Struct is a type that represents information about a specific struct,
 // its fields, and comments group.
 type Struct struct {
@@ -14,6 +17,17 @@ type Struct struct {
 	Fields   []Arg    // A list of fields that belong to this struct.
 	File     string   // Name of the file where the function is located.
 	Name     string   // Name of the struct, e.g. "Application".
+}
+
+// Filter returns a list of structures from members of a list
+// fulfilling a condition given by the fn argument.
+func (ss Structs) Filter(fn func(f *Struct) bool) (res Structs) {
+	for _, v := range ss {
+		if fn(&v) {
+			res = append(res, v)
+		}
+	}
+	return res
 }
 
 // processStructDecl ensures that received ast gen declaration
