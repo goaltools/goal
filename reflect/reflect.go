@@ -12,8 +12,8 @@ import (
 // Package is a type that combines declarations
 // of functions, types, and structs of a single go package.
 type Package struct {
-	Funcs   []Func   // A list of functions of the package.
-	Methods []Func   // A list of methods (functions with receivers) of the package.
+	Funcs   Funcs    // A list of functions of the package.
+	Methods Funcs    // A list of methods (functions with receivers) of the package.
 	Name    string   // Name of the package, e.g. "controllers".
 	Structs []Struct // A list of struct types of the package.
 

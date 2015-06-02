@@ -22,13 +22,13 @@ func TestParseDir_IncorrectPath(t *testing.T) {
 func TestParseDir(t *testing.T) {
 	p := ParseDir("./testdata")
 	expRes := &Package{
-		Funcs: []Func{
+		Funcs: Funcs{
 			{
 				File: "testdata/sample2.go",
 				Name: "init",
 			},
 		},
-		Methods: []Func{
+		Methods: Funcs{
 			{
 				Comments: []string{"// Hello is a method."},
 				File:     "testdata/sample1.go",
@@ -106,13 +106,13 @@ func TestProcessDecls(t *testing.T) {
 		`,
 	)
 	expRes := &Package{
-		Funcs: []Func{
+		Funcs: Funcs{
 			{
 				File: "sample.go",
 				Name: "init",
 			},
 		},
-		Methods: []Func{
+		Methods: Funcs{
 			{
 				File: "sample.go",
 				Name: "Test",
@@ -162,9 +162,9 @@ func TestProcessDecls(t *testing.T) {
 	if !reflect.DeepEqual(expRes.Imports["sample.go"], is) {
 		t.Errorf("Incorrect imports returned. Expected %#v, got %#v.", expRes.Imports, is)
 	}
-	assertDeepEqualFuncSlice(expRes.Funcs, fs)
-	assertDeepEqualFuncSlice(expRes.Methods, ms)
-	assertDeepEqualStructSlice(expRes.Structs, ss)
+	assertDeepEqualFuncs(expRes.Funcs, fs)
+	assertDeepEqualFuncs(expRes.Methods, ms)
+	assertDeepEqualStructs(expRes.Structs, ss)
 }
 
 func TestJoinMaps(t *testing.T) {
@@ -217,9 +217,9 @@ func assertDeepEqualPkg(p1, p2 *Package) {
 	if p1.Name != p2.Name {
 		log.Error.Panicf("Packages are not equal: %#v != %#v.", p1, p2)
 	}
-	assertDeepEqualStructSlice(p1.Structs, p2.Structs)
-	assertDeepEqualFuncSlice(p1.Funcs, p2.Funcs)
-	assertDeepEqualFuncSlice(p1.Methods, p2.Methods)
+	assertDeepEqualStructs(p1.Structs, p2.Structs)
+	assertDeepEqualFuncs(p1.Funcs, p2.Funcs)
+	assertDeepEqualFuncs(p1.Methods, p2.Methods)
 }
 
 var testPackage = `package controllers

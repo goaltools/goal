@@ -4,10 +4,45 @@ import (
 	"go/ast"
 	"go/token"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/anonx/sunplate/log"
 )
+
+func TestStructsFilter(t *testing.T) {
+	t1 := Structs{
+		{
+			Name: "Struct1",
+		},
+		{
+			Name: "Struct2",
+		},
+		{
+			Name: "Struct12",
+		},
+	}
+	expRes := Structs{
+		{
+			Name: "Struct2",
+		},
+		{
+			Name: "Struct12",
+		},
+	}
+	r := t1.Filter(func(s *Struct) bool {
+		return true
+	})
+	assertDeepEqualStructs(t1, r)
+
+	r = t1.Filter(func(s *Struct) bool {
+		if strings.HasSuffix(s.Name, "2") {
+			return true
+		}
+		return false
+	})
+	assertDeepEqualStructs(expRes, r)
+}
 
 func TestProcessStructDecl_IncorrectTok(t *testing.T) {
 	s := processStructDecl(&ast.GenDecl{
@@ -179,7 +214,7 @@ func assertDeepEqualStruct(s1, s2 *Struct) {
 		}
 		return
 	}
-	assertDeepEqualArgSlice(s1.Fields, s2.Fields)
+	assertDeepEqualArgs(s1.Fields, s2.Fields)
 	if !reflect.DeepEqual(s1.Comments, s2.Comments) {
 		log.Error.Panicf("Comments of structs are not equal: %#v != %#v.", s1.Comments, s2.Comments)
 	}
@@ -188,9 +223,9 @@ func assertDeepEqualStruct(s1, s2 *Struct) {
 	}
 }
 
-// assertDeepEqualStructSlice is a function that is used in tests for
-// comparison of struct slices.
-func assertDeepEqualStructSlice(s1, s2 []Struct) {
+// assertDeepEqualStructs is a function that is used in tests for
+// comparison of structs.
+func assertDeepEqualStructs(s1, s2 Structs) {
 	if len(s1) != len(s2) {
 		log.Error.Panicf(
 			"Struct slices %#v and %#v have different length: %d and %d.",

@@ -4,11 +4,25 @@ import (
 	"go/ast"
 )
 
+// Args is a type that is used for representation of an arguments list.
+type Args []Arg
+
 // Arg is used to describe arguments of functions and fields of structures.
 type Arg struct {
 	Name string // Name of the argument, e.g. "name" or "age".
 	Tag  string // Tag is a field tag that may be presented.
 	Type *Type  // Type represents a type of argument.
+}
+
+// Filter returns a list of functions from members of a list
+// fulfilling a condition given by the fn argument.
+func (as Args) Filter(fn func(f *Arg) bool) (res Args) {
+	for _, v := range as {
+		if fn(&v) {
+			res = append(res, v)
+		}
+	}
+	return res
 }
 
 // processFieldList expects an ast FieldList as input parameter.
