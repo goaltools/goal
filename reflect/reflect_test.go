@@ -221,34 +221,3 @@ func assertDeepEqualPkg(p1, p2 *Package) {
 	assertDeepEqualFuncs(p1.Funcs, p2.Funcs)
 	assertDeepEqualFuncs(p1.Methods, p2.Methods)
 }
-
-var testPackage = `package controllers
-
-import (
-	"github.com/anonx/sunplate/action"
-	t "github.com/anonx/sunplate/middleware/template"
-)
-
-// Application is a test struct.
-type Application struct {
-	Test struct {
-		HelloWorld string "testtag:'helloworld'"
-		Smth struct {
-			Yahoo string
-		}
-	}
-	Name string "testtag:'name'"
-	Age  int    "testtag:'age'"
-	*t.Middleware
-}
-
-// Index comment is here.
-func (c *Application) Index(firstname, lastname string) action.Type {
-	return "Incorrect return type but I do not care"
-}
-
-// About comment is here.
-func (c *Application) About(page int, t1, t2 template.Middleware, smth *template.Middleware) string {
-	return "How are ya?"
-}
-`
