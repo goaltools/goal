@@ -87,6 +87,7 @@ func processDecls(decls []ast.Decl, file string) (fs, ms []Func, ss []Struct, is
 			if f.Recv == nil { // If the function has no receiver.
 				// Add the processed decl to the list of functions.
 				fs = append(fs, *f)
+				continue
 			}
 			// Otherwise, add it to the list of methods.
 			ms = append(ms, *f)
@@ -109,7 +110,7 @@ func processDecls(decls []ast.Decl, file string) (fs, ms []Func, ss []Struct, is
 			imp := processImportDecl(genDecl)
 			if imp != nil {
 				// Add the imports to the map.
-				joinMaps(is, imp)
+				is = joinMaps(is, imp)
 				continue
 			}
 		}

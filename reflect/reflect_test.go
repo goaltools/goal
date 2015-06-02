@@ -6,6 +6,8 @@ import (
 	"go/token"
 	"reflect"
 	"testing"
+
+	"github.com/anonx/sunplate/log"
 )
 
 func TestParseDir_IncorrectPath(t *testing.T) {
@@ -18,7 +20,64 @@ func TestParseDir_IncorrectPath(t *testing.T) {
 }
 
 func TestParseDir(t *testing.T) {
-	ParseDir("../example/controllers")
+	p := ParseDir("./testdata")
+	expRes := &Package{
+		Funcs: []Func{
+			{
+				File: "testdata/sample2.go",
+				Name: "init",
+			},
+		},
+		Methods: []Func{
+			{
+				Comments: []string{"// Hello is a method."},
+				File:     "testdata/sample1.go",
+				Name:     "Hello",
+				Recv: &Arg{
+					Name: "t",
+					Type: &Type{
+						Name: "Test",
+					},
+				},
+				Results: []Arg{
+					{
+						Type: &Type{
+							Name: "string",
+						},
+					},
+				},
+			},
+		},
+		Name: "sample",
+		Structs: []Struct{
+			{
+				Comments: []string{"// Test is a type."},
+				Fields: []Arg{
+					{
+						Name: "Name",
+						Tag:  `tag:"name"`,
+						Type: &Type{
+							Name: "string",
+						},
+					},
+				},
+				File: "testdata/sample1.go",
+				Name: "Test",
+			},
+		},
+
+		Imports: map[string]map[string]string{
+			"testdata/sample1.go": {
+				"fmt": "fmt",
+				"l":   "github.com/anonx/sunplate/log",
+			},
+			"testdata/sample2.go": {
+				"log": "github.com/anonx/sunplate/log",
+			},
+		},
+	}
+
+	assertDeepEqualPkg(expRes, p)
 }
 
 func TestProcessDecls(t *testing.T) {
@@ -99,9 +158,13 @@ func TestProcessDecls(t *testing.T) {
 			},
 		},
 	}
-
-	_ = pkg
-	_ = expRes
+	fs, ms, ss, is := processDecls(pkg.Decls, "sample.go")
+	if !reflect.DeepEqual(expRes.Imports["sample.go"], is) {
+		t.Errorf("Incorrect imports returned. Expected %#v, got %#v.", expRes.Imports, is)
+	}
+	assertDeepEqualFuncSlice(expRes.Funcs, fs)
+	assertDeepEqualFuncSlice(expRes.Methods, ms)
+	assertDeepEqualStructSlice(expRes.Structs, ss)
 }
 
 func TestJoinMaps(t *testing.T) {
@@ -140,20 +203,23 @@ func getPackage(t *testing.T, src string) *ast.File {
 	return pkg
 }
 
-// deepEqualPkg is used by tests to compare two packages.
-func deepEqualPkg(p1, p2 *Package) bool {
+// assertDeepEqualPkg is used by tests to compare two packages.
+func assertDeepEqualPkg(p1, p2 *Package) {
 	if p1 == nil || p2 == nil {
-		if p1 == p2 {
-			return true
+		if p1 != p2 {
+			log.Error.Panicf("One of the packages is nil, while another is not: %#v != %#v", p1, p2)
 		}
-		return false
+		return
 	}
-	if p1.Name != p2.Name || !deepEqualStructSlice(p1.Structs, p2.Structs) ||
-		!deepEqualFuncSlice(p1.Funcs, p2.Funcs) || !deepEqualFuncSlice(p1.Methods, p2.Methods) {
-
-		return false
+	if !reflect.DeepEqual(p1.Imports, p2.Imports) {
+		log.Error.Panicf("Imports of packages are not equal: %#v != %#v.", p1.Imports, p2.Imports)
 	}
-	return true
+	if p1.Name != p2.Name {
+		log.Error.Panicf("Packages are not equal: %#v != %#v.", p1, p2)
+	}
+	assertDeepEqualStructSlice(p1.Structs, p2.Structs)
+	assertDeepEqualFuncSlice(p1.Funcs, p2.Funcs)
+	assertDeepEqualFuncSlice(p1.Methods, p2.Methods)
 }
 
 var testPackage = `package controllers

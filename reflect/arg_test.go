@@ -3,6 +3,8 @@ package reflect
 import (
 	"go/ast"
 	"testing"
+
+	"github.com/anonx/sunplate/log"
 )
 
 func TestProcessFieldList_EmptyInput(t *testing.T) {
@@ -55,12 +57,7 @@ func TestProcessFieldList(t *testing.T) {
 
 	args := processFieldList(f)
 	for i, exp := range expRes {
-		if !deepEqualArg(&exp, &args[i]) {
-			t.Errorf(
-				"Cannot process '%s' field. Expected %#v of type %#v, received: %#v of type %#v.",
-				exp.Name, exp, exp.Type, args[i], args[i].Type,
-			)
-		}
+		assertDeepEqualArg(&exp, &args[i])
 	}
 }
 
@@ -95,9 +92,7 @@ func TestProcessField_EmptyName(t *testing.T) {
 	}
 	funcDecl := pkg.Decls[0].(*ast.FuncDecl)
 	l := processFieldList(funcDecl.Type.Results)
-	if !deepEqualArg(&expRes, &l[0]) {
-		t.Errorf("Incorrect fieldList result. Expected field %#v, got %#v.", expRes, l[0])
-	}
+	assertDeepEqualArg(&expRes, &l[0])
 }
 
 func TestProcessField(t *testing.T) {
@@ -149,17 +144,7 @@ func TestProcessField(t *testing.T) {
 
 	for i, v := range getFields(t, pkg).List {
 		args := processField(v)
-		if len(args) == 0 {
-			t.Error("Arguments expected, nothing is returned.")
-		}
-		for j, arg := range args {
-			if arg.Name != expRes[i][j].Name || !deepEqualType(arg.Type, expRes[i][j].Type) {
-				t.Errorf(
-					"Cannot process '%s' field. Expected %#v of type %#v, received: %#v of type %#v.",
-					arg.Name, expRes[i][j], expRes[i][j].Type, arg, arg.Type,
-				)
-			}
-		}
+		assertDeepEqualArgSlice(expRes[i], args)
 	}
 }
 
@@ -184,30 +169,31 @@ func getFields(t *testing.T, pkg *ast.File) *ast.FieldList {
 	return s.Fields
 }
 
-// deepEqualArg is a function that is used by tests to compare two arguments.
-func deepEqualArg(a1, a2 *Arg) bool {
+// assertDeepEqualArg is a function that is used by tests to compare two arguments.
+func assertDeepEqualArg(a1, a2 *Arg) {
 	if a1 == nil || a2 == nil {
-		if a1 == a2 {
-			return true
+		if a1 != a2 {
+			log.Error.Panicf("One of the arguments is nil, while other is not: %#v != %#v", a1, a2)
 		}
-		return false
+		return
 	}
-	if a1.Name == a2.Name && a1.Tag == a2.Tag && deepEqualType(a1.Type, a2.Type) {
-		return true
+	assertDeepEqualType(a1.Type, a2.Type)
+	if a1.Name != a2.Name || a1.Tag != a2.Tag {
+		log.Error.Panicf("Arguments are not equal: %#v != %#v.", a1, a2)
 	}
-	return false
 }
 
-// deepEqualArgSlice is a function that is used in tests for
+// assertDeepEqualArgSlice is a function that is used in tests for
 // comparison of struct slices.
-func deepEqualArgSlice(a1, a2 []Arg) bool {
+func assertDeepEqualArgSlice(a1, a2 []Arg) {
 	if len(a1) != len(a2) {
-		return false
+		log.Error.Panicf(
+			"Argument slices %#v and %#v have different length: %d and %d.",
+			a1, a2, len(a1), len(a2),
+		)
+		return
 	}
 	for i, a := range a1 {
-		if !deepEqualArg(&a, &a2[i]) {
-			return false
-		}
+		assertDeepEqualArg(&a, &a2[i])
 	}
-	return true
 }

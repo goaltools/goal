@@ -2,6 +2,8 @@ package reflect
 
 import (
 	"testing"
+
+	"github.com/anonx/sunplate/log"
 )
 
 func TestTypeString(t *testing.T) {
@@ -82,13 +84,15 @@ func TestProcessType(t *testing.T) {
 	}
 }
 
-// deepEqualType is a function that is used by tests to compare types.
-func deepEqualType(t1, t2 *Type) bool {
+// assertDeepEqualType is a function that is used by tests to compare types.
+func assertDeepEqualType(t1, t2 *Type) {
 	if t1 == nil || t2 == nil {
-		if t1 == t2 {
-			return true
+		if t1 != t2 {
+			log.Error.Panicf("One of the types is nil while another is not: %#v != %#v.", t1, t2)
 		}
-		return false
+		return
 	}
-	return t1.String() == t2.String()
+	if t1.String() != t2.String() {
+		log.Error.Panicf("Types are not equal: %s != %s.", t1, t2)
+	}
 }
