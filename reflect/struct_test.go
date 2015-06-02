@@ -183,14 +183,23 @@ func deepEqualStruct(s1, s2 *Struct) bool {
 		}
 		return false
 	}
-	if !reflect.DeepEqual(s1.Comments, s2.Comments) || s1.Name != s2.Name {
+	if !reflect.DeepEqual(s1.Comments, s2.Comments) || s1.Name != s2.Name || s1.File != s2.File {
 		return false
 	}
-	if len(s1.Fields) != len(s2.Fields) {
+	if !deepEqualArgSlice(s1.Fields, s2.Fields) {
 		return false
 	}
-	for i, field := range s1.Fields {
-		if !deepEqualArg(&field, &s2.Fields[i]) {
+	return true
+}
+
+// deepEqualStructSlice is a function that is used in tests for
+// comparison of struct slices.
+func deepEqualStructSlice(s1, s2 []Struct) bool {
+	if len(s1) != len(s2) {
+		return false
+	}
+	for i, st := range s1 {
+		if !deepEqualStruct(&st, &s2[i]) {
 			return false
 		}
 	}

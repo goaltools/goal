@@ -141,19 +141,26 @@ func deepEqualFunc(f1, f2 *Func) bool {
 		}
 		return false
 	}
-	if f1.Name != f2.Name ||
+	if f1.Name != f2.Name || f1.File != f2.File ||
 		!reflect.DeepEqual(f1.Comments, f2.Comments) || !deepEqualArg(f1.Recv, f2.Recv) ||
 		len(f1.Params) != len(f2.Params) || len(f1.Results) != len(f2.Results) {
 
 		return false
 	}
-	for i, arg := range f1.Params {
-		if !deepEqualArg(&arg, &f2.Params[i]) {
-			return false
-		}
+	if !deepEqualArgSlice(f1.Params, f2.Params) || !deepEqualArgSlice(f1.Results, f2.Results) {
+		return false
 	}
-	for i, arg := range f1.Results {
-		if !deepEqualArg(&arg, &f2.Results[i]) {
+	return true
+}
+
+// deepEqualFuncSlice is a function that is used in tests for
+// comparison of func slices.
+func deepEqualFuncSlice(f1, f2 []Func) bool {
+	if len(f1) != len(f2) {
+		return false
+	}
+	for i, fn := range f1 {
+		if !deepEqualFunc(&fn, &f2[i]) {
 			return false
 		}
 	}
