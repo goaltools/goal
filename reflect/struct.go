@@ -12,6 +12,7 @@ import (
 type Struct struct {
 	Comments []string // Comments right above the struct declaration.
 	Fields   []Arg    // A list of fields that belong to this struct.
+	File     string   // Name of the file where the function is located.
 	Name     string   // Name of the struct, e.g. "Application".
 }
 

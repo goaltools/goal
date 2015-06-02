@@ -197,3 +197,17 @@ func deepEqualArg(a1, a2 *Arg) bool {
 	}
 	return false
 }
+
+// deepEqualArgSlice is a function that is used in tests for
+// comparison of struct slices.
+func deepEqualArgSlice(a1, a2 []Arg) bool {
+	if len(a1) != len(a2) {
+		return false
+	}
+	for i, a := range a1 {
+		if !deepEqualArg(&a, &a2[i]) {
+			return false
+		}
+	}
+	return true
+}
