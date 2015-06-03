@@ -13,8 +13,8 @@ type Structs []Struct
 // Struct is a type that represents information about a specific struct,
 // its fields, and comments group.
 type Struct struct {
-	Comments []string // Comments right above the struct declaration.
-	Fields   []Arg    // A list of fields that belong to this struct.
+	Comments Comments // Comments right above the struct declaration.
+	Fields   Args     // A list of fields that belong to this struct.
 	File     string   // Name of the file where the function is located.
 	Name     string   // Name of the struct, e.g. "Application".
 }

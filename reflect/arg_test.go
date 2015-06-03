@@ -58,7 +58,7 @@ func TestProcessFieldList(t *testing.T) {
 			}
 		`,
 	)
-	expRes := []Arg{
+	expRes := Args{
 		{
 			Name: "Something",
 			Type: &Type{
@@ -139,7 +139,7 @@ func TestProcessField(t *testing.T) {
 			}
 		`,
 	)
-	expRes := [][]Arg{
+	expRes := []Args{
 		{
 			{
 				Name: "Something",

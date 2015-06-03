@@ -12,10 +12,10 @@ import (
 // Package is a type that combines declarations
 // of functions, types, and structs of a single go package.
 type Package struct {
-	Funcs   Funcs    // A list of functions of the package.
-	Methods Funcs    // A list of methods (functions with receivers) of the package.
-	Name    string   // Name of the package, e.g. "controllers".
-	Structs []Struct // A list of struct types of the package.
+	Funcs   Funcs   // A list of functions of the package.
+	Methods Funcs   // A list of methods (functions with receivers) of the package.
+	Name    string  // Name of the package, e.g. "controllers".
+	Structs Structs // A list of struct types of the package.
 
 	// Imports is a map of import paths in the following format:
 	//	- Filename:
@@ -75,7 +75,7 @@ func ParseDir(path string) *Package {
 // processDecls expects a list of declarations as an input
 // parameter. It will be parsed, splitted into functions,
 // methods, and structs and returned.
-func processDecls(decls []ast.Decl, file string) (fs, ms []Func, ss []Struct, is map[string]string) {
+func processDecls(decls []ast.Decl, file string) (fs, ms Funcs, ss Structs, is map[string]string) {
 	for _, decl := range decls {
 		// Try to process the declaration as a function.
 		var f *Func

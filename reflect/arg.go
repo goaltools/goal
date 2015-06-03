@@ -26,8 +26,8 @@ func (as Args) Filter(fn func(f *Arg) bool) (res Args) {
 }
 
 // processFieldList expects an ast FieldList as input parameter.
-// The list is transformed into []Arg.
-func processFieldList(fields *ast.FieldList) (list []Arg) {
+// The list is transformed into Args.
+func processFieldList(fields *ast.FieldList) (list Args) {
 	// Make sure FieldList is not empty.
 	if fields == nil {
 		return
@@ -45,7 +45,7 @@ func processFieldList(fields *ast.FieldList) (list []Arg) {
 
 // processField receives an ast field structure
 // and returns a list of  extracted arguments.
-func processField(field *ast.Field) (list []Arg) {
+func processField(field *ast.Field) (list Args) {
 	// All names of the same field have the same type.
 	t := processType(field.Type)
 	if t == nil { // Skip fields that we don't know how to process.
@@ -61,7 +61,7 @@ func processField(field *ast.Field) (list []Arg) {
 
 	// If there are no names, return without them.
 	if len(field.Names) == 0 {
-		return []Arg{
+		return Args{
 			{
 				Tag:  tag,
 				Type: t,

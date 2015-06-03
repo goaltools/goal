@@ -76,9 +76,9 @@ func TestProcessStructDecl(t *testing.T) {
 		`,
 	)
 	expRes := Struct{
-		Comments: []string{"// Sample ...", "// Line 2"},
+		Comments: Comments{"// Sample ...", "// Line 2"},
 		Name:     "Sample",
-		Fields: []Arg{
+		Fields: Args{
 			{
 				Name: "Something",
 				Tag:  "something",
@@ -159,7 +159,7 @@ func TestProcessTypeSpec(t *testing.T) {
 		`,
 	)
 	expRes := &Struct{
-		Fields: []Arg{
+		Fields: Args{
 			{
 				Name: "Something",
 				Tag:  "something",

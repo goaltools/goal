@@ -9,12 +9,12 @@ type Funcs []Func
 
 // Func is a type that represents information about a function or method.
 type Func struct {
-	Comments []string // Comments that are located right above the function declaration.
+	Comments Comments // Comments that are located right above the function declaration.
 	File     string   // Name of the file where the function is located.
 	Name     string   // Name of the function, e.g. "Index" or "About".
-	Params   []Arg    // A list of arguments this function receives.
+	Params   Args     // A list of arguments this function receives.
 	Recv     *Arg     // Receiver if it is a method and nil otherwise.
-	Results  []Arg    // A list of arguments the function returns.
+	Results  Args     // A list of arguments the function returns.
 }
 
 // Filter returns a list of functions from members of a list
