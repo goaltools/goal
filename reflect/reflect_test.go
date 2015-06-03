@@ -30,7 +30,7 @@ func TestParseDir(t *testing.T) {
 		},
 		Methods: Funcs{
 			{
-				Comments: []string{"// Hello is a method."},
+				Comments: Comments{"// Hello is a method."},
 				File:     "testdata/sample1.go",
 				Name:     "Hello",
 				Recv: &Arg{
@@ -39,7 +39,7 @@ func TestParseDir(t *testing.T) {
 						Name: "Test",
 					},
 				},
-				Results: []Arg{
+				Results: Args{
 					{
 						Type: &Type{
 							Name: "string",
@@ -49,10 +49,10 @@ func TestParseDir(t *testing.T) {
 			},
 		},
 		Name: "sample",
-		Structs: []Struct{
+		Structs: Structs{
 			{
-				Comments: []string{"// Test is a type."},
-				Fields: []Arg{
+				Comments: Comments{"// Test is a type."},
+				Fields: Args{
 					{
 						Name: "Name",
 						Tag:  `tag:"name"`,
@@ -123,7 +123,7 @@ func TestProcessDecls(t *testing.T) {
 						Star: true,
 					},
 				},
-				Results: []Arg{
+				Results: Args{
 					{
 						Type: &Type{
 							Name: "bool",
@@ -133,9 +133,9 @@ func TestProcessDecls(t *testing.T) {
 			},
 		},
 		Name: "test",
-		Structs: []Struct{
+		Structs: Structs{
 			{
-				Fields: []Arg{
+				Fields: Args{
 					{
 						Name: "Something",
 						Tag:  "something",

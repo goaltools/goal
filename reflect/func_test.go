@@ -72,11 +72,11 @@ func TestProcessFuncDecl(t *testing.T) {
 			}
 		`,
 	)
-	expRes := []Func{
+	expRes := Funcs{
 		{
-			Comments: []string{"// Index is a method of App.", "// Index does something cool."},
+			Comments: Comments{"// Index is a method of App.", "// Index does something cool."},
 			Name:     "Index",
-			Results: []Arg{
+			Results: Args{
 				{
 					Type: &Type{
 						Name:    "Result",
@@ -93,9 +93,9 @@ func TestProcessFuncDecl(t *testing.T) {
 			},
 		},
 		{
-			Comments: []string{"// About is used for...", "// Try it."},
+			Comments: Comments{"// About is used for...", "// Try it."},
 			Name:     "About",
-			Params: []Arg{
+			Params: Args{
 				{
 					Name: "page",
 					Type: &Type{
@@ -103,7 +103,7 @@ func TestProcessFuncDecl(t *testing.T) {
 					},
 				},
 			},
-			Results: []Arg{
+			Results: Args{
 				{
 					Name: "res",
 					Type: &Type{
@@ -121,9 +121,9 @@ func TestProcessFuncDecl(t *testing.T) {
 			},
 		},
 		{
-			Comments: []string{"// HelloWorld is a demo function.", "// It expects a greeting message, name, and your age."},
+			Comments: Comments{"// HelloWorld is a demo function.", "// It expects a greeting message, name, and your age."},
 			Name:     "HelloWorld",
-			Params: []Arg{
+			Params: Args{
 				{
 					Name: "greeting",
 					Type: &Type{
@@ -143,7 +143,7 @@ func TestProcessFuncDecl(t *testing.T) {
 					},
 				},
 			},
-			Results: []Arg{
+			Results: Args{
 				{
 					Type: &Type{
 						Name: "string",
