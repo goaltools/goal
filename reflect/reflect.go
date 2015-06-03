@@ -1,4 +1,6 @@
-// Package reflect is ...
+// Package reflect is a wrapper for go/ast, go/token, and go/parser packages.
+// It is used to get information about functions, methods, structures, and
+// imports of go files in a specific directory.
 package reflect
 
 import (
