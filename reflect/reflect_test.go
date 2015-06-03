@@ -172,7 +172,7 @@ func TestProcessDecls(t *testing.T) {
 			},
 		},
 		Imports: map[string]map[string]string{
-			"sample.go": map[string]string{
+			"sample.go": {
 				"strings":  "strings",
 				"example":  "./example",
 				"sunplate": "github.com/anonx/sunplate",
