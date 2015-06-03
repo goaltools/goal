@@ -10,6 +10,29 @@ import (
 	"github.com/anonx/sunplate/log"
 )
 
+func TestImportsValue(t *testing.T) {
+	var t1 Imports
+	v, ok := t1.Value("somefile.go", "somename")
+	if v != "" || ok != false {
+		t.Errorf("Incorrect imports value. Expected '', true. Got '%s', %v.", v, ok)
+	}
+
+	t2 := Imports{
+		"sample.go": {
+			"l": "github.com/anonx/sunplate/log",
+		},
+	}
+	v, ok = t2.Value("sample.go", "l")
+	if v != "github.com/anonx/sunplate/log" || ok != true {
+		t.Errorf("Incorrect imports value. Expected 'sample.go', true. Got '%s', %v.", v, ok)
+	}
+
+	v, ok = t2.Value("sample.go", "key_that_does_not_exist")
+	if v != "" || ok != false {
+		t.Errorf("Incorrect imports value. Expected '', true. Got '%s', %v.", v, ok)
+	}
+}
+
 func TestParseDir_IncorrectPath(t *testing.T) {
 	defer func() {
 		if err := recover(); err == nil {

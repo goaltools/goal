@@ -9,19 +9,38 @@ import (
 	"github.com/anonx/sunplate/log"
 )
 
+// Imports is a map of import paths in the following format:
+//	- Filename:
+//		- Import name:
+//			- Import value
+type Imports map[string]map[string]string
+
 // Package is a type that combines declarations
 // of functions, types, and structs of a single go package.
 type Package struct {
 	Funcs   Funcs   // A list of functions of the package.
+	Imports Imports // Imports of this package grouped by files.
 	Methods Funcs   // A list of methods (functions with receivers) of the package.
 	Name    string  // Name of the package, e.g. "controllers".
 	Structs Structs // A list of struct types of the package.
+}
 
-	// Imports is a map of import paths in the following format:
-	//	- Filename:
-	//		- Import name:
-	//			- Import value
-	Imports map[string]map[string]string
+// Value checks whether requested import name exists in
+// requested file. If so, import value and true are returned.
+// Otherwise, empty string and false will be the results.
+func (i Imports) Value(file, name string) (string, bool) {
+	// Check whether such file exists.
+	f, ok := i[file]
+	if !ok {
+		return "", false
+	}
+
+	// Make sure requested name does exist.
+	v, ok := f[name]
+	if !ok {
+		return "", false
+	}
+	return v, true
 }
 
 // ParseDir expects a path to directory with a go package
