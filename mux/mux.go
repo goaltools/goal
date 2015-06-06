@@ -11,8 +11,8 @@ import (
 	"github.com/naoina/denco"
 )
 
-// Type represents a multiplexer for HTTP request.
-type Type struct {
+// Router represents a multiplexer for HTTP request.
+type Router struct {
 	routers map[string]*denco.Router
 }
 
@@ -24,21 +24,21 @@ type Handler struct {
 }
 
 // New allocates and returns a new multiplexer.
-func New() *Type {
-	return &Type{}
+func New() *Router {
+	return &Router{}
 }
 
 // ServeHTTP is used to implement http.Handler interface.
 // It dispatches the request to the handler whose pattern
 // most closely matches the request URL.
-func (t *Type) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (t *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // Handle registers the handler for the given pattern.
 // If a handler already exists for pattern, it is being overridden.
-func (t *Type) Handle(pattern string, handler Handler) {
+func (t *Router) Handle(pattern string, handler Handler) {
 }
 
 // HandleFunc registers the handler function for the given pattern.
-func (t *Type) HandleFunc(pattern string, handler http.HandlerFunc) {
+func (t *Router) HandleFunc(pattern string, handler http.HandlerFunc) {
 }
