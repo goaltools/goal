@@ -3,6 +3,29 @@
 // argument. So, it requires a more memory and it is a bit slower.
 // However, the downsides are an acceptable trade off for compatability
 // with the standard library.
+//
+// A sample of its usage is below:
+//
+//	package main
+//
+//	import (
+//		"log"
+//		"net/http"
+//
+//		"github.com/anonx/sunplate/routing"
+//	)
+//
+//	func main() {
+//		r := routing.New()
+//		err := r.Handle(routing.Routes{
+//			r.Get("/profiles/:username", ShowUserHandleFunc),
+//			r.Delete("/profiles/:username", DeleteUserHandleFunc),
+//		}).Build()
+//		if err != nil {
+//			panic(err)
+//		}
+//		log.Fatal(http.ListenAndServe(":8080", r))
+//	}
 package routing
 
 import (
@@ -11,26 +34,33 @@ import (
 	"github.com/naoina/denco"
 )
 
-// Router represents a multiplexer for HTTP request.
+// Router represents a multiplexer for HTTP requests.
 type Router struct {
-	data *denco.Router
+	data    *denco.Router  // data stores denco router.
+	indexes map[string]int // indexes are used to check whether a record exists.
+	records []denco.Record // records is a list of handlers expected by denco router.
 }
 
-// info stores information about HTTP request's handler, its
-// pattern and methods.
-type info struct {
-	handler http.HandlerFunc // HTTP request handler.
-	methods []string         // A list of allowed HTTP methods (e.g. "GET" or "POST").
-	pattern string           // Pattern is a routing path for handler.
+// Routes is an alias of []Route.
+type Routes []Route
+
+// Route is used to store information about HTTP request's handler
+// including a list of allowed methods and pattern.
+type Route struct {
+	handler *http.HandlerFunc // HTTP request handler function.
+	methods []string          // A list of allowed HTTP methods (e.g. "GET" or "POST").
+	pattern string            // Pattern is a routing path for handler.
 }
 
-// New allocates and returns a new multiplexer.
-func New() *Router {
-	return &Router{}
+// NewRouter allocates and returns a new multiplexer.
+func NewRouter() *Router {
+	return &Router{
+		indexes: map[string]int{},
+	}
 }
 
 // HasMethod checks whether specific method request is allowed.
-func (t *info) HasMethod(name string) bool {
+func (t *Route) HasMethod(name string) bool {
 	// We are iterating through a slice of method strings
 	// rather than using a map as there are only a few possible values.
 	// So, hash function will require more time than a simple loop.
@@ -46,15 +76,59 @@ func (t *info) HasMethod(name string) bool {
 // It dispatches the request to the handler whose pattern
 // most closely matches the request URL.
 func (t *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	h, _ := t.Handler(r)
+	h.ServeHTTP(w, r)
 }
 
-// Handle registers the handler for the given pattern.
-// If a handler already exists for pattern, it is being overridden.
-func (t *Router) Handle(method, pattern string, handler http.Handler) {
+// Handle registers handlers for given patterns.
+// If a handler already exists for pattern, it will be overridden.
+// If it exists but with another method, a new method will be added.
+func (t *Router) Handle(routes Routes) {
+	for _, route := range routes {
+		// Check whether we have already had such route.
+		index, ok := t.indexes[route.pattern]
+		if ok {
+			// If we haven't, add it.
+			t.records = append(t.records, denco.NewRecord(route.pattern, route))
+			continue
+		}
+
+		// Check whether existing route has the same handler and
+		// we are just trying to add a new method.
+		r := t.records[index].Value.(Route)
+		if r.handler != route.handler {
+			// If we aren't, override an old route.
+			t.records[index] = denco.NewRecord(route.pattern, route)
+			continue
+		}
+
+		// Otherwise, add all methods that haven't added yet.
+		for _, v := range r.methods {
+			if !route.HasMethod(v) {
+				route.methods = append(route.methods, v)
+			}
+		}
+	}
 }
 
-// HandleFunc registers the handler function for the given pattern.
-func (t *Router) HandleFunc(method, pattern string, handler http.HandlerFunc) {
+// Build compiles registered routes. Routes that are added after building will not
+// be handled. A new call to build will be required.
+func (t *Router) Build() error {
+	router := denco.New()
+	err := router.Build(t.records)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Route allocates and returns a Route struct.
+func (t *Router) Route(method, pattern string, handler http.HandlerFunc) Route {
+	return Route{
+		handler: &handler,
+		methods: []string{method},
+		pattern: pattern,
+	}
 }
 
 // Handler returns the handler to use for the given request, consulting r.Method
@@ -70,16 +144,16 @@ func (t *Router) Handler(r *http.Request) (handler http.Handler, pattern string)
 	}
 
 	// Check whether requested method is allowed.
-	data := obj.(info)
-	if !data.HasMethod(r.Method) {
-		return http.HandlerFunc(MethodNotAllowed), data.pattern
+	route := obj.(Route)
+	if !route.HasMethod(r.Method) {
+		return http.HandlerFunc(MethodNotAllowed), route.pattern
 	}
 
 	// Add parameters of request to request.Form and return a handler.
 	for _, param := range params {
 		r.Form.Add(param.Name, param.Value)
 	}
-	return data.handler, data.pattern
+	return route.handler, route.pattern
 }
 
 // MethodNotAllowed replies to the request with an HTTP 405 method not allowed
