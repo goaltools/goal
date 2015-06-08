@@ -76,7 +76,7 @@ func newDict() *dict {
 // saved to the dict.
 func (t *dict) set(k string, v *http.HandlerFunc) {
 	// Check whether we have already had such key.
-	if v, i := t.get(k); i >= 0 {
+	if _, i := t.get(k); i >= 0 {
 		// If so, update it.
 		t.values[i] = v
 		return
