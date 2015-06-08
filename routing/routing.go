@@ -175,11 +175,7 @@ func (t *Router) Handle(routes Routes) *Router {
 // be handled. A new call to build will be required.
 func (t *Router) Build() error {
 	t.data = denco.New()
-	err := t.data.Build(t.records)
-	if err != nil {
-		return err
-	}
-	return nil
+	return t.data.Build(t.records)
 }
 
 // Route allocates and returns a Route struct.
