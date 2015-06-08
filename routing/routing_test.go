@@ -14,6 +14,7 @@ func TestRouter(t *testing.T) {
 	err := r.Handle(Routes{
 		r.Get("/", testHandlerFunc),
 		r.Get("/profile/:name", testHandlerFunc),
+		r.Get("/profile/:name", testHandlerFuncHelloWorld), // This should override the previous route.
 		r.Post("/profile/:name", testHandlerFunc),
 		r.Head("/profile/:name", testHandlerFunc),
 		r.Put("/profile/:name", testHandlerFunc),
@@ -37,7 +38,7 @@ func TestRouter(t *testing.T) {
 		},
 		{
 			200, "GET", "/profile/john",
-			fmt.Sprintf("method: GET, path: /profile/john, form: %v", url.Values{
+			fmt.Sprintf("Hello, world!\nmethod: GET, path: /profile/john, form: %v", url.Values{
 				"name": {"john"},
 			}),
 		},
@@ -101,4 +102,9 @@ func TestRouter(t *testing.T) {
 
 func testHandlerFunc(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "method: %s, path: %s, form: %v", r.Method, r.URL.Path, r.Form)
+}
+
+func testHandlerFuncHelloWorld(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "Hello, world!\n")
+	testHandlerFunc(w, r)
 }
