@@ -6,8 +6,7 @@ import (
 	"runtime"
 
 	"github.com/anonx/sunplate/log"
-
-	"github.com/julienschmidt/httprouter"
+	"github.com/anonx/sunplate/routing"
 )
 
 // Comments below are used by `go generate`.
@@ -20,6 +19,12 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	// Include handlers and run the app.
-	router := httprouter.New()
-	log.Error.Fatal(http.ListenAndServe(":8080", router))
+	r := routing.NewRouter()
+	err := r.Handle(routing.Routes{
+		nil,
+	}).Build()
+	if err != nil {
+		log.Error.Fatal(err)
+	}
+	log.Error.Fatal(http.ListenAndServe(":8080", r))
 }
