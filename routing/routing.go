@@ -44,7 +44,7 @@ type Router struct {
 }
 
 // Routes is an alias of []Route.
-type Routes []Route
+type Routes []*Route
 
 // Route is used to store information about HTTP request's handler
 // including a list of allowed methods and pattern.
@@ -88,8 +88,8 @@ func (t *dict) set(k string, v *http.HandlerFunc) {
 
 // get receives a key as input and returns associated value.
 func (t *dict) get(k string) (*http.HandlerFunc, int) {
-	for i, v := range t.keys {
-		if v == k {
+	for i := range t.keys {
+		if t.keys[i] == k {
 			return t.values[i], i
 		}
 	}
@@ -99,9 +99,9 @@ func (t *dict) get(k string) (*http.HandlerFunc, int) {
 // join receives a new dict and appends it to the dict.
 func (t *dict) join(d *dict) {
 	// Iterate through all keys of a new dict.
-	for i, k := range d.keys {
+	for i := range d.keys {
 		// Add them to the main dict.
-		t.set(k, d.values[i])
+		t.set(d.keys[i], d.values[i])
 	}
 }
 
@@ -113,27 +113,27 @@ func NewRouter() *Router {
 }
 
 // Get is an short form of Route("GET", pattern, handler).
-func (t *Router) Get(pattern string, handler http.HandlerFunc) Route {
+func (t *Router) Get(pattern string, handler http.HandlerFunc) *Route {
 	return t.Route("GET", pattern, handler)
 }
 
 // Post is a short form of Route("POST", pattern, handler).
-func (t *Router) Post(pattern string, handler http.HandlerFunc) Route {
+func (t *Router) Post(pattern string, handler http.HandlerFunc) *Route {
 	return t.Route("POST", pattern, handler)
 }
 
 // Put is a short form of Route("PUT", pattern, handler).
-func (t *Router) Put(pattern string, handler http.HandlerFunc) Route {
+func (t *Router) Put(pattern string, handler http.HandlerFunc) *Route {
 	return t.Route("PUT", pattern, handler)
 }
 
 // Head is a short form of Route("HEAD", pattern, handler).
-func (t *Router) Head(pattern string, handler http.HandlerFunc) Route {
+func (t *Router) Head(pattern string, handler http.HandlerFunc) *Route {
 	return t.Route("HEAD", pattern, handler)
 }
 
 // Delete is a short form of Route("DELETE", pattern, handler).
-func (t *Router) Delete(pattern string, handler http.HandlerFunc) Route {
+func (t *Router) Delete(pattern string, handler http.HandlerFunc) *Route {
 	return t.Route("DELETE", pattern, handler)
 }
 
@@ -149,24 +149,24 @@ func (t *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // If a handler already exists for pattern, it will be overridden.
 // If it exists but with another method, a new method will be added.
 func (t *Router) Handle(routes Routes) *Router {
-	for _, route := range routes {
+	for i := range routes {
 		// Check whether we have already had such route.
-		index, ok := t.indexes[route.pattern]
+		index, ok := t.indexes[routes[i].pattern]
 
 		// If we haven't, add the route.
 		if !ok {
 			// Save pattern's index to simplify its search
 			// in next iteration.
-			t.indexes[route.pattern] = len(t.records)
+			t.indexes[routes[i].pattern] = len(t.records)
 
 			// Add the route to the slice.
-			t.records = append(t.records, denco.NewRecord(route.pattern, route))
+			t.records = append(t.records, denco.NewRecord(routes[i].pattern, routes[i]))
 			continue
 		}
 
 		// Otherwise, just add new HTTP methods to the existing route.
-		r := t.records[index].Value.(Route)
-		r.handlers.join(route.handlers)
+		r := t.records[index].Value.(*Route)
+		r.handlers.join(routes[i].handlers)
 	}
 	return t
 }
@@ -179,10 +179,10 @@ func (t *Router) Build() error {
 }
 
 // Route allocates and returns a Route struct.
-func (t *Router) Route(method, pattern string, handler http.HandlerFunc) Route {
+func (t *Router) Route(method, pattern string, handler http.HandlerFunc) *Route {
 	hs := newDict()
 	hs.set(strings.ToUpper(method), &handler)
-	return Route{
+	return &Route{
 		handlers: hs,
 		pattern:  pattern,
 	}
@@ -201,18 +201,16 @@ func (t *Router) Handler(r *http.Request) (handler http.Handler, pattern string)
 	}
 
 	// Check whether requested method is allowed.
-	route := obj.(Route)
+	route := obj.(*Route)
 	handler, ok := route.handlers.get(r.Method)
 	if ok == -1 {
 		return http.HandlerFunc(MethodNotAllowed), route.pattern
 	}
 
 	// Add parameters of request to request.Form and return a handler.
-	if r.Form == nil { // Make sure Form is initialized.
-		r.Form = url.Values{}
-	}
-	for _, param := range params {
-		r.Form.Add(param.Name, param.Value)
+	r.Form = make(url.Values, len(params))
+	for i := range params {
+		r.Form[params[i].Name] = []string{params[i].Value}
 	}
 	return handler, route.pattern
 }
