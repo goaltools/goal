@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/anonx/sunplate/log"
-	"github.com/julienschmidt/httprouter"
-	"github.com/naoina/denco"
+	"github.com/anonx/sunplate/internal/github.com/julienschmidt/httprouter"
+	"github.com/anonx/sunplate/internal/github.com/naoina/denco"
 )
 
 var (

@@ -6,6 +6,18 @@
 			"Local": "github.com/anonx/sunplate/internal/github.com/agtorre/gocolorize",
 			"Version": "f42b554bf7f006936130c9bb4f971afd2d87f671",
 			"VersionTime": "2014-09-21T15:56:20-07:00"
+		},
+		{
+			"Vendor": "github.com/julienschmidt/httprouter",
+			"Local": "github.com/anonx/sunplate/internal/github.com/julienschmidt/httprouter",
+			"Version": "8c199fb6259ffc1af525cc3ad52ee60ba8359669",
+			"VersionTime": "2015-04-21T19:00:07+02:00"
+		},
+		{
+			"Vendor": "github.com/naoina/denco",
+			"Local": "github.com/anonx/sunplate/internal/github.com/naoina/denco",
+			"Version": "9af2ba0e24214bac003821f4a501b131b2e04c75",
+			"VersionTime": "2015-04-07T13:17:33+09:00"
 		}
 	]
 }
