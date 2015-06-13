@@ -32,7 +32,7 @@ func Start(basePath string, params map[string]string) {
 	findFiles(params["--path"])
 
 	// Generate and save a new package.
-	t := output.NewType(params["--package"], filepath.Join(basePath, "./views.go.template"))
+	t := output.NewType(params["--package"], filepath.Join(basePath, "./listing.go.template"))
 	t.CreateDir(params["--output"])
 	t.Extension = ".go" // Save generated file as a .go source.
 	t.Context = map[string]interface{}{
