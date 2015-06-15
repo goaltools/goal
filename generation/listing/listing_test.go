@@ -15,17 +15,6 @@ func TestStart(t *testing.T) {
 	os.RemoveAll(filepath.Join(expectedParams["--output"], "../"))
 }
 
-func TestInitDefaults(t *testing.T) {
-	params := map[string]string{}
-	initDefaults(params)
-
-	for k, v := range expectedParams {
-		if params[k] != v {
-			t.Errorf("Default parameter '%s' is not set, expected '%s' got '%s'.", k, v, params[k])
-		}
-	}
-}
-
 func TestWalkFunc(t *testing.T) {
 	TestError := errors.New("this is a test error")
 	if err := walkFunc("", nil, TestError); err != TestError {

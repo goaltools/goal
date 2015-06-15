@@ -5,6 +5,7 @@ package generation
 import (
 	"path/filepath"
 
+	"github.com/anonx/sunplate/command"
 	"github.com/anonx/sunplate/generation/handlers"
 	"github.com/anonx/sunplate/generation/listing"
 	"github.com/anonx/sunplate/log"
@@ -15,7 +16,7 @@ import (
 var BasePath = "./"
 
 // Start is an entry point of generate command.
-func Start(action string, params map[string]string) {
+func Start(action string, params command.Data) {
 	switch params[action] {
 	case "handler", "handlers":
 		handlers.Start(filepath.Join(BasePath, "./handlers"), params)

@@ -3,11 +3,12 @@
 package help
 
 import (
+	"github.com/anonx/sunplate/command"
 	"github.com/anonx/sunplate/log"
 )
 
 // Start is an entry point of help command.
-func Start(action string, params map[string]string) {
+func Start(action string, params command.Data) {
 	switch params[action] {
 	default:
 		log.Info.Printf(info, action)
