@@ -12,7 +12,7 @@ var ErrIncorrectArgs = errors.New("incorrect arguments received")
 // Handler is an entry function of subprograms.
 // It expects the command name as a first argument and a map of
 // all available parameters as a second one.
-type Handler func(string, map[string]string)
+type Handler func(string, Data)
 
 // Data is an internal type for representation of user input parameters.
 type Data map[string]string
