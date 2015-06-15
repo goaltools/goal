@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/anonx/sunplate/command"
 	"github.com/anonx/sunplate/generation/output"
 	"github.com/anonx/sunplate/log"
 )
@@ -24,41 +25,21 @@ var (
 // --path defines what directory to analyze ("./views" by-default).
 // --output is a path to directory where to create a new package ("./assets" by-default).
 // --package is what package should be created as a result ("views" by-default).
-func Start(basePath string, params map[string]string) {
-	// Initialize missed parameters.
-	initDefaults(params)
-
+func Start(basePath string, params command.Data) {
 	// Start search of files.
 	findFiles(params["--path"])
 
 	// Generate and save a new package.
-	t := output.NewType(params["--package"], filepath.Join(basePath, "./listing.go.template"))
-	t.CreateDir(params["--output"])
+	t := output.NewType(
+		params.Default("--package", "views"), filepath.Join(basePath, "./listing.go.template"),
+	)
+	t.CreateDir(params.Default("--output", "./assets/views/"))
 	t.Extension = ".go" // Save generated file as a .go source.
 	t.Context = map[string]interface{}{
 		"files":    files,
-		"rootPath": params["--path"],
+		"rootPath": params.Default("--path", "./views"),
 	}
 	t.Generate()
-}
-
-// initDefaults makes sure required parameters are not empty.
-// And if they are default ones are used instead.
-func initDefaults(params map[string]string) {
-	// Check path to be scanned.
-	if params["--path"] == "" {
-		params["--path"] = "./views"
-	}
-
-	// Identify the dir where output will be stored.
-	if params["--output"] == "" {
-		params["--output"] = "./assets/views/"
-	}
-
-	// Define the package name of the output.
-	if params["--package"] == "" {
-		params["--package"] = "views"
-	}
 }
 
 // findFiles starts a search of files. The result will be stored

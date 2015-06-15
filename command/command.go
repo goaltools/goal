@@ -14,11 +14,14 @@ var ErrIncorrectArgs = errors.New("incorrect arguments received")
 // all available parameters as a second one.
 type Handler func(string, map[string]string)
 
+// Data is an internal type for representation of user input parameters.
+type Data map[string]string
+
 // Type is a main type of command package.
 // It is used for storage of parsed parameters.
 type Type struct {
 	action string
-	params map[string]string
+	params Data
 }
 
 // NewType initializes and returns Type object. It expects even number of args.
@@ -31,7 +34,7 @@ func NewType(args []string) (*Type, error) {
 	}
 
 	// Save the arguments as a dict.
-	params := map[string]string{}
+	params := Data{}
 	for i := 0; i < len(args); i += 2 {
 		params[args[i]] = args[i+1]
 	}
@@ -53,4 +56,14 @@ func (t *Type) Register(handlers map[string]Handler) error {
 	}
 	handler(t.action, t.params)
 	return nil
+}
+
+// Default expects a key and a value as input parameters.
+// If such key exists within params, an associated value is returned.
+// Otherwise, the value received as input parameter is returned.
+func (t Data) Default(key, value string) string {
+	if v, ok := t[key]; ok {
+		return v
+	}
+	return value
 }
