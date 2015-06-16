@@ -25,7 +25,7 @@ type Type struct {
 }
 
 // NewType initializes and returns Type object. It expects even number of args.
-// Otherwise, it an IncorIncorrectArgsErr error will be returned.
+// Otherwise, an IncorIncorrectArgsErr error will be returned.
 func NewType(args []string) (*Type, error) {
 	// Make sure the number of arguments is even number
 	// and it is more than zero.
