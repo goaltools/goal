@@ -121,38 +121,6 @@ func extractControllers(pkg *reflect.Package) (cs []Controller) {
 		return true
 	}
 
-	// isBefore gets a Func and checks whether it is a Before magic method.
-	isBefore := func(f *reflect.Func) bool {
-		if f.Name == MagicMethodBefore {
-			return true
-		}
-		return false
-	}
-
-	// isAfter gets a Func and checks whether it is an After magic method.
-	isAfter := func(f *reflect.Func) bool {
-		if f.Name == MagicMethodAfter {
-			return true
-		}
-		return false
-	}
-
-	// isFinally gets a Func and checks whether it is a Finally magic method.
-	isFinally := func(f *reflect.Func) bool {
-		if f.Name == MagicMethodFinally {
-			return true
-		}
-		return false
-	}
-
-	// notMagicMethod gets a Func and makes sure it is not a magic method but a usual action.
-	notMagicMethod := func(f *reflect.Func) bool {
-		if isBefore(f) || isAfter(f) || isFinally(f) {
-			return false
-		}
-		return true
-	}
-
 	// Iterating through all available structures and checking
 	// whether those structures are controllers (i.e. whether they have actions).
 	for i := 0; i < len(pkg.Structs); i++ {
@@ -163,8 +131,8 @@ func extractControllers(pkg *reflect.Package) (cs []Controller) {
 		}
 
 		// Check whether there are actions among those methods.
-		as := ms.Filter(isAction, notMagicMethod, isAfter, isBefore, isFinally)
-		if len(as) == 0 {
+		as, count := ms.Filter(isAction, notMagicMethod, isAfter, isBefore, isFinally)
+		if count == 0 {
 			continue
 		}
 
@@ -178,4 +146,36 @@ func extractControllers(pkg *reflect.Package) (cs []Controller) {
 		})
 	}
 	return
+}
+
+// isBefore gets a Func and checks whether it is a Before magic method.
+func isBefore(f *reflect.Func) bool {
+	if f.Name == MagicMethodBefore {
+		return true
+	}
+	return false
+}
+
+// isAfter gets a Func and checks whether it is an After magic method.
+func isAfter(f *reflect.Func) bool {
+	if f.Name == MagicMethodAfter {
+		return true
+	}
+	return false
+}
+
+// isFinally gets a Func and checks whether it is a Finally magic method.
+func isFinally(f *reflect.Func) bool {
+	if f.Name == MagicMethodFinally {
+		return true
+	}
+	return false
+}
+
+// notMagicMethod gets a Func and makes sure it is not a magic method but a usual action.
+func notMagicMethod(f *reflect.Func) bool {
+	if isBefore(f) || isAfter(f) || isFinally(f) {
+		return false
+	}
+	return true
 }
