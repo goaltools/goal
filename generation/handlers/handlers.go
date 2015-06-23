@@ -60,6 +60,39 @@ func Start(basePath string, params command.Data) {
 // extractControllers gets a reflect.Package type and returns
 // a slice of controllers that are found there.
 func extractControllers(pkg *reflect.Package) (cs []Controller) {
+	// Initialize a function that will be used for detection of actions.
+	action := actionFunc(pkg)
+
+	// Iterating through all available structures and checking
+	// whether those structures are controllers (i.e. whether they have actions).
+	for i := 0; i < len(pkg.Structs); i++ {
+		// Make sure the structure has methods.
+		ms, ok := pkg.Methods[pkg.Structs[i].Name]
+		if !ok {
+			continue
+		}
+
+		// Check whether there are actions among those methods.
+		as, count := ms.Filter(action, notMagicMethod, after, before, finally)
+		if count == 0 {
+			continue
+		}
+
+		// Add a new controller to the list of results.
+		cs = append(cs, Controller{
+			Actions: as[0],
+			After:   as[1],
+			Before:  as[2],
+			Finally: as[3],
+			Struct:  pkg.Structs[i],
+		})
+	}
+	return
+}
+
+// actionFunc returns a function that may be used to check whether
+// specific Func represents an action (or one of magic method) or not.
+func actionFunc(pkg *reflect.Package) func(f *reflect.Func) bool {
 	// Actions are required to return action.Result as the first argument.
 	// actionImportName is used to store information on how the action package is named.
 	// For illustration, here is an example:
@@ -68,7 +101,7 @@ func extractControllers(pkg *reflect.Package) (cs []Controller) {
 	//	)
 	// In the example above action package will be imported as "qwerty".
 	// So, we are saving this name to actionImportName[FILE_NAME_WHERE_WE_IMPORT_THIS]
-	// to eliminate the need of iterating over all imports over and over again.
+	// to eliminate the need of iterating through all imports over and over again.
 	actionImportName := map[string]string{}
 
 	// Files that should be excluded from search of actions
@@ -76,10 +109,8 @@ func extractControllers(pkg *reflect.Package) (cs []Controller) {
 	// We are using this as a cache.
 	ignoreFiles := map[string]bool{}
 
-	// isAction gets a pointer to reflect.Func structure
-	// and checks whether it represents action or one of magic methods.
-	// If so, it return true.
-	isAction := func(f *reflect.Func) bool {
+	// Return the function that will define whether the function is an action.
+	return func(f *reflect.Func) bool {
 		// Check whether the file where this method located
 		// is ignored due to the lack of action subpackage import.
 		if ignoreFiles[f.File] {
@@ -120,52 +151,26 @@ func extractControllers(pkg *reflect.Package) (cs []Controller) {
 		}
 		return true
 	}
-
-	// Iterating through all available structures and checking
-	// whether those structures are controllers (i.e. whether they have actions).
-	for i := 0; i < len(pkg.Structs); i++ {
-		// Make sure the structure has methods.
-		ms, ok := pkg.Methods[pkg.Structs[i].Name]
-		if !ok {
-			continue
-		}
-
-		// Check whether there are actions among those methods.
-		as, count := ms.Filter(isAction, notMagicMethod, isAfter, isBefore, isFinally)
-		if count == 0 {
-			continue
-		}
-
-		// Add a new controller to the list of results.
-		cs = append(cs, Controller{
-			Actions: as[0],
-			After:   as[1],
-			Before:  as[2],
-			Finally: as[3],
-			Struct:  pkg.Structs[i],
-		})
-	}
-	return
 }
 
-// isBefore gets a Func and checks whether it is a Before magic method.
-func isBefore(f *reflect.Func) bool {
+// before gets a Func and checks whether it is a Before magic method.
+func before(f *reflect.Func) bool {
 	if f.Name == MagicMethodBefore {
 		return true
 	}
 	return false
 }
 
-// isAfter gets a Func and checks whether it is an After magic method.
-func isAfter(f *reflect.Func) bool {
+// after gets a Func and checks whether it is an After magic method.
+func after(f *reflect.Func) bool {
 	if f.Name == MagicMethodAfter {
 		return true
 	}
 	return false
 }
 
-// isFinally gets a Func and checks whether it is a Finally magic method.
-func isFinally(f *reflect.Func) bool {
+// finally gets a Func and checks whether it is a Finally magic method.
+func finally(f *reflect.Func) bool {
 	if f.Name == MagicMethodFinally {
 		return true
 	}
@@ -174,7 +179,7 @@ func isFinally(f *reflect.Func) bool {
 
 // notMagicMethod gets a Func and makes sure it is not a magic method but a usual action.
 func notMagicMethod(f *reflect.Func) bool {
-	if isBefore(f) || isAfter(f) || isFinally(f) {
+	if before(f) || after(f) || finally(f) {
 		return false
 	}
 	return true
