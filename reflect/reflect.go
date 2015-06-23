@@ -7,6 +7,7 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"strings"
 
 	"github.com/anonx/sunplate/log"
 )
@@ -17,12 +18,17 @@ import (
 //			- Import value
 type Imports map[string]map[string]string
 
+// Methods is a map of functions with receiver in the following format:
+//	- Name of a struct:
+//		- Methods
+type Methods map[string]Funcs
+
 // Package is a type that combines declarations
 // of functions, types, and structs of a single go package.
 type Package struct {
 	Funcs   Funcs   // A list of functions of the package.
 	Imports Imports // Imports of this package grouped by files.
-	Methods Funcs   // A list of methods (functions with receivers) of the package.
+	Methods Methods // Struct names and their Methods (functions with receivers).
 	Name    string  // Name of the package, e.g. "controllers".
 	Structs Structs // A list of struct types of the package.
 }
@@ -43,6 +49,27 @@ func (i Imports) Value(file, name string) (string, bool) {
 		return "", false
 	}
 	return v, true
+}
+
+// Name checks whether an import that ends with a requested value exists
+// in the requested file. If so, it's name and true are returned.
+// Otherwise, empty string and false will be the results.
+// Imports are ensured to end with the value rather than be equal to it
+// for compatability with "vendor" package manager.
+func (i Imports) Name(file, value string) (string, bool) {
+	// Check whether such file exists.
+	f, ok := i[file]
+	if !ok {
+		return "", false
+	}
+
+	// Make sure requested import does exist.
+	for name := range f {
+		if strings.HasSuffix(f[name], value) {
+			return name, true
+		}
+	}
+	return "", false
 }
 
 // ParseDir expects a path to directory with a go package
@@ -66,6 +93,7 @@ func ParseDir(path string) *Package {
 	// into single Package struct.
 	p := &Package{
 		Imports: map[string]map[string]string{},
+		Methods: map[string]Funcs{},
 		Name:    pkg.Name,
 	}
 	for name, file := range pkg.Files {
@@ -79,7 +107,7 @@ func ParseDir(path string) *Package {
 
 		// Attach methods.
 		if len(ms) > 0 {
-			p.Methods = append(p.Methods, ms...)
+			p.Methods = joinMethods(p.Methods, ms)
 		}
 
 		// Add structures to the package.
@@ -96,7 +124,7 @@ func ParseDir(path string) *Package {
 // processDecls expects a list of declarations as an input
 // parameter. It will be parsed, splitted into functions,
 // methods, and structs and returned.
-func processDecls(decls []ast.Decl, file string) (fs, ms Funcs, ss Structs, is map[string]string) {
+func processDecls(decls []ast.Decl, file string) (fs Funcs, ms Methods, ss Structs, is map[string]string) {
 	for _, decl := range decls {
 		// Try to process the declaration as a function.
 		var f *Func
@@ -111,7 +139,7 @@ func processDecls(decls []ast.Decl, file string) (fs, ms Funcs, ss Structs, is m
 				continue
 			}
 			// Otherwise, add it to the list of methods.
-			ms = append(ms, *f)
+			ms = joinMethods(ms, Methods{f.Recv.Type.Name: Funcs{*f}})
 			continue
 		}
 
@@ -139,9 +167,10 @@ func processDecls(decls []ast.Decl, file string) (fs, ms Funcs, ss Structs, is m
 	return
 }
 
-// joinMaps adds addition map[string]string to base one.
+// joinMaps adds addition map[string]string to the base one.
 // If there are key collisions, addition argument's values
-// are used.
+// have higher priority.
+// NOTE: this function has side effects, base is modified.
 func joinMaps(base, addition map[string]string) map[string]string {
 	// Make sure base map is initialized.
 	if base == nil {
@@ -151,6 +180,23 @@ func joinMaps(base, addition map[string]string) map[string]string {
 	// Join two maps and return the result.
 	for k, v := range addition {
 		base[k] = v
+	}
+	return base
+}
+
+// joinMethods adds addition Methods to the base one.
+// If there are key collisions, addition argument's values
+// have higher priority.
+// NOTE: this function has side effects, base is modified.
+func joinMethods(base, addition Methods) Methods {
+	// Make sure base Methods structure is initialized.
+	if base == nil {
+		base = Methods{}
+	}
+
+	// Join two Methods structures and return the result.
+	for k, v := range addition {
+		base[k] = append(base[k], v...)
 	}
 	return base
 }
