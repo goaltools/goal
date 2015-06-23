@@ -29,14 +29,17 @@ func TestFuncsFilter(t *testing.T) {
 			Name: "Func32",
 		},
 	}
-	r := t1.Filter(func(f *Func) bool {
+	r, count := t1.Filter(func(f *Func) bool {
 		return true
 	}, func(f *Func) bool {
 		return true
 	})
+	if count != 3 {
+		t.Errorf("Func Filter: incorrect count result. Expected %d, got %d.", 3, count)
+	}
 	assertDeepEqualFuncs(t1, r[0])
 
-	r = t1.Filter(func(f *Func) bool {
+	r, count = t1.Filter(func(f *Func) bool {
 		if strings.HasSuffix(f.Name, "2") {
 			return true
 		}
@@ -44,6 +47,9 @@ func TestFuncsFilter(t *testing.T) {
 	}, func(f *Func) bool {
 		return true
 	})
+	if count != 2 {
+		t.Errorf("Func Filter: incorrect count result. Expected %d, got %d.", 2, count)
+	}
 	assertDeepEqualFuncs(expRes, r[0])
 }
 

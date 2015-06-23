@@ -21,15 +21,16 @@ type Func struct {
 // It cuts off those Funcs that do not satisfy condition.
 // And then groups the rest of them.
 // For illustration:
-//	res := myFuncs.Filter(isExported, withArguments, withoutArguments)
+//	res, count := myFuncs.Filter(isExported, withArguments, withoutArguments)
 // The result will be:
 //	// All this functions are satisfying isExported condition.
 //	[]Funcs{
 //		Funcs{ these are functions withArguments },
 //		Funcs{ these are functions withoutArguments },
 //	}
-func (fs Funcs) Filter(cond func(f *Func) bool, groups ...func(f *Func) bool) []Funcs {
+func (fs Funcs) Filter(cond func(f *Func) bool, groups ...func(f *Func) bool) ([]Funcs, int) {
 	res := make([]Funcs, len(groups))
+	count := 0
 
 	// Iterating over all available Funcs.
 	for _, f := range fs {
@@ -37,6 +38,7 @@ func (fs Funcs) Filter(cond func(f *Func) bool, groups ...func(f *Func) bool) []
 		if !cond(&f) {
 			continue
 		}
+		count++
 
 		// Group them into categories.
 		for i := range groups {
@@ -46,7 +48,7 @@ func (fs Funcs) Filter(cond func(f *Func) bool, groups ...func(f *Func) bool) []
 		}
 	}
 
-	return res
+	return res, count
 }
 
 // processFuncDecl receives an ast function declaration and
