@@ -17,21 +17,35 @@ type Func struct {
 	Results  Args     // A list of arguments the function returns.
 }
 
-// Filter returns from members of a list groups of function lists
-// fulfilling conditions given by the fns argument. So, if we call it as follows:
-//	functions.Filter(filterFunc1, filterFunc2, filterFunc3)
-// we will get []Funcs (len = 3) where 0th element contains functions
-// that satisfies filterFunc1, 1st that satisfies filterFunc2, and so forth.
-func (fs Funcs) Filter(fns ...func(f *Func) bool) []Funcs {
-	res := make([]Funcs, len(fns))
-	for i := range fns {
-		res[i] = Funcs{}
-		for _, f := range fs {
-			if fns[i](&f) {
+// Filter gets a condition function and a number of group functions.
+// It cuts off those Funcs that do not satisfy condition.
+// And then groups the rest of them.
+// For illustration:
+//	res := myFuncs.Filter(isExported, withArguments, withoutArguments)
+// The result will be:
+//	// All this functions are satisfying isExported condition.
+//	[]Funcs{
+//		Funcs{ these are functions withArguments },
+//		Funcs{ these are functions withoutArguments },
+//	}
+func (fs Funcs) Filter(cond func(f *Func) bool, groups ...func(f *Func) bool) []Funcs {
+	res := make([]Funcs, len(groups))
+
+	// Iterating over all available Funcs.
+	for _, f := range fs {
+		// Make sure they satisfy requested condition.
+		if !cond(&f) {
+			continue
+		}
+
+		// Group them into categories.
+		for i := range groups {
+			if groups[i](&f) {
 				res[i] = append(res[i], f)
 			}
 		}
 	}
+
 	return res
 }
 
