@@ -14,7 +14,7 @@ func TestImportsValue(t *testing.T) {
 	var t1 Imports
 	v, ok := t1.Value("somefile.go", "somename")
 	if v != "" || ok != false {
-		t.Errorf("Incorrect imports value. Expected '', true. Got '%s', %v.", v, ok)
+		t.Errorf("Incorrect imports value. Expected '', false. Got '%s', %v.", v, ok)
 	}
 
 	t2 := Imports{
@@ -24,12 +24,37 @@ func TestImportsValue(t *testing.T) {
 	}
 	v, ok = t2.Value("sample.go", "l")
 	if v != "github.com/anonx/sunplate/log" || ok != true {
-		t.Errorf("Incorrect imports value. Expected 'sample.go', true. Got '%s', %v.", v, ok)
+		t.Errorf("Incorrect imports value. Expected 'github.com/anonx/sunplate/log', true. Got '%s', %v.", v, ok)
 	}
 
 	v, ok = t2.Value("sample.go", "key_that_does_not_exist")
 	if v != "" || ok != false {
-		t.Errorf("Incorrect imports value. Expected '', true. Got '%s', %v.", v, ok)
+		t.Errorf("Incorrect imports value. Expected '', false. Got '%s', %v.", v, ok)
+	}
+}
+
+func TestImportsName(t *testing.T) {
+	var t1 Imports
+	v, ok := t1.Name("somefile.go", "github.com/anonx/sunplate")
+	if v != "" || ok != false {
+		t.Errorf("Incorrect import name value. Expected '', false. Got '%s', %v.", v, ok)
+	}
+
+	t2 := Imports{
+		"sample.go": {
+			"action":  "github.com/anonx/sunplate/action",
+			"example": "github.com/anonx/sunplate/example",
+			"l":       "github.com/anonx/sunplate/log",
+		},
+	}
+	v, ok = t2.Name("sample.go", "sunplate/example")
+	if v != "example" || ok != true {
+		t.Errorf("Incorrect import name value. Expected 'example', true. Got '%s', %v.", v, ok)
+	}
+
+	v, ok = t2.Name("sample.go", "github.com/import_that_does_not_exist")
+	if v != "" || ok != false {
+		t.Errorf("Incorrect imports value. Expected '', false. Got '%s', %v.", v, ok)
 	}
 }
 
@@ -51,21 +76,23 @@ func TestParseDir(t *testing.T) {
 				Name: "init",
 			},
 		},
-		Methods: Funcs{
-			{
-				Comments: Comments{"// Hello is a method."},
-				File:     "testdata/sample1.go",
-				Name:     "Hello",
-				Recv: &Arg{
-					Name: "t",
-					Type: &Type{
-						Name: "Test",
-					},
-				},
-				Results: Args{
-					{
+		Methods: Methods{
+			"Test": Funcs{
+				{
+					Comments: Comments{"// Hello is a method."},
+					File:     "testdata/sample1.go",
+					Name:     "Hello",
+					Recv: &Arg{
+						Name: "t",
 						Type: &Type{
-							Name: "string",
+							Name: "Test",
+						},
+					},
+					Results: Args{
+						{
+							Type: &Type{
+								Name: "string",
+							},
 						},
 					},
 				},
@@ -135,21 +162,23 @@ func TestProcessDecls(t *testing.T) {
 				Name: "init",
 			},
 		},
-		Methods: Funcs{
-			{
-				File: "sample.go",
-				Name: "Test",
-				Recv: &Arg{
-					Name: "s",
-					Type: &Type{
-						Name: "Sample",
-						Star: true,
-					},
-				},
-				Results: Args{
-					{
+		Methods: Methods{
+			"Sample": Funcs{
+				{
+					File: "sample.go",
+					Name: "Test",
+					Recv: &Arg{
+						Name: "s",
 						Type: &Type{
-							Name: "bool",
+							Name: "Sample",
+							Star: true,
+						},
+					},
+					Results: Args{
+						{
+							Type: &Type{
+								Name: "bool",
+							},
 						},
 					},
 				},
@@ -186,7 +215,7 @@ func TestProcessDecls(t *testing.T) {
 		t.Errorf("Incorrect imports returned. Expected %#v, got %#v.", expRes.Imports, is)
 	}
 	assertDeepEqualFuncs(expRes.Funcs, fs)
-	assertDeepEqualFuncs(expRes.Methods, ms)
+	assertDeepEqualMethods(expRes.Methods, ms)
 	assertDeepEqualStructs(expRes.Structs, ss)
 }
 
@@ -242,5 +271,19 @@ func assertDeepEqualPkg(p1, p2 *Package) {
 	}
 	assertDeepEqualStructs(p1.Structs, p2.Structs)
 	assertDeepEqualFuncs(p1.Funcs, p2.Funcs)
-	assertDeepEqualFuncs(p1.Methods, p2.Methods)
+	assertDeepEqualMethods(p1.Methods, p2.Methods)
+}
+
+// assertDeepEqualMethods is used by tests to compare two Methods values.
+func assertDeepEqualMethods(m1, m2 Methods) {
+	if len(m1) != len(m2) {
+		log.Error.Panicf(
+			"Methods maps %#v and %#v have different length: %d and %d.",
+			m1, m2, len(m1), len(m2),
+		)
+		return
+	}
+	for structName, funcs := range m1 {
+		assertDeepEqualFuncs(funcs, m2[structName])
+	}
 }
