@@ -32,15 +32,18 @@ func TestFuncsFilter(t *testing.T) {
 	r := t1.Filter(func(f *Func) bool {
 		return true
 	})
-	assertDeepEqualFuncs(t1, r)
+	assertDeepEqualFuncs(t1, r[0])
 
 	r = t1.Filter(func(f *Func) bool {
 		if strings.HasSuffix(f.Name, "2") {
 			return true
 		}
 		return false
+	}, func(f *Func) bool {
+		return true
 	})
-	assertDeepEqualFuncs(expRes, r)
+	assertDeepEqualFuncs(expRes, r[0])
+	assertDeepEqualFuncs(t1, r[1])
 }
 
 func TestProcessFuncDecl(t *testing.T) {

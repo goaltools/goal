@@ -17,12 +17,19 @@ type Func struct {
 	Results  Args     // A list of arguments the function returns.
 }
 
-// Filter returns a list of functions from members of a list
-// fulfilling a condition given by the fn argument.
-func (fs Funcs) Filter(fn func(f *Func) bool) (res Funcs) {
-	for _, v := range fs {
-		if fn(&v) {
-			res = append(res, v)
+// Filter returns from members of a list groups of function lists
+// fulfilling conditions given by the fns argument. So, if we call it as follows:
+//	functions.Filter(filterFunc1, filterFunc2, filterFunc3)
+// we will get []Funcs (len = 3) where 0th element contains functions
+// that satisfies filterFunc1, 1st that satisfies filterFunc2, and so forth.
+func (fs Funcs) Filter(fns ...func(f *Func) bool) []Funcs {
+	res := make([]Funcs, len(fns))
+	for i := range fns {
+		res[i] = Funcs{}
+		for _, f := range fs {
+			if fns[i](&f) {
+				res[i] = append(res[i], f)
+			}
 		}
 	}
 	return res
