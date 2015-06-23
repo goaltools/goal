@@ -9,7 +9,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/fatih/color"
+	"github.com/anonx/sunplate/internal/github.com/fatih/color"
 )
 
 // A list of loggers that are used by "sunplate" packages.

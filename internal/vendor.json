@@ -2,16 +2,10 @@
 	"Tool": "github.com/kardianos/vendor",
 	"Package": [
 		{
-			"Vendor": "github.com/agtorre/gocolorize",
-			"Local": "github.com/anonx/sunplate/internal/github.com/agtorre/gocolorize",
-			"Version": "f42b554bf7f006936130c9bb4f971afd2d87f671",
-			"VersionTime": "2014-09-21T15:56:20-07:00"
-		},
-		{
-			"Vendor": "github.com/julienschmidt/httprouter",
-			"Local": "github.com/anonx/sunplate/internal/github.com/julienschmidt/httprouter",
-			"Version": "8c199fb6259ffc1af525cc3ad52ee60ba8359669",
-			"VersionTime": "2015-04-21T19:00:07+02:00"
+			"Vendor": "github.com/fatih/color",
+			"Local": "github.com/anonx/sunplate/internal/github.com/fatih/color",
+			"Version": "1b35f289c47d5c73c398cea8e006b7bcb6234a96",
+			"VersionTime": "2015-05-11T01:06:52+03:00"
 		},
 		{
 			"Vendor": "github.com/naoina/denco",
