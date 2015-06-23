@@ -26,7 +26,7 @@ func main() {
 	defer catchPanic()
 
 	// Show header message.
-	log.Trace.Println(header)
+	log.Info.Println(header)
 
 	// Validate input parameters and find out what user wants to run.
 	ct, err := command.NewType(os.Args[1:])
@@ -44,7 +44,7 @@ func main() {
 
 func catchPanic() {
 	if err := recover(); err != nil {
-		log.Error.Fatal(err)
+		log.Trace.Fatal(err)
 	}
 }
 
