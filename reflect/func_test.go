@@ -31,6 +31,8 @@ func TestFuncsFilter(t *testing.T) {
 	}
 	r := t1.Filter(func(f *Func) bool {
 		return true
+	}, func(f *Func) bool {
+		return true
 	})
 	assertDeepEqualFuncs(t1, r[0])
 
@@ -43,7 +45,6 @@ func TestFuncsFilter(t *testing.T) {
 		return true
 	})
 	assertDeepEqualFuncs(expRes, r[0])
-	assertDeepEqualFuncs(t1, r[1])
 }
 
 func TestProcessFuncDecl(t *testing.T) {
