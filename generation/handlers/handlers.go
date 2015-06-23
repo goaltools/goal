@@ -73,6 +73,7 @@ func extractControllers(pkg *reflect.Package) (cs []Controller) {
 		}
 
 		// Check whether there are actions among those methods.
+		// If there are no any, this is not a controller; ignore it.
 		as, count := ms.Filter(action, notMagicMethod, after, before, finally)
 		if count == 0 {
 			continue

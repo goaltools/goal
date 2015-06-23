@@ -1,16 +1,15 @@
 // Package log is a simple wrapper on golang standard log
-// package and agtorre/gocolorize (that colorizes the result on *nix systems).
-// There are four predefined loggers.
-// They are Error, Warn, Trace, and Info.
+// package and terminal colorizer (that colorizes result on win and *nix systems).
+// There are four predefined loggers. They are Error, Warn, Trace, and Info.
 package log
 
 import (
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
-	"runtime"
 
-	"github.com/anonx/sunplate/internal/github.com/agtorre/gocolorize"
+	"github.com/fatih/color"
 )
 
 // A list of loggers that are used by "sunplate" packages.
@@ -23,45 +22,45 @@ var (
 
 // context stores information about logger output and its color.
 type context struct {
-	c gocolorize.Colorize
+	c *color.Color
 	w io.Writer
 }
 
 // Write is used for writing to predefined output using
 // foreground color we want.
 func (c *context) Write(p []byte) (n int, err error) {
-	return c.w.Write([]byte(c.c.Paint(string(p))))
+	// Set the color that has been registered for this logger.
+	c.c.Set()
+	defer color.Unset() // Don't forget to stop using after we're done.
+
+	// Write the result to writer.
+	return c.w.Write(p)
 }
 
 func init() {
 	// Initialize default loggers.
 	Error = log.New(
 		&context{
-			c: gocolorize.NewColor("red"),
+			c: color.New(color.FgRed),
 			w: os.Stderr,
 		}, "", 0,
 	)
 	Warn = log.New(
 		&context{
-			c: gocolorize.NewColor("yellow"),
+			c: color.New(color.FgYellow),
 			w: os.Stderr,
 		}, "", 0,
 	)
 	Info = log.New(
 		&context{
-			c: gocolorize.NewColor("green"),
+			c: color.New(color.FgGreen),
 			w: os.Stdout,
 		}, "", 0,
 	)
 	Trace = log.New(
 		&context{
-			c: gocolorize.NewColor("blue"),
-			w: os.Stdout,
+			c: color.New(color.FgCyan),
+			w: ioutil.Discard,
 		}, "", 0,
 	)
-
-	// Do not use colorize when on windows.
-	if runtime.GOOS == "windows" {
-		gocolorize.SetPlain(true)
-	}
 }
