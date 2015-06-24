@@ -17,7 +17,7 @@ type Func struct {
 	Results  Args     // A list of arguments the function returns.
 }
 
-// Filter gets a condition function and a number of group functions.
+// FilterGroups gets a condition function and a number of group functions.
 // It cuts off those Funcs that do not satisfy condition.
 // And then groups the rest of them.
 // For illustration:
@@ -28,7 +28,7 @@ type Func struct {
 //		Funcs{ these are functions withArguments },
 //		Funcs{ these are functions withoutArguments },
 //	}
-func (fs Funcs) Filter(cond func(f *Func) bool, groups ...func(f *Func) bool) ([]Funcs, int) {
+func (fs Funcs) FilterGroups(cond func(f *Func) bool, groups ...func(f *Func) bool) ([]Funcs, int) {
 	res := make([]Funcs, len(groups))
 	count := 0
 
