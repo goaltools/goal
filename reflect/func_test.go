@@ -29,7 +29,7 @@ func TestFuncsFilter(t *testing.T) {
 			Name: "Func32",
 		},
 	}
-	r, count := t1.Filter(func(f *Func) bool {
+	r, count := t1.FilterGroups(func(f *Func) bool {
 		return true
 	}, func(f *Func) bool {
 		return true
@@ -39,7 +39,7 @@ func TestFuncsFilter(t *testing.T) {
 	}
 	assertDeepEqualFuncs(t1, r[0])
 
-	r, count = t1.Filter(func(f *Func) bool {
+	r, count = t1.FilterGroups(func(f *Func) bool {
 		if strings.HasSuffix(f.Name, "2") {
 			return true
 		}
