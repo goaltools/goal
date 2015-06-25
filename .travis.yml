@@ -7,7 +7,7 @@ before_install:
 install:
   - export PATH=$PATH:${GOPATH%%:*}/bin:${GOPATH##:*}/bin
 
-  - go get github.com/anonx/sunplate/... # Getting the dependencies for the repo.
+  - go get -t github.com/anonx/sunplate/... # Getting the dependencies for the repo.
   - go test -v github.com/anonx/sunplate/...
 script:
   - cd ${GOPATH%%:*}/src/github.com/anonx/sunplate
