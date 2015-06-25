@@ -3,7 +3,6 @@
 package handlers
 
 import (
-	"go/ast"
 	"path/filepath"
 
 	"github.com/anonx/sunplate/command"
@@ -11,35 +10,33 @@ import (
 	"github.com/anonx/sunplate/reflect"
 )
 
-const (
-	// ActionInterfaceImport is a GOPATH to the Result interface
-	// that should be implemented by types returned by actions.
-	ActionInterfaceImport = "github.com/anonx/sunplate/action"
+// packages represents packages of controllers. The format is the following:
+//	- Import path:
+//		- Controllers
+type packages map[string]controllers
 
-	// ActionInterfaceName is an interface that should be implemented
-	// by types that are returned from actions.
-	ActionInterfaceName = "Result"
+// controllers stores information about application controllers
+// in the following form:
+//	- Name of the controller:
+//		- Controller representation itself
+type controllers map[string]controller
 
-	// MagicMethodBefore is a name of the magic method that will be executed
-	// before every action.
-	MagicMethodBefore = "Before"
+// parent represents embedded struct that should be scanned for
+// actions and magic methods.
+type parent struct {
+	Import  string // Import path of the structure, e.g. "github.com/anonx/sunplate/template" or "".
+	Name    string // Name of the structure, e.g. "Template".
+	Pointer bool   // Is this type embedded as a pointer or not, i.e. "*Template" or "Template".
+}
 
-	// MagicMethodAfter is a name of the magic method that will be executed
-	// after every action.
-	MagicMethodAfter = "After"
-
-	// MagicMethodFinally is a name of the magic method that will be executed
-	// after every action no matter what.
-	MagicMethodFinally = "Finally"
-)
-
-// Controller is a type that represents application controller,
+// controller is a type that represents application controller,
 // a structure that has actions.
-type Controller struct {
+type controller struct {
 	Actions reflect.Funcs  // Actions are methods that implement action.Result interface.
 	After   reflect.Funcs  // Magic methods that are executed after actions if they return nil.
 	Before  reflect.Funcs  // Magic methods that are executed before every action.
 	Finally reflect.Funcs  // Finally is executed at the end of every request no matter what.
+	Parents []parent       // A list of embedded structs that should be parsed.
 	Struct  reflect.Struct // Structure of the controller (its name, fields, etc).
 }
 
@@ -57,9 +54,36 @@ func Start(basePath string, params command.Data) {
 	t.Generate()
 }
 
+func (t *packages) processPackage(importPath string) {
+}
+
+// scanAnonEmbStructs expects a package and an index of structure in that package.
+// It scans the structure looking for fields that are anonymously embedded types.
+// If those types are from other packages, they are processed as well.
+// As a result a list of all found types in a form of []parent is returned.
+func scanAnonEmbStructs(pkg *reflect.Package, i int) (ps []parent) {
+	// Iterating over fields of the structure.
+	for j := range pkg.Structs[i].Fields {
+		// Make sure current field is embedded anonymously,
+		// i.e. there is no arg name.
+		if pkg.Structs[i].Fields[j].Name != "" {
+			continue
+		}
+
+		// Add the field to the list of results.
+		imp, _ := pkg.Imports.Value(pkg.Structs[i].File, pkg.Structs[i].Fields[j].Type.Package)
+		ps = append(ps, parent{
+			Import:  imp,
+			Name:    pkg.Structs[i].Fields[j].Type.Name,
+			Pointer: pkg.Structs[i].Fields[j].Type.Star,
+		})
+	}
+	return
+}
+
 // extractControllers gets a reflect.Package type and returns
 // a slice of controllers that are found there.
-func extractControllers(pkg *reflect.Package) (cs []Controller) {
+func extractControllers(pkg *reflect.Package) (cs controllers) {
 	// Initialize a function that will be used for detection of actions.
 	action := actionFunc(pkg)
 
@@ -74,114 +98,20 @@ func extractControllers(pkg *reflect.Package) (cs []Controller) {
 
 		// Check whether there are actions among those methods.
 		// If there are no any, this is not a controller; ignore it.
-		as, count := ms.Filter(action, notMagicMethod, after, before, finally)
+		as, count := ms.FilterGroups(action, notMagicMethod, after, before, finally)
 		if count == 0 {
 			continue
 		}
 
 		// Add a new controller to the list of results.
-		cs = append(cs, Controller{
+		cs[pkg.Structs[i].Name] = controller{
 			Actions: as[0],
 			After:   as[1],
 			Before:  as[2],
 			Finally: as[3],
+			Parents: scanAnonEmbStructs(pkg, i),
 			Struct:  pkg.Structs[i],
-		})
+		}
 	}
 	return
-}
-
-// actionFunc returns a function that may be used to check whether
-// specific Func represents an action (or one of magic method) or not.
-func actionFunc(pkg *reflect.Package) func(f *reflect.Func) bool {
-	// Actions are required to return action.Result as the first argument.
-	// actionImportName is used to store information on how the action package is named.
-	// For illustration, here is an example:
-	//	import (
-	//		qwerty "github.com/anonx/sunplate/action"
-	//	)
-	// In the example above action package will be imported as "qwerty".
-	// So, we are saving this name to actionImportName[FILE_NAME_WHERE_WE_IMPORT_THIS]
-	// to eliminate the need of iterating through all imports over and over again.
-	actionImportName := map[string]string{}
-
-	// Files that should be excluded from search of actions
-	// as they do not have action package imported.
-	// We are using this as a cache.
-	ignoreFiles := map[string]bool{}
-
-	// Return the function that will define whether the function is an action.
-	return func(f *reflect.Func) bool {
-		// Check whether the file where this method located
-		// is ignored due to the lack of action subpackage import.
-		if ignoreFiles[f.File] {
-			return false
-		}
-
-		// Check whether the method returns at least one parameter.
-		if len(f.Results) == 0 {
-			return false
-		}
-
-		// Make sure the method we are checking is Exported.
-		// Private ones are ignored.
-		if !ast.IsExported(f.Name) {
-			return false
-		}
-
-		// Check whether we already know from previous iterations
-		// how action subpackage is imported (its name).
-		if _, ok := actionImportName[f.File]; !ok {
-			// If not, try to find it out.
-			n, ok := pkg.Imports.Name(f.File, ActionInterfaceImport)
-			if !ok {
-				// Action subpackage import path is not found in this file.
-				// So, this is not an action method.
-				// Ignore this file (and all methods inside it) in future.
-				ignoreFiles[f.File] = true
-				return false
-			}
-			actionImportName[f.File] = n // Save the import name to use in future iterations.
-		}
-
-		// Make sure the first result is of type action.Result.
-		correctPackage := f.Results[0].Type.Package == actionImportName[f.File]
-		correctName := f.Results[0].Type.Name == ActionInterfaceName
-		if !correctPackage || !correctName {
-			return false
-		}
-		return true
-	}
-}
-
-// before gets a Func and checks whether it is a Before magic method.
-func before(f *reflect.Func) bool {
-	if f.Name == MagicMethodBefore {
-		return true
-	}
-	return false
-}
-
-// after gets a Func and checks whether it is an After magic method.
-func after(f *reflect.Func) bool {
-	if f.Name == MagicMethodAfter {
-		return true
-	}
-	return false
-}
-
-// finally gets a Func and checks whether it is a Finally magic method.
-func finally(f *reflect.Func) bool {
-	if f.Name == MagicMethodFinally {
-		return true
-	}
-	return false
-}
-
-// notMagicMethod gets a Func and makes sure it is not a magic method but a usual action.
-func notMagicMethod(f *reflect.Func) bool {
-	if before(f) || after(f) || finally(f) {
-		return false
-	}
-	return true
 }
