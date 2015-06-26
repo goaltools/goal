@@ -57,8 +57,8 @@ type Route struct {
 // for small sets of data.
 // On average efficency of getting an element from map is O(c + 1).
 // At the same time efficency of iterating over a slice is O(n).
-// And when n is small, O(n) < O(c + 1). That's why we are using simple loop rather than
-// a map function.
+// And when n is small, O(n) < O(c + 1). That's why we are using slice and simple loop
+// rather than a map.
 type dict struct {
 	keys   []string
 	values []*http.HandlerFunc
@@ -202,15 +202,17 @@ func (t *Router) Handler(r *http.Request) (handler http.Handler, pattern string)
 
 	// Check whether requested method is allowed.
 	route := obj.(*Route)
-	handler, ok := route.handlers.get(r.Method)
-	if ok == -1 {
+	handler, i := route.handlers.get(r.Method)
+	if i == -1 {
 		return http.HandlerFunc(MethodNotAllowed), route.pattern
 	}
 
 	// Add parameters of request to request.Form and return a handler.
-	r.Form = make(url.Values, len(params))
-	for i := range params {
-		r.Form[params[i].Name] = []string{params[i].Value}
+	if len(params) > 0 {
+		r.Form = make(url.Values, len(params))
+		for i := range params {
+			r.Form[params[i].Name] = []string{params[i].Value}
+		}
 	}
 	return handler, route.pattern
 }

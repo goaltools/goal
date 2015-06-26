@@ -21,9 +21,38 @@ type route struct {
 	method, pattern string
 }
 
-func BenchmarkGithubAPI_Denco(b *testing.B) {
-	w := new(mockResponseWriter)
+func BenchmarkGithubAPIStatic_DencoRoute(b *testing.B) {
+	r := newRequest("GET", "/gitignore/templates")
+	benchmarkGithubAPIDenco(b, r)
+}
+
+func BenchmarkGithubAPIStatic_HTTPRouter(b *testing.B) {
+	r := newRequest("GET", "/gitignore/templates")
+	benchmarkGithubAPIHTTPRouter(b, r)
+}
+
+func BenchmarkGithubAPIStatic_Routing(b *testing.B) {
+	r := newRequest("GET", "/gitignore/templates")
+	benchmarkGithubAPIRouting(b, r)
+}
+
+func BenchmarkGithubAPIParams_DencoRoute(b *testing.B) {
 	r := newRequest("GET", "/repos/johndoe/superproject/stargazers")
+	benchmarkGithubAPIDenco(b, r)
+}
+
+func BenchmarkGithubAPIParams_HTTPRouter(b *testing.B) {
+	r := newRequest("GET", "/repos/johndoe/superproject/stargazers")
+	benchmarkGithubAPIHTTPRouter(b, r)
+}
+
+func BenchmarkGithubAPIParams_Routing(b *testing.B) {
+	r := newRequest("GET", "/repos/johndoe/superproject/stargazers")
+	benchmarkGithubAPIRouting(b, r)
+}
+
+func benchmarkGithubAPIDenco(b *testing.B, r *http.Request) {
+	w := new(mockResponseWriter)
 
 	b.ReportAllocs()
 	b.ResetTimer()
@@ -33,9 +62,8 @@ func BenchmarkGithubAPI_Denco(b *testing.B) {
 	}
 }
 
-func BenchmarkGithubAPI_HTTPRouter(b *testing.B) {
+func benchmarkGithubAPIHTTPRouter(b *testing.B, r *http.Request) {
 	w := new(mockResponseWriter)
-	r := newRequest("GET", "/repos/johndoe/superproject/stargazers")
 
 	b.ReportAllocs()
 	b.ResetTimer()
@@ -45,9 +73,8 @@ func BenchmarkGithubAPI_HTTPRouter(b *testing.B) {
 	}
 }
 
-func BenchmarkGithubAPI_Routing(b *testing.B) {
+func benchmarkGithubAPIRouting(b *testing.B, r *http.Request) {
 	w := new(mockResponseWriter)
-	r := newRequest("GET", "/repos/johndoe/superproject/stargazers")
 
 	b.ReportAllocs()
 	b.ResetTimer()
@@ -319,7 +346,7 @@ func init() {
 		)
 	}
 
-	// create http.handler-s to be used by http.listenandserve.
+	// create http.handler-s to be used by http.ListenAndServe.
 	var err error
 	dencoH, err = dencoMux.Build(dencoList)
 	if err != nil {
