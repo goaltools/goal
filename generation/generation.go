@@ -23,9 +23,10 @@ func Start(action string, params command.Data) {
 	case "listing":
 		listing.Start(filepath.Join(BasePath, "./listing"), params)
 	default:
-		log.Warn.Panicf(
-			"I do not know how to generate '%s'.\nRun 'sunplate help %s' for more information.",
-			params[action], action,
-		)
+		log.Trace.Panicf(errMsg, params[action], action)
 	}
 }
+
+var errMsg = `I do not know how to generate "%s".
+Run "sunplate help %s" for more information.
+`

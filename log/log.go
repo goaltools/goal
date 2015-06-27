@@ -41,7 +41,7 @@ func init() {
 	// Initialize default loggers.
 	Error = log.New(
 		&context{
-			c: color.New(color.FgRed),
+			c: color.New(color.FgRed, color.Bold),
 			w: os.Stderr,
 		}, "", 0,
 	)

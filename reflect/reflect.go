@@ -78,7 +78,7 @@ func ParseDir(path string) *Package {
 	fset := token.NewFileSet() // Positions are relative to fset.
 	pkgs, err := parser.ParseDir(fset, path, nil, parser.ParseComments)
 	if err != nil {
-		log.Error.Panic(err)
+		log.Trace.Panic(err)
 	}
 
 	// Just one package per directory is allowed.
