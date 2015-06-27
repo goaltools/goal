@@ -44,7 +44,7 @@ func main() {
 
 func catchPanic() {
 	if err := recover(); err != nil {
-		log.Trace.Fatal(err)
+		log.Error.Fatal(err)
 	}
 }
 
