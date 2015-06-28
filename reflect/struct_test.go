@@ -208,32 +208,15 @@ func TestProcessImportSpec(t *testing.T) {
 
 // assertDeepEqualStruct is used by tests to compare two structures.
 func assertDeepEqualStruct(s1, s2 *Struct) {
-	if s1 == nil || s2 == nil {
-		if s1 != s2 {
-			log.Error.Panicf("One of the structs is nil while another is not: %#v != %#v.", s1, s2)
-		}
-		return
-	}
-	assertDeepEqualArgs(s1.Fields, s2.Fields)
-	if !reflect.DeepEqual(s1.Comments, s2.Comments) {
-		log.Error.Panicf("Comments of structs are not equal: %#v != %#v.", s1.Comments, s2.Comments)
-	}
-	if s1.Name != s2.Name || s1.File != s2.File {
-		log.Error.Panicf("Structs are not equal: %#v != %#v.", s1, s2)
+	if err := AssertEqualStruct(s1, s2); err != nil {
+		log.Error.Panic(err)
 	}
 }
 
 // assertDeepEqualStructs is a function that is used in tests for
 // comparison of structs.
-func assertDeepEqualStructs(s1, s2 Structs) {
-	if len(s1) != len(s2) {
-		log.Error.Panicf(
-			"Struct slices %#v and %#v have different length: %d and %d.",
-			s1, s2, len(s1), len(s2),
-		)
-		return
-	}
-	for i, st := range s1 {
-		assertDeepEqualStruct(&st, &s2[i])
+func assertDeepEqualStructs(ss1, ss2 Structs) {
+	if err := AssertEqualStructs(ss1, ss2); err != nil {
+		log.Error.Panic(err)
 	}
 }

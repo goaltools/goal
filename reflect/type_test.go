@@ -84,15 +84,8 @@ func TestProcessType(t *testing.T) {
 	}
 }
 
-// assertDeepEqualType is a function that is used by tests to compare types.
 func assertDeepEqualType(t1, t2 *Type) {
-	if t1 == nil || t2 == nil {
-		if t1 != t2 {
-			log.Error.Panicf("One of the types is nil while another is not: %#v != %#v.", t1, t2)
-		}
-		return
-	}
-	if t1.String() != t2.String() {
-		log.Error.Panicf("Types are not equal: %s != %s.", t1, t2)
+	if err := AssertEqualType(t1, t2); err != nil {
+		log.Error.Panic(err)
 	}
 }
