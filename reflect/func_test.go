@@ -2,7 +2,6 @@ package reflect
 
 import (
 	"go/ast"
-	"reflect"
 	"strings"
 	"testing"
 
@@ -180,34 +179,15 @@ func TestProcessFuncDecl(t *testing.T) {
 // assertDeepEqualFunc is used by tests to check whether two Func structs are
 // equal or not.
 func assertDeepEqualFunc(f1, f2 *Func) {
-	if f1 == nil || f2 == nil {
-		if f1 != f2 {
-			log.Error.Panicf("One of the funcs is nil while another is not: %#v != %#v.", f1, f2)
-		}
-		return
-	}
-	assertDeepEqualArg(f1.Recv, f2.Recv)
-	assertDeepEqualArgs(f1.Params, f2.Params)
-	assertDeepEqualArgs(f1.Results, f2.Results)
-	if !reflect.DeepEqual(f1.Comments, f2.Comments) {
-		log.Error.Panicf("Comments of funcs are not equal: %#v != %#v.", f1.Comments, f2.Comments)
-	}
-	if f1.Name != f2.Name || f1.File != f2.File {
-		log.Error.Panicf("Funcs are not equal: %#v != %#v.", f1, f2)
+	if err := AssertEqualFunc(f1, f2); err != nil {
+		log.Error.Panic(err)
 	}
 }
 
 // assertDeepEqualFuncs is a function that is used in tests for
 // comparison of functions.
-func assertDeepEqualFuncs(f1, f2 Funcs) {
-	if len(f1) != len(f2) {
-		log.Error.Panicf(
-			"Func slices %#v and %#v have different length: %d and %d.",
-			f1, f2, len(f1), len(f2),
-		)
-		return
-	}
-	for i, fn := range f1 {
-		assertDeepEqualFunc(&fn, &f2[i])
+func assertDeepEqualFuncs(fs1, fs2 Funcs) {
+	if err := AssertEqualFuncs(fs1, fs2); err != nil {
+		log.Error.Panic(err)
 	}
 }

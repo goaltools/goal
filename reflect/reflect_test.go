@@ -255,35 +255,16 @@ func getPackage(t *testing.T, src string) *ast.File {
 	return pkg
 }
 
-// assertDeepEqualPkg is used by tests to compare two packages.
-func assertDeepEqualPkg(p1, p2 *Package) {
-	if p1 == nil || p2 == nil {
-		if p1 != p2 {
-			log.Error.Panicf("One of the packages is nil, while another is not: %#v != %#v", p1, p2)
-		}
-		return
+// assertDeepEqualMethods is used by tests to compare two Methods values.
+func assertDeepEqualMethods(ms1, ms2 Methods) {
+	if err := AssertEqualMethods(ms1, ms2); err != nil {
+		log.Error.Panic(err)
 	}
-	if !reflect.DeepEqual(p1.Imports, p2.Imports) {
-		log.Error.Panicf("Imports of packages are not equal: %#v != %#v.", p1.Imports, p2.Imports)
-	}
-	if p1.Name != p2.Name {
-		log.Error.Panicf("Packages are not equal: %#v != %#v.", p1, p2)
-	}
-	assertDeepEqualStructs(p1.Structs, p2.Structs)
-	assertDeepEqualFuncs(p1.Funcs, p2.Funcs)
-	assertDeepEqualMethods(p1.Methods, p2.Methods)
 }
 
-// assertDeepEqualMethods is used by tests to compare two Methods values.
-func assertDeepEqualMethods(m1, m2 Methods) {
-	if len(m1) != len(m2) {
-		log.Error.Panicf(
-			"Methods maps %#v and %#v have different length: %d and %d.",
-			m1, m2, len(m1), len(m2),
-		)
-		return
-	}
-	for structName, funcs := range m1 {
-		assertDeepEqualFuncs(funcs, m2[structName])
+// assertDeepEqualPkg is used by tests to compare two packages.
+func assertDeepEqualPkg(p1, p2 *Package) {
+	if err := AssertEqualPkg(p1, p2); err != nil {
+		log.Error.Panic(err)
 	}
 }

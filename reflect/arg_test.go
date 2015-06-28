@@ -206,29 +206,15 @@ func getFields(t *testing.T, pkg *ast.File) *ast.FieldList {
 
 // assertDeepEqualArg is a function that is used by tests to compare two arguments.
 func assertDeepEqualArg(a1, a2 *Arg) {
-	if a1 == nil || a2 == nil {
-		if a1 != a2 {
-			log.Error.Panicf("One of the arguments is nil, while other is not: %#v != %#v", a1, a2)
-		}
-		return
-	}
-	assertDeepEqualType(a1.Type, a2.Type)
-	if a1.Name != a2.Name || a1.Tag != a2.Tag {
-		log.Error.Panicf("Arguments are not equal: %#v != %#v.", a1, a2)
+	if err := AssertEqualArg(a1, a1); err != nil {
+		log.Error.Panic(err)
 	}
 }
 
 // assertDeepEqualArgs is a function that is used in tests for
 // comparison of arguments.
 func assertDeepEqualArgs(as1, as2 Args) {
-	if len(as1) != len(as2) {
-		log.Error.Panicf(
-			"Argument slices %#v and %#v have different length: %d and %d.",
-			as1, as2, len(as1), len(as2),
-		)
-		return
-	}
-	for i, a := range as1 {
-		assertDeepEqualArg(&a, &as2[i])
+	if err := AssertEqualArgs(as1, as1); err != nil {
+		log.Error.Panic(err)
 	}
 }
