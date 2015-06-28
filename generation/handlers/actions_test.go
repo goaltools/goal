@@ -1,0 +1,124 @@
+package handlers
+
+import (
+	"testing"
+
+	"github.com/anonx/sunplate/reflect"
+)
+
+func TestActionFunc(t *testing.T) {
+	f := actionFn
+	fn := actionFunc(&reflect.Package{
+		Imports: reflect.Imports{
+			"app.go": map[string]string{
+				"action": "github.com/anonx/sunplate/action",
+			},
+		},
+	})
+
+	res := fn(&reflect.Func{
+		Name: "Test",
+	})
+	if res {
+		t.Errorf("Incorrect result: actions are methods that return at least one result.")
+	}
+
+	res = fn(f)
+	if !res {
+		t.Errorf("Incorrect result: true should be returned when receiving action as an argument.")
+	}
+
+	f.Name = "index"
+	res = fn(f)
+	if res {
+		t.Errorf("Unexported methods cannot be actions.")
+	}
+}
+
+func TestBefore(t *testing.T) {
+	f := actionFn
+	res := before(f)
+	if res {
+		t.Errorf("Incorrect result: action is not a magic Before method.")
+	}
+
+	f.Name = "Before"
+	res = before(f)
+	if !res {
+		t.Errorf("Incorrect result: action is a magic Before method.")
+	}
+}
+
+func TestAfter(t *testing.T) {
+	f := actionFn
+	res := after(f)
+	if res {
+		t.Errorf("Incorrect result: action is not a magic After method.")
+	}
+
+	f.Name = "After"
+	res = after(f)
+	if !res {
+		t.Errorf("Incorrect result: action is a magic After method.")
+	}
+}
+
+func TestFinally(t *testing.T) {
+	f := actionFn
+	res := finally(f)
+	if res {
+		t.Errorf("Incorrect result: action is not a magic Finally method.")
+	}
+
+	f.Name = "Finally"
+	res = finally(f)
+	if !res {
+		t.Errorf("Incorrect result: action is a magic Finally method.")
+	}
+}
+
+func TestNotMagicMethod(t *testing.T) {
+	f := actionFn
+	f.Name = "Before"
+	res := notMagicMethod(f)
+	if res {
+		t.Errorf("Incorrect result: action is a magic method.")
+	}
+
+	f.Name = "Index"
+	res = notMagicMethod(f)
+	if !res {
+		t.Errorf("Incorrect result: action is not a magic method.")
+	}
+}
+
+var actionFn = &reflect.Func{
+	Comments: reflect.Comments{
+		"// Something is a sample action.",
+	},
+	Name: "Something",
+	File: "app.go",
+	Params: reflect.Args{
+		{
+			Name: "page",
+			Type: &reflect.Type{
+				Name: "int",
+			},
+		},
+	},
+	Recv: &reflect.Arg{
+		Name: "c",
+		Type: &reflect.Type{
+			Name: "App",
+			Star: true,
+		},
+	},
+	Results: reflect.Args{
+		{
+			Type: &reflect.Type{
+				Name:    "Result",
+				Package: "action",
+			},
+		},
+	},
+}
