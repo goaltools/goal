@@ -59,6 +59,19 @@ func TestRegister(t *testing.T) {
 	}
 }
 
+func TestDefault(t *testing.T) {
+	d := Data{
+		"key1": "value1",
+	}
+	if d.Default("key1", "smth") != "value1" {
+		t.Errorf("Default is expected to return value if it exists.")
+	}
+
+	if d.Default("key2", "smth") != "smth" {
+		t.Errorf("Default is expected to return default value if key is not found.")
+	}
+}
+
 // expectPanic is used to make sure there was a panic in program.
 // If there wasn't, this function panics with the input message.
 // Use it as follows:
