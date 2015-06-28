@@ -6,7 +6,7 @@ import (
 
 // App is a sample controller.
 type App struct {
-	Controller
+	*Controller
 }
 
 // HelloWorld is a sample action.

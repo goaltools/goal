@@ -2,11 +2,13 @@ package controllers
 
 import (
 	a "github.com/anonx/sunplate/action"
+	"github.com/anonx/sunplate/generation/handlers/testdata/controllers/subpackage"
 )
 
 // Controller is a struct that should be embedded into every controller
 // of your app to make methods provided by middleware controllers available.
 type Controller struct {
+	subpackage.Controller
 }
 
 // Before is a magic method that is executed before every request.

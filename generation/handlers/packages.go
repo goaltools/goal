@@ -29,19 +29,21 @@ type parent struct {
 // controller is a type that represents application controller,
 // a structure that has actions.
 type controller struct {
-	Actions reflect.Funcs  // Actions are methods that implement action.Result interface.
-	After   reflect.Funcs  // Magic methods that are executed after actions if they return nil.
-	Before  reflect.Funcs  // Magic methods that are executed before every action.
-	Finally reflect.Funcs  // Finally is executed at the end of every request no matter what.
-	Parents []parent       // A list of embedded structs that should be parsed.
-	Struct  reflect.Struct // Structure of the controller (its name, fields, etc).
+	Actions reflect.Funcs // Actions are methods that implement action.Result interface.
+	After   *reflect.Func // Magic method that is executed after actions if they return nil.
+	Before  *reflect.Func // Magic method that is executed before every action.
+	Finally *reflect.Func // Finally is executed at the end of every request no matter what.
+
+	Comments reflect.Comments // A group of comments right above the controller declaration.
+	File     string           // Name of the file where this controller is located.
+	Parents  []parent         // A list of embedded structs that should be parsed.
 }
 
 // processPackage gets an import path of a package, processes it, and
 // extracts controllers + actions. Absolute import path is expected,
 // i.e. "github.com/anonx/sunplate/controllers" rather than "./controllers".
 func (ps packages) processPackage(importPath string) {
-	p := reflect.ParseDir(filepath.Join(build.Default.GOPATH, importPath))
+	p := reflect.ParseDir(filepath.Join(build.Default.GOPATH, "src", importPath))
 	ps[importPath] = ps.extractControllers(p)
 }
 
@@ -67,8 +69,8 @@ func (ps packages) scanAnonEmbStructs(pkg *reflect.Package, i int) (prs []parent
 		})
 
 		// Check whether this import has already been processed.
-		// If not do it now.
-		if _, ok := ps[imp]; !ok {
+		// If not, do it now.
+		if _, ok := ps[imp]; imp != "" && !ok {
 			ps.processPackage(imp)
 		}
 	}
@@ -77,12 +79,13 @@ func (ps packages) scanAnonEmbStructs(pkg *reflect.Package, i int) (prs []parent
 
 // extractControllers gets a reflect.Package type and returns
 // a slice of controllers that are found there.
-func (ps packages) extractControllers(pkg *reflect.Package) (cs controllers) {
+func (ps packages) extractControllers(pkg *reflect.Package) controllers {
 	// Initialize a function that will be used for detection of actions.
 	action := actionFunc(pkg)
 
 	// Iterating through all available structures and checking
 	// whether those structures are controllers (i.e. whether they have actions).
+	cs := controllers{}
 	for i := 0; i < len(pkg.Structs); i++ {
 		// Make sure the structure has methods.
 		ms, ok := pkg.Methods[pkg.Structs[i].Name]
@@ -100,12 +103,23 @@ func (ps packages) extractControllers(pkg *reflect.Package) (cs controllers) {
 		// Add a new controller to the list of results.
 		cs[pkg.Structs[i].Name] = controller{
 			Actions: as[0],
-			After:   as[1],
-			Before:  as[2],
-			Finally: as[3],
-			Parents: ps.scanAnonEmbStructs(pkg, i),
-			Struct:  pkg.Structs[i],
+			After:   firstFunc(as[1]),
+			Before:  firstFunc(as[2]),
+			Finally: firstFunc(as[3]),
+
+			Comments: pkg.Structs[i].Comments,
+			File:     pkg.Structs[i].File,
+			Parents:  ps.scanAnonEmbStructs(pkg, i),
 		}
 	}
-	return
+	return cs
+}
+
+// firstFunc gets a list of functions and returns the first element of it.
+// If the list is empty, nil is returned.
+func firstFunc(fs reflect.Funcs) *reflect.Func {
+	if len(fs) == 0 {
+		return nil
+	}
+	return &fs[0]
 }
