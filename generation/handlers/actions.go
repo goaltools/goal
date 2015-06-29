@@ -15,17 +15,17 @@ const (
 	// by types that are returned from actions.
 	actionInterfaceName = "Result"
 
-	// magicMethodBefore is a name of the magic method that will be executed
+	// magicActionBefore is a name of the magic method that will be executed
 	// before every action.
-	magicMethodBefore = "Before"
+	magicActionBefore = "Before"
 
-	// magicMethodAfter is a name of the magic method that will be executed
+	// magicActionAfter is a name of the magic method that will be executed
 	// after every action.
-	magicMethodAfter = "After"
+	magicActionAfter = "After"
 
-	// magicMethodFinally is a name of the magic method that will be executed
+	// magicActionFinally is a name of the magic method that will be executed
 	// after every action no matter what.
-	magicMethodFinally = "Finally"
+	magicActionFinally = "Finally"
 )
 
 // actionFunc returns a function that may be used to check whether
@@ -91,32 +91,32 @@ func actionFunc(pkg *reflect.Package) func(f *reflect.Func) bool {
 	}
 }
 
-// before gets a Func and checks whether it is a Before magic method.
+// before gets a Func and checks whether it is a Before magic action.
 func before(f *reflect.Func) bool {
-	if f.Name == magicMethodBefore {
+	if f.Name == magicActionBefore {
 		return true
 	}
 	return false
 }
 
-// after gets a Func and checks whether it is an After magic method.
+// after gets a Func and checks whether it is an After magic action.
 func after(f *reflect.Func) bool {
-	if f.Name == magicMethodAfter {
+	if f.Name == magicActionAfter {
 		return true
 	}
 	return false
 }
 
-// finally gets a Func and checks whether it is a Finally magic method.
+// finally gets a Func and checks whether it is a Finally magic action.
 func finally(f *reflect.Func) bool {
-	if f.Name == magicMethodFinally {
+	if f.Name == magicActionFinally {
 		return true
 	}
 	return false
 }
 
-// notMagicMethod gets a Func and makes sure it is not a magic method but a usual action.
-func notMagicMethod(f *reflect.Func) bool {
+// notMagicAction gets a Func and makes sure it is not a magic method but a usual action.
+func notMagicAction(f *reflect.Func) bool {
 	if before(f) || after(f) || finally(f) {
 		return false
 	}
