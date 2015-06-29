@@ -29,6 +29,9 @@ type Type struct {
 	//	filepath.Join(Path, Package+Extension)
 	Extension string
 
+	// Name of the template that is used by this Type.
+	TemplateName string
+
 	// Template is a skeleton of file that has to be generated.
 	Template *template.Template
 
@@ -40,13 +43,16 @@ type Type struct {
 // with initialized Template field.
 // << and >> are used as delimiters.
 func NewType(pkg, templatePath string) Type {
-	t, err := template.ParseFiles(templatePath) // Use << and >> as delimiters.
+	n := filepath.Base(templatePath)
+	t, err := template.New(n).Delims("<@", ">"). // Use <@ and > as delimiters.
+							Funcs(funcs).ParseFiles(templatePath)
 	if err != nil {
 		log.Error.Panicf("Didn't manage to open template '%s', error: '%s'.", templatePath, err)
 	}
 	return Type{
-		Package:  pkg,
-		Template: t,
+		Package:      pkg,
+		TemplateName: n,
+		Template:     t,
 	}
 }
 
@@ -75,7 +81,7 @@ func (t *Type) CreateDir(path string) {
 func (t *Type) Generate() {
 	// Generate a template file.
 	var buffer bytes.Buffer
-	err := t.Template.Execute(&buffer, map[string]interface{}{
+	err := t.Template.ExecuteTemplate(&buffer, t.TemplateName, map[string]interface{}{
 		"context":   t.Context,
 		"extension": t.Extension,
 		"package":   t.Package,
