@@ -77,16 +77,16 @@ func TestFinally(t *testing.T) {
 	}
 }
 
-func TestNotMagicMethod(t *testing.T) {
+func TestNotMagicAction(t *testing.T) {
 	f := actionFn
 	f.Name = "Before"
-	res := notMagicMethod(f)
+	res := notMagicAction(f)
 	if res {
 		t.Errorf("Incorrect result: action is a magic method.")
 	}
 
 	f.Name = "Index"
-	res = notMagicMethod(f)
+	res = notMagicAction(f)
 	if !res {
 		t.Errorf("Incorrect result: action is not a magic method.")
 	}
