@@ -239,9 +239,8 @@ var ps = packages{
 			File: "app.go",
 			Parents: []parent{
 				{
-					Import:  "github.com/anonx/sunplate/generation/handlers/testdata/controllers",
-					Name:    "Controller",
-					Pointer: true,
+					Import: "github.com/anonx/sunplate/generation/handlers/testdata/controllers",
+					Name:   "Controller",
 				},
 			},
 		},

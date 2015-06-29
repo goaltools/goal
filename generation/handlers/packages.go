@@ -21,9 +21,8 @@ type controllers map[string]controller
 // parent represents embedded struct that should be scanned for
 // actions and magic methods.
 type parent struct {
-	Import  string // Import path of the structure, e.g. "github.com/anonx/sunplate/template" or "".
-	Name    string // Name of the structure, e.g. "Template".
-	Pointer bool   // Is this type embedded as a pointer or not, i.e. "*Template" or "Template".
+	Import string // Import path of the structure, e.g. "github.com/anonx/sunplate/template" or "".
+	Name   string // Name of the structure, e.g. "Template".
 }
 
 // controller is a type that represents application controller,
@@ -60,12 +59,16 @@ func (ps packages) scanAnonEmbStructs(pkg *reflect.Package, i int) (prs []parent
 			continue
 		}
 
+		// Ensure the struct is embedded as a pointer.
+		if pkg.Structs[i].Fields[j].Type.Star {
+			continue
+		}
+
 		// Add the field to the list of results.
 		imp, _ := pkg.Imports.Value(pkg.Structs[i].File, pkg.Structs[i].Fields[j].Type.Package)
 		prs = append(prs, parent{
-			Import:  imp,
-			Name:    pkg.Structs[i].Fields[j].Type.Name,
-			Pointer: pkg.Structs[i].Fields[j].Type.Star,
+			Import: imp,
+			Name:   pkg.Structs[i].Fields[j].Type.Name,
 		})
 
 		// Check whether this import has already been processed.
@@ -95,7 +98,7 @@ func (ps packages) extractControllers(pkg *reflect.Package) controllers {
 
 		// Check whether there are actions among those methods.
 		// If there are no any, this is not a controller; ignore it.
-		as, count := ms.FilterGroups(action, notMagicMethod, after, before, finally)
+		as, count := ms.FilterGroups(action, notMagicAction, after, before, finally)
 		if count == 0 {
 			continue
 		}
