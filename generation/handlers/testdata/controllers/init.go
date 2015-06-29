@@ -3,12 +3,16 @@ package controllers
 import (
 	a "github.com/anonx/sunplate/action"
 	"github.com/anonx/sunplate/generation/handlers/testdata/controllers/subpackage"
+
+	"github.com/revel/revel/testing"
 )
 
 // Controller is a struct that should be embedded into every controller
 // of your app to make methods provided by middleware controllers available.
 type Controller struct {
-	subpackage.Controller
+	*subpackage.Controller
+
+	testing.TestSuite
 }
 
 // Before is a magic method that is executed before every request.
