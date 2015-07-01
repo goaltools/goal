@@ -37,6 +37,13 @@ func (c *context) Write(p []byte) (n int, err error) {
 	return c.w.Write(p)
 }
 
+// AssertNil makes sure an error is nil. If not, it panics writing message to Trace.
+func AssertNil(err error) {
+	if err != nil {
+		Trace.Panic(err)
+	}
+}
+
 func init() {
 	// Initialize default loggers.
 	Error = log.New(
