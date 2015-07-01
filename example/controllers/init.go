@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/anonx/sunplate/action"
 	"github.com/anonx/sunplate/example/assets/views"
 	"github.com/anonx/sunplate/middleware/template"
 
@@ -10,13 +11,18 @@ import (
 // Controller is a struct that should be embedded into every controller
 // of your app to make methods provided by middlewares available.
 type Controller struct {
-	template.Middleware
+	*template.Middleware
 
 	*t.TestSuite
 
 	HeyWorld   TestType `tag:"smth_cool=xxx"`
 	Bullshit   *string
 	GPA, Grade float64
+}
+
+// Before ...
+func (c *Controller) Before() action.Result {
+	return nil
 }
 
 // TestType ...
