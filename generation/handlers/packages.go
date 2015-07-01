@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"fmt"
 	"go/build"
 	"path/filepath"
 
+	"github.com/anonx/sunplate/path"
 	"github.com/anonx/sunplate/reflect"
 )
 
@@ -18,9 +20,13 @@ type packages map[string]controllers
 //		- Controller representation itself
 type controllers map[string]controller
 
+// parents represents a set of parent controllers.
+type parents []parent
+
 // parent represents embedded struct that should be scanned for
 // actions and magic methods.
 type parent struct {
+	ID     int    // Unique number that is used for generation of import names.
 	Import string // Import path of the structure, e.g. "github.com/anonx/sunplate/template" or "".
 	Name   string // Name of the structure, e.g. "Template".
 }
@@ -35,15 +41,27 @@ type controller struct {
 
 	Comments reflect.Comments // A group of comments right above the controller declaration.
 	File     string           // Name of the file where this controller is located.
-	Parents  []parent         // A list of embedded structs that should be parsed.
+	Parents  parents          // A list of embedded structs that should be parsed.
+}
+
+// Package returns a unique package name that may be used in templates
+// concatenated with some arbitarry suffix strings.
+func (p parent) Package(suffices ...string) string {
+	s := fmt.Sprintf("c%d", p.ID)
+	for i := range suffices {
+		s += suffices[i]
+	}
+	return s
 }
 
 // processPackage gets an import path of a package, processes it, and
-// extracts controllers + actions. Absolute import path is expected,
-// i.e. "github.com/anonx/sunplate/controllers" rather than "./controllers".
+// extracts controllers + actions.
 func (ps packages) processPackage(importPath string) {
 	p := reflect.ParseDir(filepath.Join(build.Default.GOPATH, "src", importPath))
-	ps[importPath] = ps.extractControllers(p)
+	cs := ps.extractControllers(p)
+	if len(cs) > 0 {
+		ps[importPath] = cs
+	}
 }
 
 // scanAnonEmbStructs expects a package and an index of structure in that package.
@@ -60,21 +78,21 @@ func (ps packages) scanAnonEmbStructs(pkg *reflect.Package, i int) (prs []parent
 		}
 
 		// Ensure the struct is embedded as a pointer.
-		if pkg.Structs[i].Fields[j].Type.Star {
+		if !pkg.Structs[i].Fields[j].Type.Star {
 			continue
 		}
 
 		// Add the field to the list of results.
 		imp, _ := pkg.Imports.Value(pkg.Structs[i].File, pkg.Structs[i].Fields[j].Type.Package)
 		prs = append(prs, parent{
-			Import: imp,
+			Import: path.AbsoluteImport(imp),
 			Name:   pkg.Structs[i].Fields[j].Type.Name,
 		})
 
 		// Check whether this import has already been processed.
 		// If not, do it now.
 		if _, ok := ps[imp]; imp != "" && !ok {
-			ps.processPackage(imp)
+			ps.processPackage(path.AbsoluteImport(imp))
 		}
 	}
 	return

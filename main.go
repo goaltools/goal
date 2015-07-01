@@ -4,9 +4,7 @@
 package main
 
 import (
-	"go/build"
 	"os"
-	"path/filepath"
 
 	"github.com/anonx/sunplate/command"
 	"github.com/anonx/sunplate/generation"
@@ -46,13 +44,6 @@ func catchPanic() {
 	if err := recover(); err != nil {
 		log.Error.Fatal(err)
 	}
-}
-
-func init() {
-	// Set a base path of 'generation' package's files.
-	generation.BasePath = filepath.Join(
-		build.Default.GOPATH, "src/github.com/anonx/sunplate/generation",
-	)
 }
 
 var header = `~

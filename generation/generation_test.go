@@ -29,7 +29,7 @@ func TestStart_Handlers(t *testing.T) {
 func TestStart_Listing(t *testing.T) {
 	Start("generate", map[string]string{
 		"generate":  "listing",
-		"--path":    "./testdata/views",
+		"--input":   "./testdata/views",
 		"--output":  "./testdata/assets/views",
 		"--package": "views",
 	})
