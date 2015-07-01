@@ -9,29 +9,30 @@ import (
 )
 
 func TestStart(t *testing.T) {
-	Start("./", map[string]string{})
+	Start(map[string]string{})
 
 	// Remove the directory we have created.
 	os.RemoveAll(filepath.Join(expectedParams["--output"], "../"))
 }
 
 func TestWalkFunc(t *testing.T) {
+	files, fn := walkFunc("")
 	TestError := errors.New("this is a test error")
-	if err := walkFunc("", nil, TestError); err != TestError {
-		t.Errorf("walkFunc expected to return TestError, returned '%s'.", err)
+	if err := fn("", nil, TestError); err != TestError {
+		t.Errorf(`walkFunc expected to return TestError, returned "%s".`, err)
 	}
-	walkFunc("/myfile", testFile{}, nil)
+	fn("/myfile", testFile{}, nil)
 	if len(files) == 0 || files["/myfile"] != "/myfile" {
 		t.Error("Failed to add path to files list.")
 	}
-	err := walkFunc("", testFile{dir: true}, nil)
+	err := fn("", testFile{dir: true}, nil)
 	if err != nil {
-		t.Errorf("Error expected to be nil, '%s' received instead.", err)
+		t.Errorf(`Error expected to be nil, "%s" received instead.`, err)
 	}
 }
 
 var expectedParams = map[string]string{
-	"--path":    "./views",
+	"--input":   "./views",
 	"--output":  "./assets/views/",
 	"--package": "views",
 }

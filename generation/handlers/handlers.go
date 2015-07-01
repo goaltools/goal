@@ -4,21 +4,79 @@ package handlers
 
 import (
 	"path/filepath"
+	"strings"
 
 	"github.com/anonx/sunplate/command"
 	"github.com/anonx/sunplate/generation/output"
+	"github.com/anonx/sunplate/path"
 )
 
 // Start is an entry point of the generate handlers command.
-func Start(basePath string, params command.Data) {
-	// Generate and save a new package.
+func Start(params command.Data) {
+	inputDir := params.Default("--input", "./controllers")
+	outputDir := params.Default("--output", "./assets/handlers")
+	outPkg := params.Default("--package", "handlers")
+
+	// Start processing of controllers.
+	ps := packages{}
+	absImport := path.AbsoluteImport(inputDir)
+	absImportOut := path.AbsoluteImport(outputDir)
+	ps.processPackage(absImport)
+
+	// Start generation of handler packages.
 	t := output.NewType(
-		params.Default("--package", "handlers"), filepath.Join(basePath, "./handlers.go.template"),
+		"", filepath.Join(path.SunplateDir("generation", "handlers"), "./handlers.go.template"),
 	)
-	t.CreateDir(params.Default("--output", "./assets/handlers/"))
-	t.Extension = ".go" // Save generated file as a .go source.
-	t.Context = map[string]interface{}{
-		"rootPath": params.Default("--path", "./controllers/"),
+	t.Extension = ".go" // Save generated files as a .go source.
+
+	// Iterate through all available packages and generate handlers for them.
+	for imp := range ps {
+		// Check whether current package is the main one
+		// and should be stored at the root directory or it is a subpackage.
+		//
+		// I.e. if --input is "./controllers" and --output is "./assets/handlers",
+		// we are saving processed "./controllers" package to "./assets/handlers"
+		// and some "github.com/anonx/smth" to "./assets/handlers/github.com/anonx/smth".
+		out := outputDir
+		if imp != absImport {
+			out = filepath.Join(out, imp)
+		}
+		t.CreateDir(out)
+
+		// Iterate over all available controllers, generate handlers package on
+		// every of them.
+		for name := range ps[imp] {
+			// Find parent controllers of this controller.
+			cs := []parent{}
+			for i, p := range ps[imp][name].Parents {
+				// Make sure it is a controller rather than just some embedded struct.
+				if _, ok := ps[p.Import]; ok {
+					cs = append(cs, parent{
+						ID:     i,
+						Import: p.Import,
+						Name:   p.Name,
+					})
+				}
+			}
+
+			// Initialize parameters and generate a package.
+			t.Package = strings.ToLower(name)
+			t.Context = map[string]interface{}{
+				"after":   magicActionAfter,
+				"before":  magicActionBefore,
+				"finally": magicActionFinally,
+
+				"controller":   ps[imp][name],
+				"file":         filepath.Base(ps[imp][name].File),
+				"import":       imp,
+				"input":        inputDir,
+				"name":         name,
+				"outputImport": absImportOut,
+				"output":       outputDir,
+				"package":      outPkg,
+				"parents":      cs,
+			}
+			t.Generate()
+		}
 	}
-	t.Generate()
 }
