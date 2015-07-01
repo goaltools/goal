@@ -52,7 +52,13 @@ func AbsoluteImport(path string) string {
 	}
 
 	// Otherwise, try to convert the path to absolute.
-	// Get rid of "$GOPATH/src" and "/" (that +1) part at the beginning.
+	// Get rid of "$GOPATH/src/" part at the beginning.
 	p := filepath.Join(WorkingDir(), path)
-	return p[len(filepath.Join(build.Default.GOPATH, "src"))+1:]
+	return strings.TrimPrefix(p, filepath.Join(build.Default.GOPATH, "src")+"/")
+}
+
+// Prefixless cuts a prefix of a path and returns the result
+// that is cleaned.
+func Prefixless(path, prefix string) string {
+	return filepath.Clean(strings.TrimPrefix(path, prefix))
 }
