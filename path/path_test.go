@@ -45,4 +45,11 @@ func TestAbsoluteImport(t *testing.T) {
 	}
 }
 
+func TestPrefixless(t *testing.T) {
+	p := "/anonx/sunplate"
+	if v := Prefixless(filepath.Join("github.com", p), "github.com"); v != p {
+		t.Errorf(`Inncorrect result. Expected "%s", got %s.`, p, v)
+	}
+}
+
 var spImp = "github.com/anonx/sunplate"
