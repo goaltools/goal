@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/naoina/denco"
 	"github.com/anonx/sunplate/log"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/naoina/denco"
 )
 
 var (
