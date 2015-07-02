@@ -33,7 +33,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/anonx/sunplate/internal/github.com/naoina/denco"
+	"github.com/naoina/denco"
 )
 
 // Router represents a multiplexer for HTTP requests.
