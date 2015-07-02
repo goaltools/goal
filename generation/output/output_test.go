@@ -65,7 +65,7 @@ func TestGenerate_NoWritePrivileges(t *testing.T) {
 	// Prepare a readonly directory.
 	os.Chmod("./testdata/readonly", 0544)
 
-	typ := NewType("test", "./output.go")
+	typ := NewType("test", "./testdata/test.template")
 	typ.Path = "./testdata/readonly"
 	defer expectPanic("We do not have write access to the directory, thus panic expected.")
 	typ.Generate()
