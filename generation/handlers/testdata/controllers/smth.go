@@ -9,5 +9,9 @@ func (c *Controller) Smth() bool {
 func (c App) SmthElse() {
 }
 
+// SmthElse1 is not an action as it doesn't return action.Result.
+func (c *App) SmthElse1() {
+}
+
 func init() {
 }

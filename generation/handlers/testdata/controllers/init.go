@@ -13,6 +13,7 @@ type Controller struct {
 	*subpackage.Controller
 
 	testing.TestSuite
+	Test testing.TestSuite
 }
 
 // Before is a magic method that is executed before every request.
@@ -28,6 +29,12 @@ func (c Controller) index(page int) a.Result {
 // Index is a sample action.
 func (c *App) Index(page int) a.Result {
 	return nil
+}
+
+// NotAction is not an action as this method doesn't return
+// action.Result as its first argument.
+func (c Controller) NotAction(page int) (bool, a.Result) {
+	return false, nil
 }
 
 // After is a magic method that is executed after every request.
