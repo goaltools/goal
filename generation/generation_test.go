@@ -19,8 +19,13 @@ func TestStart_IncorrectSubcommand(t *testing.T) {
 
 func TestStart_Handlers(t *testing.T) {
 	Start("generate", map[string]string{
-		"generate": "handlers",
+		"generate":  "handlers",
+		"--input":   "./handlers/testdata/controllers",
+		"--output":  "./handlers/testdata/assets/handlers",
+		"--package": "handlers",
 	})
+
+	// TODO: check correctness of generated package.
 
 	// Remove the directory we have created.
 	os.RemoveAll("./assets")
