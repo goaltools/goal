@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/anonx/sunplate/internal/github.com/naoina/denco"
+	"github.com/naoina/denco"
 	"github.com/anonx/sunplate/log"
 
 	"github.com/julienschmidt/httprouter"
