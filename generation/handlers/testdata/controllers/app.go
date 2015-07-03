@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"github.com/anonx/sunplate/action"
+
+	"github.com/revel/revel/testing"
 )
 
 // App is a sample controller.
@@ -30,6 +32,12 @@ func (c App) HelloWorld(page int) action.Result {
 
 // Finally is a magic method that is executed after every request.
 func (c *Controller) Finally(name string) action.Result {
+	return nil
+}
+
+// UnsupportedAction is not an action as it requires argument that is not
+// of builtin type.
+func (c Controller) UnsupportedAction(t testing.TestSuite) action.Result {
 	return nil
 }
 
