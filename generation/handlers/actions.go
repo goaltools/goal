@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"go/ast"
+	"strings"
 
+	"github.com/anonx/sunplate/log"
 	"github.com/anonx/sunplate/reflect"
 )
 
@@ -27,6 +29,36 @@ const (
 	// after every action no matter what.
 	magicActionFinally = "Finally"
 )
+
+// supportedTypes are the types that can be used for arguments of actions.
+// Key of the map concatenated with one of the values is a type name.
+var supportedTypes = map[string][]string{
+	"bool":   {""},
+	"float":  {"32", "64"},
+	"int":    {"", "8", "16", "32", "64"},
+	"string": {""},
+	"uint":   {"", "8", "16", "32", "64"},
+}
+
+// validArgument gets an argument and checks whether its type is supported.
+func validArgument(a *reflect.Arg) bool {
+	// Remove "[]" part of the type at the beginning.
+	typ := a.Type.String()
+	if strings.HasPrefix(typ, "[]") {
+		typ = typ[2:]
+	}
+
+	// Check whether the type is supported.
+	for k := range supportedTypes {
+		for i := 0; i < len(supportedTypes[k]); i++ {
+			// Make sure we have found the type in the list of supported ones.
+			if k+supportedTypes[k][i] == typ {
+				return true
+			}
+		}
+	}
+	return false
+}
 
 // actionFunc returns a function that may be used to check whether
 // specific Func represents an action (or one of magic method) or not.
@@ -87,8 +119,26 @@ func actionFunc(pkg *reflect.Package) func(f *reflect.Func) bool {
 		if !correctPackage || !correctName {
 			return false
 		}
+
+		// Check whether only builtin types are among input parameters.
+		return builtin(f)
+	}
+}
+
+// builtin gets a function and makes sure its arguments are of builtin type.
+// If not, it prints a warning message and returns false.
+func builtin(f *reflect.Func) bool {
+	fn := func(a *reflect.Arg) bool {
+		if ok := validArgument(a); !ok {
+			log.Warn.Printf(
+				`Method "%s.%s" in file "%s" cannot be treated as action because argument "%s" is of unsupported type "%s".`,
+				f.Recv.Type.Name, f.Name, f.File, a.Name, a.Type,
+			)
+			return false
+		}
 		return true
 	}
+	return len(f.Params.Filter(fn)) == len(f.Params)
 }
 
 // before gets a Func and checks whether it is a Before magic action.
