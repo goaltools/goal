@@ -64,15 +64,15 @@ func TestProcessFuncDecl(t *testing.T) {
 
 			// About is used for...
 			// Try it.
-			func (c App) About(page int) (res *action.Result) {
+			func (c App) About(pages ...int) (res *action.Result) {
 				return c.RenderTemplate("about.html")
 			}
 
 			// HelloWorld is a demo function.
 			// It expects a greeting message, name, and your age.
-			func HelloWorld(greeting, name string, age int) (string, bool) {
+			func HelloWorld(greeting, name string, ages []int) (string, bool) {
 				return fmt.Sprintf(
-					"%s, %s. You're %d y.o.", greeting, name, age,
+					"%s, %s. You're %d y.o.", greeting, name, age[0],
 				), true
 			}
 
@@ -106,9 +106,9 @@ func TestProcessFuncDecl(t *testing.T) {
 			Name:     "About",
 			Params: Args{
 				{
-					Name: "page",
+					Name: "pages",
 					Type: &Type{
-						Name: "int",
+						Name: "...int",
 					},
 				},
 			},
@@ -146,9 +146,9 @@ func TestProcessFuncDecl(t *testing.T) {
 					},
 				},
 				{
-					Name: "age",
+					Name: "ages",
 					Type: &Type{
-						Name: "int",
+						Name: "[]int",
 					},
 				},
 			},

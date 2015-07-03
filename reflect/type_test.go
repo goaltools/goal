@@ -46,6 +46,8 @@ func TestProcessType(t *testing.T) {
 			Fullname  *Name
 			GPA float64
 			Grade grade.Type
+			Numbers []int
+			IDs []info.ID
 			Contact struct {
 				Email string "email"
 				Phone int64
@@ -69,10 +71,18 @@ func TestProcessType(t *testing.T) {
 			Name:    "Type",
 			Package: "grade",
 		},
+		{
+			Name: "[]int",
+		},
+		{
+			Name:    "[]ID",
+			Package: "info",
+		},
 	}
 
 	for i, v := range getFields(t, pkg).List {
-		if len(expRes) > i { // Anonymous struct should be skipped.
+		if i >= len(expRes) { // Anonymous struct should be skipped as it isn't supported.
+			processType(v.Type)
 			break
 		}
 		typ := processType(v.Type)
