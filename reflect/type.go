@@ -2,6 +2,7 @@ package reflect
 
 import (
 	"go/ast"
+	"go/token"
 )
 
 // Type represents a type of argument.
@@ -27,6 +28,8 @@ func (t *Type) String() (name string) {
 // processType parses go ast tree related to types into
 // Type, a format that is used by this reflect package.
 func processType(typ interface{}) *Type {
+	fset := token.NewFileSet()
+	ast.Print(fset, typ)
 	switch v := typ.(type) {
 	case *ast.StarExpr:
 		// X field contains info about an actual type.
@@ -47,6 +50,16 @@ func processType(typ interface{}) *Type {
 			Name:    v.Sel.Name,
 			Package: t.Name,
 		}
+	case *ast.ArrayType:
+		// Elt contains info about an actual type, get it.
+		t := processType(v.Elt)
+		t.Name = "[]" + t.Name // Add "[]" to the type name.
+		return t
+	case *ast.Ellipsis:
+		// Elt contains info about an actual type, extract it.
+		t := processType(v.Elt)
+		t.Name = "..." + t.Name // Add "..." to the type name.
+		return t
 	}
 	return nil
 }
