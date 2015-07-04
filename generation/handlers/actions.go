@@ -56,17 +56,6 @@ func actionFunc(pkg *reflect.Package) func(f *reflect.Func) bool {
 			return false
 		}
 
-		// Check whether the method returns at least one parameter.
-		if len(f.Results) == 0 {
-			return false
-		}
-
-		// Make sure the method we are checking is Exported.
-		// Private ones are ignored.
-		if !ast.IsExported(f.Name) {
-			return false
-		}
-
 		// Check whether we already know from previous iterations
 		// how action subpackage is imported (its name).
 		if _, ok := actionImportName[f.File]; !ok {
@@ -80,6 +69,17 @@ func actionFunc(pkg *reflect.Package) func(f *reflect.Func) bool {
 				return false
 			}
 			actionImportName[f.File] = n // Save the import name to use in future iterations.
+		}
+
+		// Check whether the method returns at least one parameter.
+		if len(f.Results) == 0 {
+			return false
+		}
+
+		// Make sure the method we are checking is Exported.
+		// Private ones are ignored.
+		if !ast.IsExported(f.Name) {
+			return false
 		}
 
 		// Make sure the first result is of type action.Result.
