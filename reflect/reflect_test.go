@@ -88,6 +88,20 @@ func TestParseDir(t *testing.T) {
 							Name: "Test",
 						},
 					},
+					Params: Args{
+						{
+							Name: "names",
+							Type: &Type{
+								Name: "[]string",
+							},
+						},
+						{
+							Name: "args",
+							Type: &Type{
+								Name: "...int",
+							},
+						},
+					},
 					Results: Args{
 						{
 							Type: &Type{
@@ -118,8 +132,9 @@ func TestParseDir(t *testing.T) {
 
 		Imports: map[string]map[string]string{
 			"testdata/sample1.go": {
-				"fmt": "fmt",
-				"l":   "github.com/anonx/sunplate/log",
+				"fmt":     "fmt",
+				"l":       "github.com/anonx/sunplate/log",
+				"reflect": "github.com/anonx/sunplate/reflect",
 			},
 			"testdata/sample2.go": {
 				"log": "github.com/anonx/sunplate/log",

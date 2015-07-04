@@ -54,7 +54,7 @@ func TestProcessType(t *testing.T) {
 			}
 		}
 	`)
-	expRes := []Type{
+	expRes := []*Type{
 		{
 			Name:    "Cool",
 			Package: "something",
@@ -78,14 +78,14 @@ func TestProcessType(t *testing.T) {
 			Name:    "[]ID",
 			Package: "info",
 		},
+		nil,
 	}
 
 	for i, v := range getFields(t, pkg).List {
-		if i >= len(expRes) { // Anonymous struct should be skipped as it isn't supported.
-			processType(v.Type)
-			break
-		}
 		typ := processType(v.Type)
+		if typ == nil && expRes[i] == nil {
+			continue
+		}
 		if typ == nil || typ.Name != expRes[i].Name ||
 			typ.Package != expRes[i].Package || typ.Star != expRes[i].Star {
 
