@@ -9,7 +9,11 @@ import (
 	"github.com/anonx/sunplate/command"
 	"github.com/anonx/sunplate/generation/output"
 	"github.com/anonx/sunplate/path"
+	"github.com/anonx/sunplate/strconv"
 )
+
+// Mappings of supported types and reflect functions.
+var strconvContext = strconv.Context()
 
 // Start is an entry point of the generate handlers command.
 func Start(params command.Data) {
@@ -75,6 +79,8 @@ func Start(params command.Data) {
 				"output":       outputDir,
 				"package":      outPkg,
 				"parents":      cs,
+
+				"strconv": strconvContext,
 			}
 			t.Generate()
 		}

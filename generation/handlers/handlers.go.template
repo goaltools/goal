@@ -4,10 +4,11 @@ package <@.context.package>
 
 import (
 	"net/http"
-	"strconv"
 	<@range $i, $v := .context.parents><@if $v.Import>
 	<@$v.Package> "<@join $.context.outputImport $v.Import>"<@end><@end>
 	contr "<@.context.import>"
+
+	"github.com/anonx/sunplate/strconv"
 )
 
 // <@.context.name> is automatically generated from a controller
@@ -33,11 +34,11 @@ func (t <@.context.name>) <@.context.before>(c *contr.<@.context.name>, w http.R
 	<@range $i, $v := .context.parents><@$v.Package "."><@$v.Name>{}.Before(c.<@$v.Name>, w, r)
 	<@end>
 	<@if .context.controller.Before>// Call magic <@.context.before> action of (<@.context.import>).<@.context.name>.
-	c.<@.context.controller.Before.Name>(<@range $i := .context.controller.Before.Params>
-		a<@$i>,<@end>
+	c.<@.context.controller.Before.Name>(<@range $i, $v := .context.controller.Before.Params>
+		<@$.context.strconv.Render "strconv" "r.Form" $v>,<@end>
 	)<@end>
 }
 
 func init() {
-	_ = strconv.IntSize
+	_ = strconv.MeaningOfLife
 }
