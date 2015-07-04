@@ -272,8 +272,49 @@ func TestFloat64s(t *testing.T) {
 }
 
 /*
-	Below are additional helper functions.
+	Below are tests for additional helper functions.
 */
+
+func TestGet(t *testing.T) {
+	k := "s"
+	is := []int{2, -1, 10}
+
+	exp := "z"
+	if r := get(vs, k, is); r != exp {
+		t.Errorf(errMsg, exp, r)
+	}
+
+	exp = ""
+	if r := get(vs, "", is); r != exp {
+		t.Errorf(errMsg, exp, r)
+	}
+
+	exp = ""
+	if r := get(vs, k, []int{10}); r != exp {
+		t.Errorf(errMsg, exp, r)
+	}
+}
+
+/*
+	Below are tests for code generation related functions and methods.
+*/
+
+func TestRender(t *testing.T) {
+	c := Context()
+	a := r.Arg{Name: "names", Type: &r.Type{Name: "[]string"}}
+	exp := `strconv.Strings(r.Form, "names")`
+	var expErr error
+	if r, err := c.Render("strconv", "r.Form", a); err != expErr || r != exp {
+		t.Errorf("Incorrect result of Render. Expected `%v`, `%v`;\ngot `%v`, `%v`.", exp, expErr, r, err)
+	}
+
+	a = r.Arg{Name: "names", Type: &r.Type{Name: "YoHoHo"}}
+	exp = ""
+	expErr = ErrUnsupportedType
+	if r, err := c.Render("strconv", "r.Form", a); err != expErr || r != exp {
+		t.Errorf("Incorrect result of Render. Expected `%v`, `%v`;\ngot `%v`, `%v`.", exp, expErr, r, err)
+	}
+}
 
 func TestContext(t *testing.T) {
 	c := Context()
@@ -331,26 +372,6 @@ func TestStrconvFunc(t *testing.T) {
 	}
 	if ok := !strconvFunc(r.Func{Name: "E", Params: ps}); !ok {
 		t.Errorf(errMsg, ok, !ok)
-	}
-}
-
-func TestGet(t *testing.T) {
-	k := "s"
-	is := []int{2, -1, 10}
-
-	exp := "z"
-	if r := get(vs, k, is); r != exp {
-		t.Errorf(errMsg, exp, r)
-	}
-
-	exp = ""
-	if r := get(vs, "", is); r != exp {
-		t.Errorf(errMsg, exp, r)
-	}
-
-	exp = ""
-	if r := get(vs, k, []int{10}); r != exp {
-		t.Errorf(errMsg, exp, r)
 	}
 }
 
