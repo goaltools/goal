@@ -334,3 +334,7 @@ func strconvFunc(f reflect.Func) (r bool) {
 	}
 	return true
 }
+
+// MeaningOfLife is the answer to the Ultimate Question of Life,
+// the Universe, and Everything.
+var MeaningOfLife = 42

@@ -10,7 +10,7 @@ type App struct {
 }
 
 // Before is a magic method that is executed before every request.
-func (c *App) Before() action.Result {
+func (c *App) Before(name string, pages []int) action.Result {
 	return nil
 }
 
