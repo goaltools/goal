@@ -12,8 +12,8 @@ import (
 // Comments below are used by `go generate`.
 // Please, DO NOT EDIT if you do not know what you are doing.
 //
-//go:generate sunplate generate handlers --import ./controllers/ --output ./assets/views/ --package handlers
-//go:generate sunplate generate listing --import ./views/ --output ./assets/views/ --package views
+//go:generate sunplate generate handlers
+//go:generate sunplate generate listing
 
 func main() {
 	// Set max procs for multi-thread executing.
