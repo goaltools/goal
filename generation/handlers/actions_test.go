@@ -6,21 +6,6 @@ import (
 	"github.com/anonx/sunplate/reflect"
 )
 
-func TestValidArgument(t *testing.T) {
-	if ok := !validArgument(&reflect.Arg{Type: &reflect.Type{Name: "App", Package: "xxx"}}); !ok {
-		t.Errorf("xxx.App is not a supported type: %v expected, got %v.", ok, !ok)
-	}
-	if ok := validArgument(&reflect.Arg{Type: &reflect.Type{Name: "int16"}}); !ok {
-		t.Errorf("int16 is a supported type: %v expected, got %v.", ok, !ok)
-	}
-	if ok := !validArgument(&reflect.Arg{Type: &reflect.Type{Name: "[][]int"}}); !ok {
-		t.Errorf("[][]int is not a supported type: %v expected, got %v.", ok, !ok)
-	}
-	if ok := validArgument(&reflect.Arg{Type: &reflect.Type{Name: "[]float64"}}); !ok {
-		t.Errorf("[]float64 is a supported type: %v expected, got %v.", ok, !ok)
-	}
-}
-
 func TestActionFunc(t *testing.T) {
 	f := actionFn
 	fn := actionFunc(&reflect.Package{
