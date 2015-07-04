@@ -1,44 +1,103 @@
-// Package <@.context.package> is generated automatically by Sunplate toolkit.
+// Package <@.ctx.package> is generated automatically by Sunplate toolkit.
 // Please, do not edit it manually.
-package <@.context.package>
+package <@.ctx.package>
 
 import (
 	"net/http"
-	<@range $i, $v := .context.parents><@if $v.Import>
-	<@$v.Package> "<@join $.context.outputImport $v.Import>"<@end><@end>
-	contr "<@.context.import>"
 
+:	<@range $i, $v := .ctx.parents>\
+:	:	<@if $v.Import>\
+:	:		<@$v.Package> "<@join $.ctx.outputImport $v.Import>"
+:	:	<@end>\
+:	<@end>\
+	contr "<@.ctx.import>"
+
+	a "<@.ctx.actionImport>"
 	"github.com/anonx/sunplate/strconv"
 )
 
-// <@.context.name> is automatically generated from a controller
-// that was found at "<@.context.import>/<@.context.file>".
-//<@range $i, $v := .context.controller.Comments>
-<@$v><@end>
-type <@.context.name> struct {
+// <@.ctx.name> is automatically generated from a controller
+// that was found at "<@.ctx.import>/<@.ctx.file>".
+<@template "printComments" dict (set "comments" .ctx.controller.Comments)>\
+type <@.ctx.name> struct {
 }
 
-// New allocates (<@.context.import>).<@.context.name> controller,
-// initializes its parents; then returns.
-func (t <@.context.name>) New() *contr.<@.context.name> {
-	c := &contr.<@.context.name>{}
-	<@range $i, $v := .context.parents >c.<@$v.Name> = <@$v.Package "."><@$v.Name>{}.New()
-	<@end>return c
+// New allocates (<@.ctx.import>).<@.ctx.name> controller,
+<@if .ctx.parents>\
+// initializes its parents; then returns the controller.
+<@else>\
+// then returns it.
+<@end>\
+func (t <@.ctx.name>) New() *contr.<@.ctx.name> {
+	c := &contr.<@.ctx.name>{}
+:	<@range $i, $v := .ctx.parents>\
+:		c.<@$v.Name> = <@$v.Package "."><@$v.Name>{}.New()
+:	<@end>\
+	return c
 }
 
-// <@.context.before> executes magic <@.context.before> actions of parent controllers<@if .context.controller.Before>
-// and calls <@.context.before> action of (<@.context.import>).<@.context.name> with arguments
-// that are extracted from r.Form and converted to appropriate type<@end>.
-func (t <@.context.name>) <@.context.before>(c *contr.<@.context.name>, w http.ResponseWriter, r *http.Request) {
-	// Execute magic <@.context.before> actions of parent controllers.
-	<@range $i, $v := .context.parents><@$v.Package "."><@$v.Name>{}.Before(c.<@$v.Name>, w, r)
-	<@end>
-	<@if .context.controller.Before>// Call magic <@.context.before> action of (<@.context.import>).<@.context.name>.
-	c.<@.context.controller.Before.Name>(<@range $i, $v := .context.controller.Before.Params>
-		<@$.context.strconv.Render "strconv" "r.Form" $v>,<@end>
-	)<@end>
-}
+<@template "magicActionComments" dict (set "name" .ctx.before) (set "import" .ctx.import) (set "type" .ctx.name) (set "parents" .ctx.parents) (set "self" .ctx.controller.Before)>\
+<@template "startMagicActionDecl" dict (set "type" .ctx.name) (set "name" .ctx.before) (set "result" .ctx.actionInterface)>\
+<@template "callParents" dict (set "name" .ctx.before) (set "parents" .ctx.parents)>\
+<@template "callSelf" dict (set "name" .ctx.before) (set "import" .ctx.import) (set "type" .ctx.name) (set "strconv" .ctx.strconv) (set "self" .ctx.controller.Before)>\
+<@template "endMagicActionDecl">\
+
+<@template "magicActionComments" dict (set "name" .ctx.after) (set "import" .ctx.import) (set "type" .ctx.name) (set "parents" .ctx.parents) (set "self" .ctx.controller.After)>\
+<@template "startMagicActionDecl" dict (set "type" .ctx.name) (set "name" .ctx.after) (set "result" .ctx.actionInterface)>\
+<@template "callParents" dict (set "name" .ctx.after) (set "parents" .ctx.parents)>\
+<@template "callSelf" dict (set "name" .ctx.after) (set "import" .ctx.import) (set "type" .ctx.name) (set "strconv" .ctx.strconv) (set "self" .ctx.controller.After)>\
+<@template "endMagicActionDecl">\
 
 func init() {
 	_ = strconv.MeaningOfLife
-}
+}\
+<@define "magicActionComments">\
+:	<@if not (or .parents .self)>\
+:	:	// <@.name> is a dump function that always returns nil.
+:	<@end>\
+:	<@if .parents>\
+:	:	// <@.name> executes magic actions of embedded controllers<@if .self>, and<@else>.<@end>
+:	<@end>\
+:	<@if .self>\
+:	:	// <@if not .parents><@.name> <@end>calls (<@.import>).<@.type>.<@.name> with arguments
+:	:	// that are extracted from r.Form and converted to appropriate types.
+:	<@end>\
+<@end>\
+<@define "startMagicActionDecl">\
+:	func (t <@.type>) <@.name>(c *contr.<@.type>, w http.ResponseWriter, r *http.Request) a.<@.result> {
+<@end>\
+<@define "endMagicActionDecl">\
+:		// Continue execution chain.
+:		return nil
+:	}
+<@end>\
+<@define "callParents">\
+:	<@if .parents>\
+:		// Execute magic <@.name> actions of embedded controllers.
+:	:	<@range $i, $v := .parents>\
+:	:		if r := (<@$v.Package "."><@$v.Name>{}.After(c.<@$v.Name>, w, r)); r != nil {
+:	:			return r
+:	:		}
+:	:	<@end>\
+:	<@end>\
+<@end>\
+<@define "callSelf">\
+:	<@if .self>\
+:		// Call magic <@.name> action of (<@.import>).<@.type>.
+:		if r := c.<@.name>( // Parameters should be binded.
+:	:	:	<@range $i, $v := .self.Params>\
+:	:			<@$.strconv.Render "strconv" "r.Form" $v>,
+:	:	:	<@end>\
+:		); r != nil {
+:			return r
+:		}
+:	<@end>\
+<@end>\
+\
+<@define "printComments">\
+:	<@if .comments>//
+:	:	<@range $i, $v := .comments>\
+:	:	:	<@$v>
+:	:	<@end>\
+:	<@end>\
+<@end>\

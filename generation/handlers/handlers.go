@@ -80,7 +80,9 @@ func Start(params command.Data) {
 				"package":      outPkg,
 				"parents":      cs,
 
-				"strconv": strconvContext,
+				"actionImport":    actionInterfaceImport,
+				"actionInterface": actionInterfaceName,
+				"strconv":         strconvContext,
 			}
 			t.Generate()
 		}

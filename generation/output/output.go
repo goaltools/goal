@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	"github.com/anonx/sunplate/log"
@@ -40,15 +41,22 @@ type Type struct {
 }
 
 // NewType reads the requested template and returns an output.Type
-// with initialized Template field.
-// << and >> are used as delimiters.
+// with initialized Template field. << and >> are used as delimiters.
+// "\" + "\n" sequences are removed from the template so newline
+// elision is supported. Moreover, ":" + "\t" are removed too for
+// a possibility of a better code formatting.
 func NewType(pkg, templatePath string) Type {
+	// Read the template file, cut all "\" + "\n".
+	f, err := ioutil.ReadFile(templatePath)
+	log.AssertNil(err)
+	s := strings.Replace(string(f), "\\\n", "", -1)
+	s = strings.Replace(s, ":\t", "", -1)
+
+	// Allocate a new type, initialize template, then return.
+	// Use <@ and > as delimiters, add template helper functions.
 	n := filepath.Base(templatePath)
-	t, err := template.New(n).Delims("<@", ">"). // Use <@ and > as delimiters.
-							Funcs(funcs).ParseFiles(templatePath)
-	if err != nil {
-		log.Error.Panicf("Didn't manage to open template '%s', error: '%s'.", templatePath, err)
-	}
+	t, err := template.New(n).Delims("<@", ">").Funcs(funcs).Parse(s)
+	log.AssertNil(err)
 	return Type{
 		Package:      pkg,
 		TemplateName: n,
@@ -82,7 +90,7 @@ func (t *Type) Generate() {
 	// Generate a template file.
 	var buffer bytes.Buffer
 	err := t.Template.ExecuteTemplate(&buffer, t.TemplateName, map[string]interface{}{
-		"context":   t.Context,
+		"ctx":       t.Context,
 		"extension": t.Extension,
 		"package":   t.Package,
 		"path":      t.Path,
