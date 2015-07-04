@@ -4,10 +4,11 @@ package handlers
 
 import (
 	"net/http"
-	"strconv"
-
+	
 	c0 "github.com/anonx/sunplate/example/assets/handlers/github.com/anonx/sunplate/middleware/template"
 	contr "github.com/anonx/sunplate/example/controllers"
+
+	"github.com/anonx/sunplate/strconv"
 )
 
 // Controller is automatically generated from a controller
@@ -32,11 +33,12 @@ func (t Controller) New() *contr.Controller {
 func (t Controller) Before(c *contr.Controller, w http.ResponseWriter, r *http.Request) {
 	// Execute magic Before actions of parent controllers.
 	c0.Middleware{}.Before(c.Middleware, w, r)
-
+	
 	// Call magic Before action of (github.com/anonx/sunplate/example/controllers).Controller.
-	c.Before()
+	c.Before(
+	)
 }
 
 func init() {
-	_ = strconv.IntSize
+	_ = strconv.MeaningOfLife
 }

@@ -4,9 +4,10 @@ package handlers
 
 import (
 	"net/http"
-	"strconv"
-
+	
 	contr "github.com/anonx/sunplate/example/controllers"
+
+	"github.com/anonx/sunplate/strconv"
 )
 
 // App is automatically generated from a controller
@@ -28,11 +29,14 @@ func (t App) New() *contr.App {
 // that are extracted from r.Form and converted to appropriate type.
 func (t App) Before(c *contr.App, w http.ResponseWriter, r *http.Request) {
 	// Execute magic Before actions of parent controllers.
-
+	
 	// Call magic Before action of (github.com/anonx/sunplate/example/controllers).App.
-	c.Before()
+	c.Before(
+		strconv.String(r.Form, "name"),
+		strconv.Ints(r.Form, "pages"),
+	)
 }
 
 func init() {
-	_ = strconv.IntSize
+	_ = strconv.MeaningOfLife
 }
