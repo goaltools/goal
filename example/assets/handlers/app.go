@@ -4,7 +4,7 @@ package handlers
 
 import (
 	"net/http"
-	
+
 	contr "github.com/anonx/sunplate/example/controllers"
 
 	"github.com/anonx/sunplate/strconv"
@@ -29,7 +29,7 @@ func (t App) New() *contr.App {
 // that are extracted from r.Form and converted to appropriate type.
 func (t App) Before(c *contr.App, w http.ResponseWriter, r *http.Request) {
 	// Execute magic Before actions of parent controllers.
-	
+
 	// Call magic Before action of (github.com/anonx/sunplate/example/controllers).App.
 	c.Before(
 		strconv.String(r.Form, "name"),
