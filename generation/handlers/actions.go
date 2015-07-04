@@ -5,7 +5,6 @@ import (
 
 	"github.com/anonx/sunplate/log"
 	"github.com/anonx/sunplate/reflect"
-	"github.com/anonx/sunplate/strconv"
 )
 
 const (
@@ -98,9 +97,8 @@ func actionFunc(pkg *reflect.Package) func(f *reflect.Func) bool {
 // builtin gets a function and makes sure its arguments are of builtin type.
 // If not, it prints a warning message and returns false.
 func builtin(f *reflect.Func) bool {
-	c := strconv.Context()
 	fn := func(a *reflect.Arg) bool {
-		if _, ok := c[a.Type.String()]; !ok {
+		if _, ok := strconvContext[a.Type.String()]; !ok {
 			log.Warn.Printf(
 				`Method "%s.%s" in file "%s" cannot be treated as action because argument "%s" is of unsupported type "%s".`,
 				f.Recv.Type.Name, f.Name, f.File, a.Name, a.Type,
