@@ -4,9 +4,13 @@
 package strconv
 
 import (
+	"go/ast"
 	"net/url"
 	"strconv"
 	"strings"
+
+	"github.com/anonx/sunplate/path"
+	"github.com/anonx/sunplate/reflect"
 )
 
 /*
@@ -228,6 +232,55 @@ func Float64s(vs url.Values, k string, is ...int) (as []float64) {
 		as = append(as, Float64(vs, k, i))
 	}
 	return
+}
+
+/*
+	Below are various helper functions.
+*/
+
+// Context returns mappings between types that can be parsed using
+// this package and functions for that conversions.
+// All conversion functions meet the following criterias:
+// 1. They are exported.
+// 2. They expect 3 arguments: url.Values, string, ...int.
+// 3. They return 1 argument.
+// This is useful for code generation.
+func Context() map[string]reflect.Func {
+	fs := map[string]reflect.Func{}
+	p := reflect.ParseDir(path.SunplateDir("strconv"))
+	for i := range p.Funcs {
+		if !strconvFunc(p.Funcs[i]) {
+			continue
+		}
+		fs[p.Funcs[i].Results[0].Type.String()] = p.Funcs[i]
+	}
+	return fs
+}
+
+// strconvFunc gets a reflect.Func and detects whether it is
+// a string conversion function.
+func strconvFunc(f reflect.Func) (r bool) {
+	// Make sure the function is exported.
+	if !ast.IsExported(f.Name) {
+		return
+	}
+
+	// There are should be 3 arguments: url.Values, string, ...int.
+	if len(f.Params) < 3 {
+		return
+	}
+	ps := []string{"url.Values", "string", "...int"}
+	for i := range ps {
+		if f.Params[i].Type.String() != ps[i] {
+			return
+		}
+	}
+
+	// It should return 1 parameter.
+	if len(f.Results) != 1 {
+		return
+	}
+	return true
 }
 
 // get receives url.Values, a key, and an index (as a slice, but only
