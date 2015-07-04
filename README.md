@@ -1,13 +1,20 @@
 # sunplate
-Toolkit for high productivity web development in Go language (**WIP**: not ready yet).
+Toolkit for high productivity web development in Go language.
 
-Sunplate is more high level than other golang frameworks such as Revel.
-At the same time it is very minimalistic, your app does not have monolithic
-dependencies, and there is no runtime reflection.
+Sunplate, being mostly inspired by [Revel Framework](https://github.com/revel/revel)
+and its discussions, is built around the concept of
+controllers and actions ([more about the concept](https://github.com/anonx/concept#concept)).
+However, as opposed to Revel and other high level frameworks Sunplate does not use runtime
+reflection and does not require your app to import monolithic dependencies.
 
-That is achieved by use of a bunch of `go generate` utils. Moreover, as a result
-of that every component of the toolkit can be used independently
-and they are compatable with the standard golang library.
+Instead Sunplate uses code generation and `go generate` mechanism.
+That allows us to achieve type safety, minimalism of dependencies,
+compatability with the standard libraries, and productivity for the end-developers.
+At the same time Sunplate is very customizable (you can bring your own router, template system,
+and any other component). But without prejudice to the easiness and seamless of experience
+thanks to good defaults.
+
+Status of the project: **WIP** (it does't work yet).
 
 [![GoDoc](https://godoc.org/github.com/anonx/sunplate?status.svg)](https://godoc.org/github.com/anonx/sunplate)
 [![Build Status](https://travis-ci.org/anonx/sunplate.svg?branch=master)](https://travis-ci.org/anonx/sunplate)
