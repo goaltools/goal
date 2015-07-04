@@ -1,6 +1,7 @@
 package reflect
 
 import (
+	"fmt"
 	"go/ast"
 )
 
@@ -32,7 +33,9 @@ func processType(typ interface{}) *Type {
 		// X field contains info about an actual type.
 		// Try to receive it.
 		t := processType(v.X)
-		t.Star = true
+		if t != nil {
+			t.Star = true
+		}
 		return t
 	case *ast.Ident:
 		// Initialize a name of the type and return it.
@@ -43,20 +46,38 @@ func processType(typ interface{}) *Type {
 		// X contains info about a selector's package.
 		// Try to extract it.
 		t := processType(v.X)
-		return &Type{
-			Name:    v.Sel.Name,
-			Package: t.Name,
+		if t != nil {
+			t = &Type{
+				Name:    v.Sel.Name,
+				Package: t.Name,
+			}
 		}
+		return t
 	case *ast.ArrayType:
 		// Elt contains info about an actual type, get it.
 		t := processType(v.Elt)
-		t.Name = "[]" + t.Name // Add "[]" to the type name.
+		if t != nil {
+			t.Name = fmt.Sprintf("[]%s", t.Name) // Add "[]" to the type name.
+		}
+		return t
+	case *ast.MapType:
+		// Extract key and value's types.
+		t := &Type{}
+		kt := processType(v.Key)
+		vt := processType(v.Value)
+		if kt != nil && vt != nil {
+			t.Name = fmt.Sprintf("map[%s]%s", kt.String(), vt.String())
+		}
 		return t
 	case *ast.Ellipsis:
 		// Elt contains info about an actual type, extract it.
 		t := processType(v.Elt)
-		t.Name = "..." + t.Name // Add "..." to the type name.
+		if t != nil {
+			t.Name = fmt.Sprintf("...%s", t.Name) // Add "..." to the type name.
+		}
 		return t
+	default: // Ignore unsupported types.
+		// TODO: add a better support of map and support of anonymous structs.
 	}
 	return nil
 }

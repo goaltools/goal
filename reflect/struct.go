@@ -41,10 +41,12 @@ func processStructDecl(decl *ast.GenDecl) *Struct {
 
 	// Compose a structure and return it.
 	for _, spec := range decl.Specs {
-		ts, _ := spec.(*ast.TypeSpec)              // TypeSpec is the only possible value, so ignoring second arg.
-		s := processTypeSpec(ts)                   // Composing a structure.
-		s.Comments = processCommentGroup(decl.Doc) // Adding comments block.
-		return s                                   // There is just one spec in the Specs anyway, so returning.
+		ts, _ := spec.(*ast.TypeSpec) // TypeSpec is the only possible value, so ignoring second arg.
+		s := processTypeSpec(ts)      // Composing a structure.
+		if s != nil {
+			s.Comments = processCommentGroup(decl.Doc) // Adding comments block.
+		}
+		return s // There is just one spec in the Specs anyway, so returning.
 	}
 
 	// No specs have been found.

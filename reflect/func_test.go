@@ -56,7 +56,7 @@ func TestProcessFuncDecl(t *testing.T) {
 	pkg := getPackage(t, `package test
 			// Index is a method of App.
 			// Index does something cool.
-			func (c *App) Index() action.Result {
+			func (c *App) Index(smth map[string]string) action.Result {
 				return c.RenderTemplate("index.html")
 			}
 
@@ -85,6 +85,14 @@ func TestProcessFuncDecl(t *testing.T) {
 		{
 			Comments: Comments{"// Index is a method of App.", "// Index does something cool."},
 			Name:     "Index",
+			Params: Args{
+				{
+					Name: "smth",
+					Type: &Type{
+						Name: "map[string]string",
+					},
+				},
+			},
 			Results: Args{
 				{
 					Type: &Type{
