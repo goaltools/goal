@@ -4,9 +4,10 @@ package handlers
 
 import (
 	"net/http"
-	"strconv"
 
 	contr "github.com/anonx/sunplate/middleware/template"
+
+	"github.com/anonx/sunplate/strconv"
 )
 
 // Middleware is automatically generated from a controller
@@ -30,5 +31,5 @@ func (t Middleware) Before(c *contr.Middleware, w http.ResponseWriter, r *http.R
 }
 
 func init() {
-	_ = strconv.IntSize
+	_ = strconv.MeaningOfLife
 }
