@@ -7,6 +7,7 @@ import (
 )
 
 var funcs = template.FuncMap{
+	"base":    filepath.Base,
 	"dict":    dict,
 	"join":    filepath.Join,
 	"set":     set,

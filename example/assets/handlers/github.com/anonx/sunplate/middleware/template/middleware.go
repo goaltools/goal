@@ -25,16 +25,49 @@ func (t Middleware) New() *contr.Middleware {
 	return c
 }
 
-// Before is a dump function that always returns nil.
+// Before is a dump method that always returns nil.
 func (t Middleware) Before(c *contr.Middleware, w http.ResponseWriter, r *http.Request) a.Result {
-	// Continue execution chain.
 	return nil
 }
 
-// After is a dump function that always returns nil.
+// After is a dump method that always returns nil.
 func (t Middleware) After(c *contr.Middleware, w http.ResponseWriter, r *http.Request) a.Result {
-	// Continue execution chain.
 	return nil
+}
+
+// Finally is a dump method that does nothing.
+func (t Middleware) Finally(c *contr.Middleware, w http.ResponseWriter, r *http.Request) {
+}
+
+// RenderTemplate is a handler that was generated automatically.
+// It calls Before, After, Finally methods, and RenderTemplate action found at
+// github.com/anonx/sunplate/middleware/template/template.go
+// in appropriate order.
+//
+// RenderTemplate initializes and returns HTML type that implements Result interface.
+func (t Middleware) RenderTemplate(w http.ResponseWriter, r *http.Request) {
+	c := Middleware{}.New()
+	defer Middleware{}.Finally(c, w, r)
+	if res := (Middleware{}.Before(c, w, r)); res != nil {
+		res.Apply(w, r)
+		if res.Finish() {
+			return
+		}
+	}
+	if res := c.RenderTemplate( // "Binding" parameters.
+		strconv.String(r.Form, "templatePath"),
+	); res != nil {
+		res.Apply(w, r)
+		if res.Finish() {
+			return
+		}
+	}
+	if res := (Middleware{}.After(c, w, r)); res != nil {
+		res.Apply(w, r)
+		if res.Finish() {
+			return
+		}
+	}
 }
 
 func init() {

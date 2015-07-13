@@ -46,7 +46,11 @@ type controller struct {
 
 // Package returns a unique package name that may be used in templates
 // concatenated with some arbitarry suffix strings.
+// If parent is a from the local package, empty string will be returned.
 func (p parent) Package(suffices ...string) string {
+	if p.Import == "" {
+		return ""
+	}
 	s := fmt.Sprintf("c%d", p.ID)
 	for i := range suffices {
 		s += suffices[i]
