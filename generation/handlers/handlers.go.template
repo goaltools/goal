@@ -17,16 +17,16 @@ import (
 )
 
 // <@.ctx.name> is automatically generated from a controller
-// that was found at "<@.ctx.import>/<@.ctx.file>".
+// that was found at "<@.ctx.import>/<@base .ctx.controller.File>".
 <@template "printComments" dict (set "comments" .ctx.controller.Comments)>\
 type <@.ctx.name> struct {
 }
 
 // New allocates (<@.ctx.import>).<@.ctx.name> controller,
 <@if .ctx.parents>\
-// initializes its parents; then returns the controller.
+:	// initializes its parents; then returns the controller.
 <@else>\
-// then returns it.
+:	// then returns it.
 <@end>\
 func (t <@.ctx.name>) New() *contr.<@.ctx.name> {
 	c := &contr.<@.ctx.name>{}
@@ -36,64 +36,127 @@ func (t <@.ctx.name>) New() *contr.<@.ctx.name> {
 	return c
 }
 
-<@template "magicActionComments" dict (set "name" .ctx.before) (set "import" .ctx.import) (set "type" .ctx.name) (set "parents" .ctx.parents) (set "self" .ctx.controller.Before)>\
-<@template "startMagicActionDecl" dict (set "type" .ctx.name) (set "name" .ctx.before) (set "result" .ctx.actionInterface)>\
-<@template "callParents" dict (set "name" .ctx.before) (set "parents" .ctx.parents)>\
-<@template "callSelf" dict (set "name" .ctx.before) (set "import" .ctx.import) (set "type" .ctx.name) (set "strconv" .ctx.strconv) (set "self" .ctx.controller.Before)>\
-<@template "endMagicActionDecl">\
+<@template "magicActionComments" dict (set "dot" .) (set "name" .ctx.before) (set "self" .ctx.controller.Before)>\
+func (t <@.ctx.name>) <@.ctx.before>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request) a.<@.ctx.actionInterface> {
+:	<@template "callParents" dict (set "dot" .) (set "name" .ctx.before)>\
+:	<@template "callSelf" dict (set "dot" .) (set "name" .ctx.before) (set "self" .ctx.controller.Before)>\
+	return nil
+}
 
-<@template "magicActionComments" dict (set "name" .ctx.after) (set "import" .ctx.import) (set "type" .ctx.name) (set "parents" .ctx.parents) (set "self" .ctx.controller.After)>\
-<@template "startMagicActionDecl" dict (set "type" .ctx.name) (set "name" .ctx.after) (set "result" .ctx.actionInterface)>\
-<@template "callParents" dict (set "name" .ctx.after) (set "parents" .ctx.parents)>\
-<@template "callSelf" dict (set "name" .ctx.after) (set "import" .ctx.import) (set "type" .ctx.name) (set "strconv" .ctx.strconv) (set "self" .ctx.controller.After)>\
-<@template "endMagicActionDecl">\
+<@template "magicActionComments" dict (set "dot" .) (set "name" .ctx.after) (set "self" .ctx.controller.After)>\
+func (t <@.ctx.name>) <@.ctx.after>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request) a.<@.ctx.actionInterface> {
+:	<@template "callParents" dict (set "dot" .) (set "name" .ctx.after)>\
+:	<@template "callSelf" dict (set "dot" .) (set "name" .ctx.after) (set "self" .ctx.controller.After)>\
+	return nil
+}
 
+<@template "magicActionComments" dict (set "dot" .) (set "name" .ctx.finally) (set "self" .ctx.controller.After) (set "defer" true)>\
+func (t <@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request) {
+:	<@if .ctx.controller.After>\
+:		// Call magic <@.ctx.finally> action of (<@.ctx.import>).<@.ctx.name>.
+:		defer func() {
+:			if res := c.<@.ctx.finally>( // "Binding" parameters.
+:	:	:	:	<@range $i, $v := .ctx.controller.Finally.Params>\
+:	:				<@$.ctx.strconv.Render "strconv" "r.Form" $v>,
+:	:	:	:	<@end>\
+:			); res != nil {
+:				res.Apply(w, r)
+:			}
+:		}()
+:	<@end>\
+:	<@if .ctx.parents>\
+:		// Execute magic <@.ctx.finally> actions of embedded controllers.
+:	:	<@range $i, $v := .ctx.parents>\
+:	:		<@$v.Package "."><@$v.Name>{}.<@$.ctx.finally>(c.<@$v.Name>, w, r)
+:	:	<@end>\
+:	<@end>\
+}
+
+<@range $i, $f := .ctx.controller.Actions>\
+:	// <@$f.Name> is a handler that was generated automatically.
+:	// It calls <@$.ctx.before>, <@$.ctx.after>, <@$.ctx.finally> methods, and <@$f.Name> action found at
+:	// <@join $.ctx.import (base $f.File)>
+:	// in appropriate order.
+:	<@template "printComments" dict (set "comments" $f.Comments)>\
+:	func (t <@$.ctx.name>) <@$f.Name>(w http.ResponseWriter, r *http.Request) {
+:		c := <@$.ctx.name>{}.New()
+:		defer <@$.ctx.name>{}.Finally(c, w, r)
+:		if res := (<@$.ctx.name>{}.Before(c, w, r)); res != nil {
+:			res.Apply(w, r)
+:			if res.Finish() {
+:				return
+:			}
+:		}
+:		if res := c.<@$f.Name>( // "Binding" parameters.
+:	:	:	<@range $i, $v := $f.Params>\
+:	:			<@$.ctx.strconv.Render "strconv" "r.Form" $v>,
+:	:	:	<@end>\
+:		); res != nil {
+:			res.Apply(w, r)
+:			if res.Finish() {
+:				return
+:			}
+:		}
+:		if res := (<@$.ctx.name>{}.After(c, w, r)); res != nil {
+:			res.Apply(w, r)
+:			if res.Finish() {
+:				return
+:			}
+:		}
+:	}
+
+<@end>\
+\
 func init() {
 	_ = strconv.MeaningOfLife
 }\
+\
+<@/*\
+	Below are subtemplates that are used by handlers.go.template.\
+*/>\
+\
+<@/*Print description of a magic method (before, after, finally).*/>\
 <@define "magicActionComments">\
-:	<@if not (or .parents .self)>\
-:	:	// <@.name> is a dump function that always returns nil.
+:	<@if not (or .dot.ctx.parents .self)>\
+:	:	// <@.name> is a dump method that <@if .defer>does nothing<@else>always returns nil<@end>.
 :	<@end>\
-:	<@if .parents>\
+:	<@if .dot.ctx.parents>\
 :	:	// <@.name> executes magic actions of embedded controllers<@if .self>, and<@else>.<@end>
 :	<@end>\
 :	<@if .self>\
-:	:	// <@if not .parents><@.name> <@end>calls (<@.import>).<@.type>.<@.name> with arguments
+:	:	// <@if not .dot.parents><@.name> <@end>calls (<@.dot.ctx.import>).<@.dot.ctx.name>.<@.name> with arguments
 :	:	// that are extracted from r.Form and converted to appropriate types.
+:	:	<@if (and .defer .dot.ctx.parents)>\
+:	:	:	// The call is garanteed to be done no matter what happens during execution of parent actions.
+:	:	<@end>\
 :	<@end>\
 <@end>\
-<@define "startMagicActionDecl">\
-:	func (t <@.type>) <@.name>(c *contr.<@.type>, w http.ResponseWriter, r *http.Request) a.<@.result> {
-<@end>\
-<@define "endMagicActionDecl">\
-:		// Continue execution chain.
-:		return nil
-:	}
-<@end>\
+<@/*First part of before or after magic action`s body.*/>\
 <@define "callParents">\
 :	<@if .parents>\
 :		// Execute magic <@.name> actions of embedded controllers.
-:	:	<@range $i, $v := .parents>\
-:	:		if r := (<@$v.Package "."><@$v.Name>{}.After(c.<@$v.Name>, w, r)); r != nil {
-:	:			return r
+:	:	<@range $i, $v := .dot.ctx.parents>\
+:	:		if res := (<@$v.Package "."><@$v.Name>{}.<@$.name>(c.<@$v.Name>, w, r)); r != nil {
+:	:			return res
 :	:		}
 :	:	<@end>\
 :	<@end>\
 <@end>\
+<@/*Second part of before or after magic action`s body.*/>\
 <@define "callSelf">\
 :	<@if .self>\
-:		// Call magic <@.name> action of (<@.import>).<@.type>.
-:		if r := c.<@.name>( // Parameters should be binded.
+:		// Call magic <@.name> action of (<@.dot.ctx.import>).<@.dot.ctx.name>.
+:		if res := c.<@.name>( // "Binding" parameters.
 :	:	:	<@range $i, $v := .self.Params>\
-:	:			<@$.strconv.Render "strconv" "r.Form" $v>,
+:	:			<@$.dot.ctx.strconv.Render "strconv" "r.Form" $v>,
 :	:	:	<@end>\
-:		); r != nil {
-:			return r
+:		); res != nil {
+:			return res
 :		}
 :	<@end>\
 <@end>\
 \
+<@/*Get a slice of strings and print it (every one on a new line).*/>\
 <@define "printComments">\
 :	<@if .comments>//
 :	:	<@range $i, $v := .comments>\

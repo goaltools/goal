@@ -6,7 +6,7 @@ import (
 
 // App is a sample controller that is used for demonstration purposes.
 type App struct {
-	Controller
+	*Controller
 }
 
 // Before is a magic method that is executed before every request.
@@ -32,6 +32,6 @@ func (c *App) After() action.Result {
 
 // Finally is a magic method that is executed after every request
 // no matter what.
-func (c *App) Finally() action.Result {
+func (c *App) Finally(name string) action.Result {
 	return nil
 }

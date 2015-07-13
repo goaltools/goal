@@ -29,30 +29,26 @@ func (t Controller) New() *contr.Controller {
 }
 
 // Before executes magic actions of embedded controllers, and
-// calls (github.com/anonx/sunplate/example/controllers).Controller.Before with arguments
+// Before calls (github.com/anonx/sunplate/example/controllers).Controller.Before with arguments
 // that are extracted from r.Form and converted to appropriate types.
 func (t Controller) Before(c *contr.Controller, w http.ResponseWriter, r *http.Request) a.Result {
-	// Execute magic Before actions of embedded controllers.
-	if r := (c0.Middleware{}.After(c.Middleware, w, r)); r != nil {
-		return r
-	}
 	// Call magic Before action of (github.com/anonx/sunplate/example/controllers).Controller.
-	if r := c.Before( // Parameters should be binded.
-	); r != nil {
-		return r
+	if res := c.Before( // "Binding" parameters.
+	); res != nil {
+		return res
 	}
-	// Continue execution chain.
 	return nil
 }
 
 // After executes magic actions of embedded controllers.
 func (t Controller) After(c *contr.Controller, w http.ResponseWriter, r *http.Request) a.Result {
-	// Execute magic After actions of embedded controllers.
-	if r := (c0.Middleware{}.After(c.Middleware, w, r)); r != nil {
-		return r
-	}
-	// Continue execution chain.
 	return nil
+}
+
+// Finally executes magic actions of embedded controllers.
+func (t Controller) Finally(c *contr.Controller, w http.ResponseWriter, r *http.Request) {
+	// Execute magic Finally actions of embedded controllers.
+	c0.Middleware{}.Finally(c.Middleware, w, r)
 }
 
 func init() {

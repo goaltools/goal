@@ -25,6 +25,11 @@ func (c *Controller) Before() action.Result {
 	return nil
 }
 
+// Finally ...
+func (c *Controller) Finally(page int) action.Result {
+	return nil
+}
+
 // TestType ...
 type TestType struct {
 }

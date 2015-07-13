@@ -34,7 +34,7 @@ These commands are not implied to be run manually but rather using `go generate`
 //go:generate sunplate generate {command} [arguments]
 ```
 
-##### - `sunplate generate handlers`- Scan controllers, generate handlers (WIP).
+##### - `sunplate generate handlers`- Scan controllers, generate handlers.
 Default parameters are:
 * `--input ./controllers`
 * `--output ./assets/handlers`
@@ -42,8 +42,7 @@ Default parameters are:
 
 Read more about controllers and actions [here](https://github.com/anonx/concept/blob/master/basics.md#basics).
 The idea is to have automatically generated handlers (just usual golang handlers) from Revel framework like controllers.
-Currently, `Before` and `After` magic actions are implemented.
-**TODO**: support of actions, `Finally` magic method.
+**TODO**: better architecture of `handlers` package, increase of test coverage.
 
 ##### - `sunplate generate listing`- Scan a directory, generate a mapping of file names to their paths.
 Default parameters are:

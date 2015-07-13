@@ -54,13 +54,23 @@ func Start(params command.Data) {
 			cs := []parent{}
 			for i, p := range ps[imp][name].Parents {
 				// Make sure it is a controller rather than just some embedded struct.
-				if _, ok := ps[p.Import]; ok {
-					cs = append(cs, parent{
-						ID:     i,
-						Import: p.Import,
-						Name:   p.Name,
-					})
+				check := p.Import
+				if check == "" {
+					check = absImport
 				}
+				if _, ok := ps[check]; !ok { // Such package is not in the list of scanned ones.
+					continue
+				}
+				if _, ok := ps[check][p.Name]; !ok { // There is no such controller.
+					continue
+				}
+
+				// It is a valid parent controller, add it to the list.
+				cs = append(cs, parent{
+					ID:     i,
+					Import: p.Import,
+					Name:   p.Name,
+				})
 			}
 
 			// Initialize parameters and generate a package.
@@ -71,7 +81,6 @@ func Start(params command.Data) {
 				"finally": magicActionFinally,
 
 				"controller":   ps[imp][name],
-				"file":         filepath.Base(ps[imp][name].File),
 				"import":       imp,
 				"input":        inputDir,
 				"name":         name,
