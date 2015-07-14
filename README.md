@@ -14,7 +14,7 @@ At the same time Sunplate is very customizable (you can bring your own router, t
 and any other component). But without prejudice to the easiness and seamless of experience
 thanks to good defaults.
 
-Status of the project: **WIP** (it does't work yet).
+Status of the project: **WIP** (mostly, it does't work yet).
 
 [![GoDoc](https://godoc.org/github.com/anonx/sunplate?status.svg)](https://godoc.org/github.com/anonx/sunplate)
 [![Build Status](https://travis-ci.org/anonx/sunplate.svg?branch=master)](https://travis-ci.org/anonx/sunplate)
@@ -57,7 +57,8 @@ Its format is:
 map[string]string{
 	"main.html":          "./views/main.html",
 	"accounts/info.html": "./views/accounts/info.html",
-} ```
+}
+```
 
 ##### - `sunplate generate routes`- Scan handlers, generate routes (Planned, router is ready).
 
