@@ -57,12 +57,11 @@ Its format is:
 map[string]string{
 	"main.html":          "./views/main.html",
 	"accounts/info.html": "./views/accounts/info.html",
-}
-```
+} ```
 
 ##### - `sunplate generate routes`- Scan handlers, generate routes (Planned, router is ready).
 
-##### - `sunplate generate autoforms`- Scan models, generate a package for easy validation, binding, and rendering of forms.
+##### - `sunplate generate autoforms`- Scan models, generate a package for easy validation, binding, and rendering of forms (Planned, will be implemented after MVP).
 
 ## License
 Distributed under the BSD 2-clause "Simplified" License unless otherwise noted.
