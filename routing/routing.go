@@ -12,19 +12,19 @@
 //		"log"
 //		"net/http"
 //
-//		"github.com/anonx/sunplate/routing"
+//		r "github.com/anonx/sunplate/routing"
 //	)
 //
 //	func main() {
-//		r := routing.New()
-//		err := r.Handle(routing.Routes{
+//		router := r.New()
+//		err := router.Handle(r.Routes{
 //			r.Get("/profiles/:username", ShowUserHandleFunc),
 //			r.Delete("/profiles/:username", DeleteUserHandleFunc),
 //		}).Build()
 //		if err != nil {
 //			panic(err)
 //		}
-//		log.Fatal(http.ListenAndServe(":8080", r))
+//		log.Fatal(http.ListenAndServe(":8080", router))
 //	}
 package routing
 
@@ -115,28 +115,28 @@ func NewRouter() *Router {
 }
 
 // Get is an short form of Route("GET", pattern, handler).
-func (t *Router) Get(pattern string, handler http.HandlerFunc) *Route {
-	return t.Route("GET", pattern, handler)
+func Get(pattern string, handler http.HandlerFunc) *Route {
+	return Do("GET", pattern, handler)
 }
 
 // Post is a short form of Route("POST", pattern, handler).
-func (t *Router) Post(pattern string, handler http.HandlerFunc) *Route {
-	return t.Route("POST", pattern, handler)
+func Post(pattern string, handler http.HandlerFunc) *Route {
+	return Do("POST", pattern, handler)
 }
 
 // Put is a short form of Route("PUT", pattern, handler).
-func (t *Router) Put(pattern string, handler http.HandlerFunc) *Route {
-	return t.Route("PUT", pattern, handler)
+func Put(pattern string, handler http.HandlerFunc) *Route {
+	return Do("PUT", pattern, handler)
 }
 
 // Head is a short form of Route("HEAD", pattern, handler).
-func (t *Router) Head(pattern string, handler http.HandlerFunc) *Route {
-	return t.Route("HEAD", pattern, handler)
+func Head(pattern string, handler http.HandlerFunc) *Route {
+	return Do("HEAD", pattern, handler)
 }
 
 // Delete is a short form of Route("DELETE", pattern, handler).
-func (t *Router) Delete(pattern string, handler http.HandlerFunc) *Route {
-	return t.Route("DELETE", pattern, handler)
+func Delete(pattern string, handler http.HandlerFunc) *Route {
+	return Do("DELETE", pattern, handler)
 }
 
 // ServeHTTP is used to implement http.Handler interface.
@@ -180,8 +180,8 @@ func (t *Router) Build() error {
 	return t.data.Build(t.records)
 }
 
-// Route allocates and returns a Route struct.
-func (t *Router) Route(method, pattern string, handler http.HandlerFunc) *Route {
+// Do allocates and returns a Route struct.
+func Do(method, pattern string, handler http.HandlerFunc) *Route {
 	hs := NewDict()
 	hs.Set(strings.ToUpper(method), &handler)
 	return &Route{

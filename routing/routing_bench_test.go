@@ -342,7 +342,7 @@ func init() {
 
 		// Add a route to routing.
 		routingList = append(
-			routingList, routingH.Route(route.method, route.pattern, testHandlerFunc),
+			routingList, Do(route.method, route.pattern, testHandlerFunc),
 		)
 	}
 
