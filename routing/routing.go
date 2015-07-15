@@ -16,7 +16,7 @@
 //	)
 //
 //	func main() {
-//		router := r.New()
+//		router := r.NewRouter()
 //		err := router.Handle(r.Routes{
 //			r.Get("/profiles/:username", ShowUserHandleFunc),
 //			r.Delete("/profiles/:username", DeleteUserHandleFunc),
