@@ -12,14 +12,14 @@ import (
 func TestRouter(t *testing.T) {
 	r := NewRouter()
 	err := r.Handle(Routes{
-		r.Get("/", testHandlerFunc),
-		r.Get("/profile/:name", testHandlerFunc),
-		r.Get("/profile/:name", testHandlerFuncHelloWorld), // This should override the previous route.
-		r.Post("/profile/:name", testHandlerFunc),
-		r.Head("/profile/:name", testHandlerFunc),
-		r.Put("/profile/:name", testHandlerFunc),
-		r.Delete("/profile/:name", testHandlerFunc),
-		r.Route("GET", "/profile/update", testHandlerFunc),
+		Get("/", testHandlerFunc),
+		Get("/profile/:name", testHandlerFunc),
+		Get("/profile/:name", testHandlerFuncHelloWorld), // This should override the previous route.
+		Post("/profile/:name", testHandlerFunc),
+		Head("/profile/:name", testHandlerFunc),
+		Put("/profile/:name", testHandlerFunc),
+		Delete("/profile/:name", testHandlerFunc),
+		Do("GET", "/profile/update", testHandlerFunc),
 	}).Build()
 	if err != nil {
 		t.Errorf("Failed to build a handler. Error: %s.", err)
