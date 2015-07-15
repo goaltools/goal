@@ -60,8 +60,6 @@ map[string]string{
 }
 ```
 
-##### - `sunplate generate routes`- Scan handlers, generate routes (Planned, router is ready).
-
 ##### - `sunplate generate autoforms`- Scan models, generate a package for easy validation, binding, and rendering of forms (Planned, will be implemented after MVP).
 
 ## License
