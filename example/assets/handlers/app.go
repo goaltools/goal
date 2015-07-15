@@ -11,25 +11,33 @@ import (
 	"github.com/anonx/sunplate/strconv"
 )
 
-// App is automatically generated from a controller
-// that was found at "github.com/anonx/sunplate/example/controllers/app.go".
+// App is an insance of tApp that is automatically generated from App controller
+// being found at "github.com/anonx/sunplate/example/controllers/app.go",
+// and contains methods to be used as handler functions.
 //
 // App is a sample controller that is used for demonstration purposes.
-type App struct {
+var App tApp
+
+// tApp is a type with handler methods of App controller.
+type tApp struct {
 }
 
 // New allocates (github.com/anonx/sunplate/example/controllers).App controller,
 // initializes its parents; then returns the controller.
-func (t App) New() *contr.App {
+func (t tApp) New() *contr.App {
 	c := &contr.App{}
-	c.Controller = Controller{}.New()
+	c.Controller = Controller.New()
 	return c
 }
 
 // Before executes magic actions of embedded controllers, and
-// Before calls (github.com/anonx/sunplate/example/controllers).App.Before with arguments
+// calls (github.com/anonx/sunplate/example/controllers).App.Before with arguments
 // that are extracted from r.Form and converted to appropriate types.
-func (t App) Before(c *contr.App, w http.ResponseWriter, r *http.Request) a.Result {
+func (t tApp) Before(c *contr.App, w http.ResponseWriter, r *http.Request) a.Result {
+	// Execute magic Before actions of embedded controllers.
+	if res := Controller.Before(c.Controller, w, r); r != nil {
+		return res
+	}
 	// Call magic Before action of (github.com/anonx/sunplate/example/controllers).App.
 	if res := c.Before( // "Binding" parameters.
 		strconv.String(r.Form, "name"),
@@ -41,9 +49,12 @@ func (t App) Before(c *contr.App, w http.ResponseWriter, r *http.Request) a.Resu
 }
 
 // After executes magic actions of embedded controllers, and
-// After calls (github.com/anonx/sunplate/example/controllers).App.After with arguments
-// that are extracted from r.Form and converted to appropriate types.
-func (t App) After(c *contr.App, w http.ResponseWriter, r *http.Request) a.Result {
+// calls (github.com/anonx/sunplate/example/controllers).App.After.
+func (t tApp) After(c *contr.App, w http.ResponseWriter, r *http.Request) a.Result {
+	// Execute magic After actions of embedded controllers.
+	if res := Controller.After(c.Controller, w, r); r != nil {
+		return res
+	}
 	// Call magic After action of (github.com/anonx/sunplate/example/controllers).App.
 	if res := c.After( // "Binding" parameters.
 	); res != nil {
@@ -53,10 +64,9 @@ func (t App) After(c *contr.App, w http.ResponseWriter, r *http.Request) a.Resul
 }
 
 // Finally executes magic actions of embedded controllers, and
-// Finally calls (github.com/anonx/sunplate/example/controllers).App.Finally with arguments
-// that are extracted from r.Form and converted to appropriate types.
+// calls (github.com/anonx/sunplate/example/controllers).App.Finally.
 // The call is garanteed to be done no matter what happens during execution of parent actions.
-func (t App) Finally(c *contr.App, w http.ResponseWriter, r *http.Request) {
+func (t tApp) Finally(c *contr.App, w http.ResponseWriter, r *http.Request) {
 	// Call magic Finally action of (github.com/anonx/sunplate/example/controllers).App.
 	defer func() {
 		if res := c.Finally( // "Binding" parameters.
@@ -66,7 +76,7 @@ func (t App) Finally(c *contr.App, w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 	// Execute magic Finally actions of embedded controllers.
-	Controller{}.Finally(c.Controller, w, r)
+	Controller.Finally(c.Controller, w, r)
 }
 
 // Index is a handler that was generated automatically.
@@ -75,10 +85,10 @@ func (t App) Finally(c *contr.App, w http.ResponseWriter, r *http.Request) {
 // in appropriate order.
 //
 // Index is an action that is used for generation of a greeting form.
-func (t App) Index(w http.ResponseWriter, r *http.Request) {
-	c := App{}.New()
-	defer App{}.Finally(c, w, r)
-	if res := (App{}.Before(c, w, r)); res != nil {
+func (t tApp) Index(w http.ResponseWriter, r *http.Request) {
+	c := App.New()
+	defer App.Finally(c, w, r)
+	if res := App.Before(c, w, r); res != nil {
 		res.Apply(w, r)
 		if res.Finish() {
 			return
@@ -91,7 +101,7 @@ func (t App) Index(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	if res := (App{}.After(c, w, r)); res != nil {
+	if res := App.After(c, w, r); res != nil {
 		res.Apply(w, r)
 		if res.Finish() {
 			return
@@ -106,10 +116,10 @@ func (t App) Index(w http.ResponseWriter, r *http.Request) {
 //
 // PostGreet prints received user fullname. If it is not valid,
 // user is redirected back to index page.
-func (t App) PostGreet(w http.ResponseWriter, r *http.Request) {
-	c := App{}.New()
-	defer App{}.Finally(c, w, r)
-	if res := (App{}.Before(c, w, r)); res != nil {
+func (t tApp) PostGreet(w http.ResponseWriter, r *http.Request) {
+	c := App.New()
+	defer App.Finally(c, w, r)
+	if res := App.Before(c, w, r); res != nil {
 		res.Apply(w, r)
 		if res.Finish() {
 			return
@@ -123,7 +133,7 @@ func (t App) PostGreet(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	if res := (App{}.After(c, w, r)); res != nil {
+	if res := App.After(c, w, r); res != nil {
 		res.Apply(w, r)
 		if res.Finish() {
 			return

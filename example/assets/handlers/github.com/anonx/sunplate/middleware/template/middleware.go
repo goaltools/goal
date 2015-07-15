@@ -11,32 +11,36 @@ import (
 	"github.com/anonx/sunplate/strconv"
 )
 
-// Middleware is automatically generated from a controller
-// that was found at "github.com/anonx/sunplate/middleware/template/template.go".
+// Middleware is an insance of tMiddleware that is automatically generated from Middleware controller
+// being found at "github.com/anonx/sunplate/middleware/template/template.go",
+// and contains methods to be used as handler functions.
 //
 // Middleware is a main type that should be embeded into controller structs.
-type Middleware struct {
+var Middleware tMiddleware
+
+// tMiddleware is a type with handler methods of Middleware controller.
+type tMiddleware struct {
 }
 
 // New allocates (github.com/anonx/sunplate/middleware/template).Middleware controller,
 // then returns it.
-func (t Middleware) New() *contr.Middleware {
+func (t tMiddleware) New() *contr.Middleware {
 	c := &contr.Middleware{}
 	return c
 }
 
 // Before is a dump method that always returns nil.
-func (t Middleware) Before(c *contr.Middleware, w http.ResponseWriter, r *http.Request) a.Result {
+func (t tMiddleware) Before(c *contr.Middleware, w http.ResponseWriter, r *http.Request) a.Result {
 	return nil
 }
 
 // After is a dump method that always returns nil.
-func (t Middleware) After(c *contr.Middleware, w http.ResponseWriter, r *http.Request) a.Result {
+func (t tMiddleware) After(c *contr.Middleware, w http.ResponseWriter, r *http.Request) a.Result {
 	return nil
 }
 
 // Finally is a dump method that does nothing.
-func (t Middleware) Finally(c *contr.Middleware, w http.ResponseWriter, r *http.Request) {
+func (t tMiddleware) Finally(c *contr.Middleware, w http.ResponseWriter, r *http.Request) {
 }
 
 // RenderTemplate is a handler that was generated automatically.
@@ -45,10 +49,10 @@ func (t Middleware) Finally(c *contr.Middleware, w http.ResponseWriter, r *http.
 // in appropriate order.
 //
 // RenderTemplate initializes and returns HTML type that implements Result interface.
-func (t Middleware) RenderTemplate(w http.ResponseWriter, r *http.Request) {
-	c := Middleware{}.New()
-	defer Middleware{}.Finally(c, w, r)
-	if res := (Middleware{}.Before(c, w, r)); res != nil {
+func (t tMiddleware) RenderTemplate(w http.ResponseWriter, r *http.Request) {
+	c := Middleware.New()
+	defer Middleware.Finally(c, w, r)
+	if res := Middleware.Before(c, w, r); res != nil {
 		res.Apply(w, r)
 		if res.Finish() {
 			return
@@ -62,7 +66,7 @@ func (t Middleware) RenderTemplate(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	if res := (Middleware{}.After(c, w, r)); res != nil {
+	if res := Middleware.After(c, w, r); res != nil {
 		res.Apply(w, r)
 		if res.Finish() {
 			return
