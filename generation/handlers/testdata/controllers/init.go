@@ -4,6 +4,7 @@ import (
 	a "github.com/anonx/sunplate/action"
 	"github.com/anonx/sunplate/generation/handlers/testdata/controllers/subpackage"
 
+	"github.com/naoina/denco"
 	"github.com/revel/revel/testing"
 )
 
@@ -11,6 +12,7 @@ import (
 // of your app to make methods provided by middleware controllers available.
 type Controller struct {
 	*subpackage.Controller
+	*denco.Param
 
 	testing.TestSuite
 	Test testing.TestSuite
