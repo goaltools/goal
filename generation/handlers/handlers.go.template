@@ -113,7 +113,7 @@ func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWri
 \
 func init() {
 	_ = strconv.MeaningOfLife
-}\
+}
 \
 <@/*\
 	Below are subtemplates that are used by handlers.go.template.\
