@@ -49,59 +49,61 @@ type Routes []*Route
 // Route is used to store information about HTTP request's handler
 // including a list of allowed methods and pattern.
 type Route struct {
-	handlers *dict  // HTTP request method -> handler pairs.
-	pattern  string // Pattern is a routing path for handler.
+	Handlers *Dict  // HTTP request method -> handler pairs.
+	Pattern  string // Pattern is a routing path for handler.
 }
 
-// dict is a dictionary structure that is used by routing package instead of map
+// Dict is a dictionary structure that is used by routing package instead of map
 // for small sets of data.
 // On average efficency of getting an element from map is O(c + 1).
 // At the same time efficency of iterating over a slice is O(n).
 // And when n is small, O(n) < O(c + 1). That's why we are using slice and simple loop
 // rather than a map.
-type dict struct {
-	keys   []string
-	values []*http.HandlerFunc
+type Dict struct {
+	Keys   []string
+	Values []*http.HandlerFunc
 }
 
-// newDict allocates and returns a dict structure.
-func newDict() *dict {
-	return &dict{
-		keys:   []string{},
-		values: []*http.HandlerFunc{},
+// NewDict allocates and returns a dict structure.
+func NewDict() *Dict {
+	return &Dict{
+		Keys:   []string{},
+		Values: []*http.HandlerFunc{},
 	}
 }
 
-// set expects key and value as input parameters that are
+// Set expects key and value as input parameters that are
 // saved to the dict.
-func (t *dict) set(k string, v *http.HandlerFunc) {
+func (t *Dict) Set(k string, v *http.HandlerFunc) {
 	// Check whether we have already had such key.
-	if _, i := t.get(k); i >= 0 {
+	if _, i := t.Get(k); i >= 0 {
 		// If so, update it.
-		t.values[i] = v
+		t.Values[i] = v
 		return
 	}
 	// Otherwise, add a new key-value pair.
-	t.keys = append(t.keys, k)
-	t.values = append(t.values, v)
+	t.Keys = append(t.Keys, k)
+	t.Values = append(t.Values, v)
 }
 
-// get receives a key as input and returns associated value.
-func (t *dict) get(k string) (*http.HandlerFunc, int) {
-	for i := range t.keys {
-		if t.keys[i] == k {
-			return t.values[i], i
+// Get receives a key as input and returns associated value
+// and its index. If the value is not found nil, -1 are returned.
+func (t *Dict) Get(k string) (*http.HandlerFunc, int) {
+	for i := range t.Keys {
+		if t.Keys[i] == k {
+			return t.Values[i], i
 		}
 	}
 	return nil, -1
 }
 
-// join receives a new dict and appends it to the dict.
-func (t *dict) join(d *dict) {
+// Join receives a new dict and joins with the old one
+// calling Set for every key - value pair.
+func (t *Dict) Join(d *Dict) {
 	// Iterate through all keys of a new dict.
-	for i := range d.keys {
+	for i := range d.Keys {
 		// Add them to the main dict.
-		t.set(d.keys[i], d.values[i])
+		t.Set(d.Keys[i], d.Values[i])
 	}
 }
 
@@ -151,22 +153,22 @@ func (t *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (t *Router) Handle(routes Routes) *Router {
 	for i := range routes {
 		// Check whether we have already had such route.
-		index, ok := t.indexes[routes[i].pattern]
+		index, ok := t.indexes[routes[i].Pattern]
 
 		// If we haven't, add the route.
 		if !ok {
 			// Save pattern's index to simplify its search
 			// in next iteration.
-			t.indexes[routes[i].pattern] = len(t.records)
+			t.indexes[routes[i].Pattern] = len(t.records)
 
 			// Add the route to the slice.
-			t.records = append(t.records, denco.NewRecord(routes[i].pattern, routes[i]))
+			t.records = append(t.records, denco.NewRecord(routes[i].Pattern, routes[i]))
 			continue
 		}
 
 		// Otherwise, just add new HTTP methods to the existing route.
 		r := t.records[index].Value.(*Route)
-		r.handlers.join(routes[i].handlers)
+		r.Handlers.Join(routes[i].Handlers)
 	}
 	return t
 }
@@ -180,11 +182,11 @@ func (t *Router) Build() error {
 
 // Route allocates and returns a Route struct.
 func (t *Router) Route(method, pattern string, handler http.HandlerFunc) *Route {
-	hs := newDict()
-	hs.set(strings.ToUpper(method), &handler)
+	hs := NewDict()
+	hs.Set(strings.ToUpper(method), &handler)
 	return &Route{
-		handlers: hs,
-		pattern:  pattern,
+		Handlers: hs,
+		Pattern:  pattern,
 	}
 }
 
@@ -202,9 +204,9 @@ func (t *Router) Handler(r *http.Request) (handler http.Handler, pattern string)
 
 	// Check whether requested method is allowed.
 	route := obj.(*Route)
-	handler, i := route.handlers.get(r.Method)
+	handler, i := route.Handlers.Get(r.Method)
 	if i == -1 {
-		return http.HandlerFunc(MethodNotAllowed), route.pattern
+		return http.HandlerFunc(MethodNotAllowed), route.Pattern
 	}
 
 	// Add parameters of request to request.Form and return a handler.
@@ -214,7 +216,7 @@ func (t *Router) Handler(r *http.Request) (handler http.Handler, pattern string)
 			r.Form[params[i].Name] = []string{params[i].Value}
 		}
 	}
-	return handler, route.pattern
+	return handler, route.Pattern
 }
 
 // MethodNotAllowed replies to the request with an HTTP 405 method not allowed
