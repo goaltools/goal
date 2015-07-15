@@ -180,6 +180,13 @@ func (t *Router) Build() error {
 	return t.data.Build(t.records)
 }
 
+// Build is a shortcut get an http handler for the routes.
+func (t Routes) Build() (http.Handler, error) {
+	r := NewRouter()
+	err := r.Handle(t).Build()
+	return r, err
+}
+
 // Do allocates and returns a Route struct.
 func Do(method, pattern string, handler http.HandlerFunc) *Route {
 	hs := NewDict()
