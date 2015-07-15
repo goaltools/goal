@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"runtime"
 
+	"github.com/anonx/sunplate/example/routes"
+
 	"github.com/anonx/sunplate/log"
-	"github.com/anonx/sunplate/routing"
 )
 
 // Comments below are used by `go generate`.
@@ -19,13 +20,10 @@ func main() {
 	// Set max procs for multi-thread executing.
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	// Include handlers and run the app.
-	r := routing.NewRouter()
-	err := r.Handle(routing.Routes{
-		nil,
-	}).Build()
+	// Build the routes and run the app.
+	handler, err := routes.List.Build()
 	if err != nil {
 		log.Error.Fatal(err)
 	}
-	log.Error.Fatal(http.ListenAndServe(":8080", r))
+	log.Error.Fatal(http.ListenAndServe(":8080", handler))
 }
