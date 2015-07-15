@@ -10,8 +10,7 @@ import (
 )
 
 func TestRouter(t *testing.T) {
-	r := NewRouter()
-	err := r.Handle(Routes{
+	rs := Routes{
 		Get("/", testHandlerFunc),
 		Get("/profile/:name", testHandlerFunc),
 		Get("/profile/:name", testHandlerFuncHelloWorld), // This should override the previous route.
@@ -20,13 +19,26 @@ func TestRouter(t *testing.T) {
 		Put("/profile/:name", testHandlerFunc),
 		Delete("/profile/:name", testHandlerFunc),
 		Do("GET", "/profile/update", testHandlerFunc),
-	}).Build()
+	}
+
+	// Creating a new router manually.
+	r := NewRouter()
+	err := r.Handle(rs).Build()
 	if err != nil {
 		t.Errorf("Failed to build a handler. Error: %s.", err)
 	}
 
 	server := httptest.NewServer(r)
 	defer server.Close()
+
+	// Using a Build shortcut.
+	h, err := rs.Build()
+	if err != nil {
+		t.Errorf("Failed to build a handler. Error: %s.", err)
+	}
+
+	server1 := httptest.NewServer(h)
+	defer server1.Close()
 
 	for _, v := range []struct {
 		status                 int
@@ -74,27 +86,29 @@ func TestRouter(t *testing.T) {
 			404, "POST", "/qwerty", "404 page not found\n",
 		},
 	} {
-		req, err := http.NewRequest(v.method, server.URL+v.path, nil)
-		if err != nil {
-			t.Errorf("Failed to create a new request. Error: %s.", err)
-			continue
-		}
-		res, err := http.DefaultClient.Do(req)
-		if err != nil {
-			t.Errorf("Cannot do a request. Error: %s.", err)
-			continue
-		}
-		defer res.Body.Close()
-		body, err := ioutil.ReadAll(res.Body)
-		if err != nil {
-			t.Errorf("Did not manage to read a response body. Error: %s.", err)
-		}
-		actual := string(body)
-		if res.StatusCode != v.status || actual != v.expected {
-			t.Errorf(
-				`%s "%s" => %#v %#v, expected %#v %#v.`,
-				v.method, v.path, res.StatusCode, actual, v.status, v.expected,
-			)
+		for _, s := range []*httptest.Server{server, server1} {
+			req, err := http.NewRequest(v.method, s.URL+v.path, nil)
+			if err != nil {
+				t.Errorf("Failed to create a new request. Error: %s.", err)
+				continue
+			}
+			res, err := http.DefaultClient.Do(req)
+			if err != nil {
+				t.Errorf("Cannot do a request. Error: %s.", err)
+				continue
+			}
+			defer res.Body.Close()
+			body, err := ioutil.ReadAll(res.Body)
+			if err != nil {
+				t.Errorf("Did not manage to read a response body. Error: %s.", err)
+			}
+			actual := string(body)
+			if res.StatusCode != v.status || actual != v.expected {
+				t.Errorf(
+					`%s "%s" => %#v %#v, expected %#v %#v.`,
+					v.method, v.path, res.StatusCode, actual, v.status, v.expected,
+				)
+			}
 		}
 	}
 
