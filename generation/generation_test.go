@@ -3,7 +3,6 @@ package generation
 import (
 	"os"
 	"os/exec"
-	"path/filepath"
 	"testing"
 )
 
@@ -14,7 +13,7 @@ func TestStart_IncorrectSubcommand(t *testing.T) {
 	})
 
 	// Remove the directory we have created.
-	os.RemoveAll(filepath.Join("./assets"))
+	os.RemoveAll("./assets")
 }
 
 func TestStart_Handlers(t *testing.T) {
