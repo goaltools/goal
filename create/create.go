@@ -14,15 +14,15 @@ import (
 	p "github.com/anonx/sunplate/path"
 )
 
-// result represents objects found when scanning a skeleton directory.
-// There are a few possible kind of them: directories, static files,
-// go source files (that require additional processing of their content).
-type result struct {
-	dirs, files, srcs map[string]string // Keys are full paths, values are relative ones.
+// Handler is an instance of new subcommand.
+var Handler = command.Handler{
+	Name: "new",
+
+	Main: start,
 }
 
-// Start is an entry point of the command.
-func Start(action string, params command.Data) {
+// start is an entry point of the command.
+var start = func(action string, params command.Data) {
 	oldImport := p.SunplateImport("skeleton")
 	newImport := p.AbsoluteImport(params.Default(action, "./"))
 
@@ -53,6 +53,13 @@ func Start(action string, params command.Data) {
 	}
 
 	log.Info.Printf(info, newImport, newImport)
+}
+
+// result represents objects found when scanning a skeleton directory.
+// There are a few possible kind of them: directories, static files,
+// go source files (that require additional processing of their content).
+type result struct {
+	dirs, files, srcs map[string]string // Keys are full paths, values are relative ones.
 }
 
 // walkFunc returns a result instance and a function that may be used for validation

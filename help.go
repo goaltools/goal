@@ -5,17 +5,18 @@ import (
 	"github.com/anonx/sunplate/log"
 )
 
-// Show a help message about supported commands.
-func showHelp(action string, params command.Data) {
+// helpHandler is an instance of a subcommand that is used
+// for showing info about supported commands.
+var helpHandler = command.Handler{
+	Name: "help",
+	Main: help,
+}
+
+// help is used for showing info about supported commands.
+func help(action string, params command.Data) {
 	switch params[action] {
 	default:
 		log.Info.Printf(helpMsg, action)
-	}
-}
-
-func catchPanic() {
-	if err := recover(); err != nil {
-		log.Error.Fatal(err)
 	}
 }
 

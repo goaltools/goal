@@ -9,8 +9,15 @@ import (
 	"github.com/anonx/sunplate/log"
 )
 
-// Start is an entry point of generate command.
-func Start(action string, params command.Data) {
+// Handler is an instance of generate subcommand.
+var Handler = command.Handler{
+	Name: "generate",
+
+	Main: start,
+}
+
+// start is an entry point of generate command.
+func start(action string, params command.Data) {
 	switch params[action] {
 	case "handler", "handlers":
 		handlers.Start(params)
