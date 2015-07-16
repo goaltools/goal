@@ -6,12 +6,11 @@ package listing
 import (
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/anonx/sunplate/command"
 	"github.com/anonx/sunplate/generation/output"
 	"github.com/anonx/sunplate/log"
-	"github.com/anonx/sunplate/path"
+	p "github.com/anonx/sunplate/path"
 )
 
 // Start is an entry point of listing subcommand.
@@ -33,7 +32,7 @@ func Start(params command.Data) {
 	// Generate and save a new package.
 	t := output.NewType(
 		outPkg, filepath.Join(
-			path.SunplateDir("generation", "listing"), "./listing.go.template",
+			p.SunplateDir("generation", "listing"), "./listing.go.template",
 		),
 	)
 	t.CreateDir(outputDir)
@@ -62,14 +61,9 @@ func walkFunc(dir string) (map[string]string, func(string, os.FileInfo, error) e
 			return nil
 		}
 
-		// Get a file path without root path. So, path like "./views/accounts/index.html"
-		// will be transformed into "accounts/index.html" if our root path is "./views".
-		relPath := strings.TrimPrefix(path, dir)
-		relPath = filepath.Clean(relPath)
-
 		// Add files to the list.
 		log.Trace.Printf(`Path "%s" discovered.`, path)
-		files[relPath] = path
+		files[p.Prefixless(path, dir)] = path
 		return nil
 	}
 }
