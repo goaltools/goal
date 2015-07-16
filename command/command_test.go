@@ -11,17 +11,20 @@ func TestProcess_IncorrectArgs(t *testing.T) {
 	})
 
 	err := c.Process()
-	if err == nil {
-		t.Errorf("Parameters cannot be omitted. Error expected, got %v.", err)
+	if err == nil || err == ErrIncorrectArgs {
+		t.Errorf(
+			"If no arguments are received an error different from IncorrectArgs is expected. Got error: %v.",
+			err,
+		)
 	}
 
 	err = c.Process("new", "path/to/app", "smth")
-	if err == nil {
-		t.Errorf("Odd number of arguments is not possible. Error expected, got %v.", err)
+	if err != nil {
+		t.Errorf("Odd number of arguments is allowed, got error: %v", err)
 	}
 
 	err = c.Process("run", "path/to/app")
-	if err == nil {
+	if err != ErrIncorrectArgs {
 		t.Errorf("Unregistered handler requested. Error expected, got %v.", err)
 	}
 }
@@ -45,6 +48,13 @@ func TestRegister(t *testing.T) {
 func TestProcess(t *testing.T) {
 	a := ""
 	v := ""
+	y := false
+
+	Helpers["-x"] = func(val string) {
+		if val == "y" {
+			y = true
+		}
+	}
 
 	c := NewContext()
 	c.Register(Handler{
@@ -58,9 +68,12 @@ func TestProcess(t *testing.T) {
 		},
 	})
 
-	err := c.Process("update", "test")
+	err := c.Process("update", "test", "-x", "y")
 	if err != nil {
 		t.Errorf("Correct input arguments are used, but got error: %v.", err)
+	}
+	if y != true {
+		t.Errorf("Helper function was not started. Y is still %v.", y)
 	}
 
 	if a != "update" || v != "test" {

@@ -12,31 +12,51 @@ import (
 	"github.com/anonx/sunplate/log"
 )
 
-// Handlers is a map of registered commands
+// Handlers is a map of registered subcommands
 // 'sunplate' toolkit supports.
-var Handlers = map[string]command.Handler{
-	"generate": generation.Start,
-	"help":     showHelp,
-	"new":      create.Start,
-}
+var Handlers = command.NewContext()
 
 func main() {
-	// Do not show stacktrace if something goes wrong.
-	defer catchPanic()
+	var trace bool
+
+	// Do not show stacktrace if something goes wrong
+	// in case tracing is turned off.
+	defer func() {
+		if err := recover(); err != nil {
+			if trace {
+				log.Warn.Fatalf("TRACE: %v.", err)
+			}
+		}
+	}()
 
 	// Show header message.
 	log.Info.Println(header)
 
-	// Validate input parameters and find out what user wants to run.
-	ct, err := command.NewType(os.Args[1:])
-	if err != nil {
-		// Validation failed because of incorrect arguments number,
-		// try to show help menu instead.
-		ct, err = command.NewType([]string{"help", "info"})
+	// Enabling tracing if that is requested by a user.
+	command.Helpers["--trace"] = func(val string) {
+		if val == "true" {
+			trace = true
+		}
 	}
-	err = ct.Register(Handlers)
-	if err != nil {
-		// Validation failed because requested handler does not exist.
-		log.Warn.Printf("Unknown command '%s'.\nRun 'sunplate help' for usage.", os.Args[1])
+
+	// Try to run the subcommand user requested.
+	err := Handlers.Process(os.Args[1:]...)
+	if err == command.ErrIncorrectArgs { // The arguments were not correct.
+		log.Warn.Printf(unknownCmd, os.Args[1])
+		return
+	}
+	if err != nil { // The arguments were omitted.
+		Handlers.Process("help", "info") // Show a help message.
+		return
 	}
 }
+
+func init() {
+	// Register the supported subcommands.
+	Handlers.Register(create.Handler)
+	Handlers.Register(generation.Handler)
+	Handlers.Register(helpHandler)
+}
+
+var unknownCmd = `Unknown command "%s".
+Run "sunplate help" for usage.`

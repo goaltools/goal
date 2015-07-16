@@ -5,6 +5,10 @@ import (
 	"errors"
 )
 
+// Helpers are functions that are executed when
+// processing specific argument keys.
+var Helpers = map[string]func(val string){}
+
 // Context stores information about supported subcommands.
 // Data has the following format:
 //	Command name:
@@ -31,9 +35,9 @@ type HandlerFunc func(string, Data)
 // Data is an internal type for representation of user input parameters.
 type Data map[string]string
 
-// errIncorrectArgs is returned every time a user is trying
+// ErrIncorrectArgs is returned every time a user is trying
 // to use input parameters we do not expect.
-var errIncorrectArgs = errors.New("incorrect arguments received")
+var ErrIncorrectArgs = errors.New("incorrect arguments received")
 
 // NewContext allocates and returns a new instance of Context.
 func NewContext() *Context {
@@ -49,15 +53,25 @@ func (c Context) Register(h Handler) {
 // starts executing a requested handler or returns an error. The first
 // argument has a special meaning, it is a handler's name.
 func (c Context) Process(args ...string) error {
-	// Make sure the number of arguments is even number
-	// and it is more than zero.
-	if len(args) == 0 || len(args)%2 != 0 {
-		return errIncorrectArgs
+	// If there are no any arguments, do nothing.
+	if len(args) == 0 {
+		return errors.New("no arguments received")
+	}
+
+	// Make sure the number of arguments is even number.
+	if len(args)%2 != 0 {
+		args = append(args, "")
 	}
 
 	// Save the arguments as a dict.
 	params := Data{}
 	for i := 0; i < len(args); i += 2 {
+		// Call an appropriate helper, if exists.
+		if f, ok := Helpers[args[i]]; ok {
+			f(args[i+1])
+		}
+
+		// Add the current argument to the dict.
 		params[args[i]] = args[i+1]
 	}
 
@@ -65,12 +79,14 @@ func (c Context) Process(args ...string) error {
 	// First argument is its name.
 	if h, ok := c[args[0]]; ok {
 		// Call the handler's entry function.
-		h.Main(args[0], params)
+		if h.Main != nil {
+			h.Main(args[0], params)
+		}
 		return nil
 	}
 
 	// Otherwise, return Incorrect Arguments error.
-	return errIncorrectArgs
+	return ErrIncorrectArgs
 }
 
 // Default expects a key and a value as input parameters.
