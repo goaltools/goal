@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"runtime"
 
-	"github.com/anonx/sunplate/example/routes"
+	"github.com/anonx/sunplate/skeleton/routes"
 
 	"github.com/anonx/sunplate/log"
 )

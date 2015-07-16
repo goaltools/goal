@@ -20,6 +20,19 @@ func TestSunplateDir(t *testing.T) {
 	}
 }
 
+func TestSunplateImport(t *testing.T) {
+	p := spImp
+
+	if v := SunplateImport(); v != p {
+		t.Errorf(`Incorrect result. Expected "%s", got "%s".`, p, v)
+	}
+
+	hp := filepath.Join(p, "generation", "handlers")
+	if v := SunplateImport("generation", "handlers"); v != hp {
+		t.Errorf(`Incorrect result. Expected "%s", got "%s".`, hp, v)
+	}
+}
+
 func TestWorkingDir(t *testing.T) {
 	p := filepath.Join(build.Default.GOPATH, "src")
 	os.Chdir(p)
@@ -32,6 +45,10 @@ func TestWorkingDir(t *testing.T) {
 func TestAbsoluteImport_AbsImportArgument(t *testing.T) {
 	if v := AbsoluteImport(spImp); v != "github.com/anonx/sunplate" {
 		t.Errorf(`Incorrect result. Expected "%s", got "%s".`, spImp, v)
+	}
+
+	if v := AbsoluteImport(""); v != "" {
+		t.Errorf(`Empty input, empty output expected, got "%s".`, v)
 	}
 }
 
