@@ -29,6 +29,11 @@ func Start(action string, params command.Data) {
 	inputDir := p.SunplateDir("skeleton")
 	outputDir := p.PackageDir(newImport)
 
+	// Make sure the output directory does not exist yet.
+	if _, err := os.Stat(outputDir); !os.IsNotExist(err) {
+		log.Error.Fatalf(`Abort: Import path "%s" already exists.`, newImport)
+	}
+
 	rs, fn := walkFunc(inputDir)
 	filepath.Walk(inputDir, fn)
 
@@ -86,8 +91,7 @@ func walkFunc(dir string) (result, func(string, os.FileInfo, error) error) {
 	}
 }
 
-var info = `Your application is ready:
-	%s
+var info = `Your application "%s" is ready:
 You can run it with:
 	sunplate run %s
 `
