@@ -31,7 +31,7 @@ func Start(action string, params command.Data) {
 
 	// Make sure the output directory does not exist yet.
 	if _, err := os.Stat(outputDir); !os.IsNotExist(err) {
-		log.Error.Fatalf(`Abort: Import path "%s" already exists.`, newImport)
+		log.Error.Panicf(`Abort: Import path "%s" already exists.`, newImport)
 	}
 
 	rs, fn := walkFunc(inputDir)
