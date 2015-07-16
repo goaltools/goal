@@ -25,6 +25,7 @@ Status of the project: **WIP** (mostly, it does't work yet).
 The list of currently planned commands include:
 
 #### General commands
+##### - `sunplate new path/to/app` - Create a new skeleton application.
 ##### - `sunplate run path/to/app` - Run a tool that watches the app files and rebuilds if necessary. It can be used as a task runner, too (Planned).
 ##### - `sunplate help` - Show information about the tool and supported commands.
 
