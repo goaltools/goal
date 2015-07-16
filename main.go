@@ -9,7 +9,6 @@ import (
 	"github.com/anonx/sunplate/command"
 	"github.com/anonx/sunplate/create"
 	"github.com/anonx/sunplate/generation"
-	"github.com/anonx/sunplate/help"
 	"github.com/anonx/sunplate/log"
 )
 
@@ -17,7 +16,7 @@ import (
 // 'sunplate' toolkit supports.
 var Handlers = map[string]command.Handler{
 	"generate": generation.Start,
-	"help":     help.Start,
+	"help":     showHelp,
 	"new":      create.Start,
 }
 
@@ -41,22 +40,3 @@ func main() {
 		log.Warn.Printf("Unknown command '%s'.\nRun 'sunplate help' for usage.", os.Args[1])
 	}
 }
-
-func catchPanic() {
-	if err := recover(); err != nil {
-		log.Error.Fatal(err)
-	}
-}
-
-var header = `~
-~ https://github.com/anonx/sunplate
-~
-                        _       _
-                       | |     | |
-  ___ _   _ _ __  _ __ | | __ _| |_ ___
- / __| | | | '_ \| '_ \| |/ _' | __/ _ \
- \__ \ |_| | | | | |_) | | (_| | ||  __/
- |___/\__,_|_| |_| .__/|_|\__,_|\__\___|
-                 | |
-                 |_|
-`
