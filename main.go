@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/anonx/sunplate/command"
+	"github.com/anonx/sunplate/create"
 	"github.com/anonx/sunplate/generation"
 	"github.com/anonx/sunplate/help"
 	"github.com/anonx/sunplate/log"
@@ -17,6 +18,7 @@ import (
 var Handlers = map[string]command.Handler{
 	"generate": generation.Start,
 	"help":     help.Start,
+	"new":      create.Start,
 }
 
 func main() {

@@ -5,15 +5,15 @@ package handlers
 import (
 	"net/http"
 
-	c0 "github.com/anonx/sunplate/example/assets/handlers/github.com/anonx/sunplate/middleware/template"
-	contr "github.com/anonx/sunplate/example/controllers"
+	c0 "github.com/anonx/sunplate/skeleton/assets/handlers/github.com/anonx/sunplate/middleware/template"
+	contr "github.com/anonx/sunplate/skeleton/controllers"
 
 	a "github.com/anonx/sunplate/action"
 	"github.com/anonx/sunplate/strconv"
 )
 
 // Controller is an insance of tController that is automatically generated from Controller controller
-// being found at "github.com/anonx/sunplate/example/controllers/init.go",
+// being found at "github.com/anonx/sunplate/skeleton/controllers/init.go",
 // and contains methods to be used as handler functions.
 //
 // Controller is a struct that should be embedded into every controller
@@ -24,7 +24,7 @@ var Controller tController
 type tController struct {
 }
 
-// New allocates (github.com/anonx/sunplate/example/controllers).Controller controller,
+// New allocates (github.com/anonx/sunplate/skeleton/controllers).Controller controller,
 // initializes its parents; then returns the controller.
 func (t tController) New() *contr.Controller {
 	c := &contr.Controller{}
@@ -33,13 +33,13 @@ func (t tController) New() *contr.Controller {
 }
 
 // Before executes magic actions of embedded controllers, and
-// calls (github.com/anonx/sunplate/example/controllers).Controller.Before.
+// calls (github.com/anonx/sunplate/skeleton/controllers).Controller.Before.
 func (t tController) Before(c *contr.Controller, w http.ResponseWriter, r *http.Request) a.Result {
 	// Execute magic Before actions of embedded controllers.
 	if res := c0.Middleware.Before(c.Middleware, w, r); r != nil {
 		return res
 	}
-	// Call magic Before action of (github.com/anonx/sunplate/example/controllers).Controller.
+	// Call magic Before action of (github.com/anonx/sunplate/skeleton/controllers).Controller.
 	if res := c.Before( // "Binding" parameters.
 	); res != nil {
 		return res

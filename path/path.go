@@ -19,8 +19,15 @@ import (
 //	path.SunplateDir("generation", "handlers")
 func SunplateDir(pkgs ...string) string {
 	p := filepath.Join(
-		build.Default.GOPATH, "src/github.com/anonx/sunplate",
+		PackageDir(""), SunplateImport(pkgs...),
 	)
+	return p
+}
+
+// SunplateImport is equivalent of the SunplateDir except it returns
+// a go import path rather than a path to a directory.
+func SunplateImport(pkgs ...string) string {
+	p := "github.com/anonx/sunplate"
 	for i := range pkgs {
 		p = filepath.Join(p, pkgs[i])
 	}
@@ -55,6 +62,11 @@ func AbsoluteImport(path string) string {
 	// Get rid of "$GOPATH/src/" part at the beginning.
 	p := filepath.Join(WorkingDir(), path)
 	return strings.TrimPrefix(p, filepath.Join(build.Default.GOPATH, "src")+"/")
+}
+
+// PackageDir gets a golang import path and returns its full path.
+func PackageDir(imp string) string {
+	return filepath.Join(build.Default.GOPATH, "src", imp)
 }
 
 // Prefixless cuts a prefix of a path and returns the result

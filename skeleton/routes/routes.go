@@ -1,7 +1,9 @@
 package routes
 
 import (
-	"github.com/anonx/sunplate/example/assets/handlers"
+	"net/http"
+
+	"github.com/anonx/sunplate/skeleton/assets/handlers"
 
 	r "github.com/anonx/sunplate/routing"
 )
@@ -15,4 +17,7 @@ import (
 // as the first argument and an error (or nil) as the second one.
 var List = r.Routes{
 	r.Get("/", handlers.App.Index),
+
+	// Serve static files of ./static directory.
+	r.Get("/static", http.FileServer(http.Dir("./static")).ServeHTTP),
 }

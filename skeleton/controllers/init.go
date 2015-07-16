@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"github.com/anonx/sunplate/action"
-	"github.com/anonx/sunplate/example/assets/views"
 	"github.com/anonx/sunplate/middleware/template"
+	"github.com/anonx/sunplate/skeleton/assets/views"
 
 	t "github.com/revel/revel/testing"
 )

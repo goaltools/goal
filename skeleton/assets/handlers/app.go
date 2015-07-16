@@ -5,14 +5,14 @@ package handlers
 import (
 	"net/http"
 
-	contr "github.com/anonx/sunplate/example/controllers"
+	contr "github.com/anonx/sunplate/skeleton/controllers"
 
 	a "github.com/anonx/sunplate/action"
 	"github.com/anonx/sunplate/strconv"
 )
 
 // App is an insance of tApp that is automatically generated from App controller
-// being found at "github.com/anonx/sunplate/example/controllers/app.go",
+// being found at "github.com/anonx/sunplate/skeleton/controllers/app.go",
 // and contains methods to be used as handler functions.
 //
 // App is a sample controller that is used for demonstration purposes.
@@ -22,7 +22,7 @@ var App tApp
 type tApp struct {
 }
 
-// New allocates (github.com/anonx/sunplate/example/controllers).App controller,
+// New allocates (github.com/anonx/sunplate/skeleton/controllers).App controller,
 // initializes its parents; then returns the controller.
 func (t tApp) New() *contr.App {
 	c := &contr.App{}
@@ -31,14 +31,14 @@ func (t tApp) New() *contr.App {
 }
 
 // Before executes magic actions of embedded controllers, and
-// calls (github.com/anonx/sunplate/example/controllers).App.Before with arguments
+// calls (github.com/anonx/sunplate/skeleton/controllers).App.Before with arguments
 // that are extracted from r.Form and converted to appropriate types.
 func (t tApp) Before(c *contr.App, w http.ResponseWriter, r *http.Request) a.Result {
 	// Execute magic Before actions of embedded controllers.
 	if res := Controller.Before(c.Controller, w, r); r != nil {
 		return res
 	}
-	// Call magic Before action of (github.com/anonx/sunplate/example/controllers).App.
+	// Call magic Before action of (github.com/anonx/sunplate/skeleton/controllers).App.
 	if res := c.Before( // "Binding" parameters.
 		strconv.String(r.Form, "name"),
 		strconv.Ints(r.Form, "pages"),
@@ -49,13 +49,13 @@ func (t tApp) Before(c *contr.App, w http.ResponseWriter, r *http.Request) a.Res
 }
 
 // After executes magic actions of embedded controllers, and
-// calls (github.com/anonx/sunplate/example/controllers).App.After.
+// calls (github.com/anonx/sunplate/skeleton/controllers).App.After.
 func (t tApp) After(c *contr.App, w http.ResponseWriter, r *http.Request) a.Result {
 	// Execute magic After actions of embedded controllers.
 	if res := Controller.After(c.Controller, w, r); r != nil {
 		return res
 	}
-	// Call magic After action of (github.com/anonx/sunplate/example/controllers).App.
+	// Call magic After action of (github.com/anonx/sunplate/skeleton/controllers).App.
 	if res := c.After( // "Binding" parameters.
 	); res != nil {
 		return res
@@ -64,10 +64,10 @@ func (t tApp) After(c *contr.App, w http.ResponseWriter, r *http.Request) a.Resu
 }
 
 // Finally executes magic actions of embedded controllers, and
-// calls (github.com/anonx/sunplate/example/controllers).App.Finally.
+// calls (github.com/anonx/sunplate/skeleton/controllers).App.Finally.
 // The call is garanteed to be done no matter what happens during execution of parent actions.
 func (t tApp) Finally(c *contr.App, w http.ResponseWriter, r *http.Request) {
-	// Call magic Finally action of (github.com/anonx/sunplate/example/controllers).App.
+	// Call magic Finally action of (github.com/anonx/sunplate/skeleton/controllers).App.
 	defer func() {
 		if res := c.Finally( // "Binding" parameters.
 			strconv.String(r.Form, "name"),
@@ -81,7 +81,7 @@ func (t tApp) Finally(c *contr.App, w http.ResponseWriter, r *http.Request) {
 
 // Index is a handler that was generated automatically.
 // It calls Before, After, Finally methods, and Index action found at
-// github.com/anonx/sunplate/example/controllers/app.go
+// github.com/anonx/sunplate/skeleton/controllers/app.go
 // in appropriate order.
 //
 // Index is an action that is used for generation of a greeting form.
@@ -111,7 +111,7 @@ func (t tApp) Index(w http.ResponseWriter, r *http.Request) {
 
 // PostGreet is a handler that was generated automatically.
 // It calls Before, After, Finally methods, and PostGreet action found at
-// github.com/anonx/sunplate/example/controllers/app.go
+// github.com/anonx/sunplate/skeleton/controllers/app.go
 // in appropriate order.
 //
 // PostGreet prints received user fullname. If it is not valid,
