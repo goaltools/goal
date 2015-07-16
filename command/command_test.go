@@ -4,58 +4,67 @@ import (
 	"testing"
 )
 
-func TestNewType_IncorrectArgsNumber(t *testing.T) {
-	_, err := NewType([]string{})
-	if err != ErrIncorrectArgs {
-		t.Error("Parameters' absence is not allowed, error expected.")
-	}
-
-	_, err = NewType([]string{"run", "path/to/app", "smth"})
-	if err != ErrIncorrectArgs {
-		t.Error("Odd number of arguments is not allowed, error expected.")
-	}
-}
-
-func TestNewType(t *testing.T) {
-	typ, err := NewType([]string{"run", "path/to/app", "--smth", "cool"})
-	if err != nil {
-		t.Errorf("Error was not expected. Got %#v.", err)
-	}
-	if typ.params["run"] != "path/to/app" {
-		t.Error("Arguments were expected to be saved as dictionary.")
-	}
-	if typ.action != "run" {
-		t.Errorf("Action was expected to be 'run'. Instead it is '%s'.", typ.action)
-	}
-}
-
-func TestRegister_IncorrectArgs(t *testing.T) {
-	typ, _ := NewType([]string{"run", "path/to/app"})
-	err := typ.Register(map[string]Handler{
-		"handlerX": func(action string, params Data) {
-			// ToDo
-		},
+func TestProcess_IncorrectArgs(t *testing.T) {
+	c := NewContext()
+	c.Register(Handler{
+		Name: "new",
 	})
-	if err != ErrIncorrectArgs {
-		t.Error("Action 'run' is not a registered handler. And thus incorrect args error expected.")
+
+	err := c.Process()
+	if err == nil {
+		t.Errorf("Parameters cannot be omitted. Error expected, got %v.", err)
+	}
+
+	err = c.Process("new", "path/to/app", "smth")
+	if err == nil {
+		t.Errorf("Odd number of arguments is not possible. Error expected, got %v.", err)
+	}
+
+	err = c.Process("run", "path/to/app")
+	if err == nil {
+		t.Errorf("Unregistered handler requested. Error expected, got %v.", err)
 	}
 }
 
 func TestRegister(t *testing.T) {
-	typ, _ := NewType([]string{"run", "path/to/app"})
+	c := NewContext()
+	c.Register(Handler{
+		Name: "new",
+	})
+	if _, ok := (*c)["new"]; !ok {
+		t.Errorf("The first handler was not registered. Context is %v.", c)
+	}
+	c.Register(Handler{
+		Name: "create",
+	})
+	if _, ok := (*c)["create"]; !ok {
+		t.Errorf("The second handler was not registered. Context is %v.", c)
+	}
+}
 
-	val := ""
-	err := typ.Register(map[string]Handler{
-		"run": func(action string, params Data) {
-			val = params["run"]
+func TestProcess(t *testing.T) {
+	a := ""
+	v := ""
+
+	c := NewContext()
+	c.Register(Handler{
+		Name: "update",
+		Main: func(action string, params Data) {
+			if action != "update" {
+				t.Errorf(`The first argument should be a subcommand name, "%s" is not.`, action)
+			}
+			a = action
+			v = params[action]
 		},
 	})
+
+	err := c.Process("update", "test")
 	if err != nil {
-		t.Errorf("Error expected to be nil. Got %#v.", err)
+		t.Errorf("Correct input arguments are used, but got error: %v.", err)
 	}
 
-	if val != "path/to/app" {
-		t.Error("Handler function for 'run' was expected to be called. But apparently it wasn't.")
+	if a != "update" || v != "test" {
+		t.Errorf(`Looks like entry function was not started. As a="%s", v="%s".`, a, v)
 	}
 }
 
