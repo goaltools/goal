@@ -12,6 +12,7 @@ import (
 // Handler is an instance of generate subcommand.
 var Handler = command.Handler{
 	Name: "generate",
+	Info: `automatic generation of golang code (for use with "go generate")`,
 
 	Main: start,
 }
@@ -24,7 +25,7 @@ func start(action string, params command.Data) {
 	case "listing":
 		listing.Start(params)
 	default:
-		log.Trace.Panicf(errMsg, params[action], action)
+		log.Error.Panicf(errMsg, params[action], action)
 	}
 }
 

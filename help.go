@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/anonx/sunplate/command"
 	"github.com/anonx/sunplate/log"
 )
@@ -14,10 +16,25 @@ var helpHandler = command.Handler{
 
 // help is used for showing info about supported commands.
 func help(action string, params command.Data) {
-	switch params[action] {
-	default:
-		log.Info.Printf(helpMsg, action)
+	// Make sure we can show help message about the requested
+	// subcommand or it is not supported.
+	if h, ok := Handlers[params[action]]; ok {
+		log.Info.Printf(infoMsg, h.Usage, h.Desc)
+		return
 	}
+	log.Info.Printf(helpMsg, showCommands()) // Show general message.
+}
+
+// showCommands returns a description of supported commands
+// to be included in help message.
+func showCommands() (s string) {
+	for n := range Handlers {
+		inf := Handlers[n].Info
+		if inf != "" {
+			s += fmt.Sprintf("\t%-12s%s\n", n, inf)
+		}
+	}
+	return
 }
 
 var header = `~
@@ -39,10 +56,12 @@ Usage:
 	sunplate {command} [arguments]
 
 The commands are:
-	new         create a skeleton application
-	run         run a watcher / task runner
+%s
+Use "sunplate help {command}" for more information.
+`
 
-	generate    analize files, build handlers, routes, etc.
+var infoMsg = `Usage:
+	sunplate %s
 
-Use "sunplate %s [command]" for more information.
+%s
 `

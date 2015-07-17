@@ -12,14 +12,14 @@ import (
 
 func TestStart_ExistingDir(t *testing.T) {
 	defer expectPanic("Creation of a project in an existing directory should cause a panic.")
-	Start("create", command.Data{
+	start("create", command.Data{
 		"create": "./testdata/existingDir",
 	})
 }
 
 func TestStart(t *testing.T) {
 	dst := "./testdata/project"
-	Start("create", command.Data{
+	start("create", command.Data{
 		"create": dst,
 	})
 

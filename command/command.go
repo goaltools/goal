@@ -40,8 +40,8 @@ type Data map[string]string
 var ErrIncorrectArgs = errors.New("incorrect arguments received")
 
 // NewContext allocates and returns a new instance of Context.
-func NewContext() *Context {
-	return &Context{}
+func NewContext() Context {
+	return Context{}
 }
 
 // Register gets a handler and adds it to the list of supported ones.
@@ -93,8 +93,8 @@ func (c Context) Process(args ...string) error {
 // If such key exists within params, an associated value is returned.
 // Otherwise, the value received as input parameter is returned.
 func (t Data) Default(key, value string) string {
-	if v, ok := t[key]; ok {
-		return v
+	if t[key] != "" {
+		return t[key]
 	}
 	return value
 }
