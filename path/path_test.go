@@ -47,13 +47,8 @@ func TestAbsoluteImport_AbsImportArgument(t *testing.T) {
 		t.Errorf(`Incorrect result. Expected "%s", got "%s".`, spImp, v)
 	}
 
-	if v := AbsoluteImport(""); v != "." {
-		t.Errorf(`Empty input: current directory expected, got "%s".`, v)
-	}
-
-	os.Chdir(filepath.Join(build.Default.GOPATH, "src", "github.com"))
-	if v := AbsoluteImport(""); v != "github.com" {
-		t.Errorf(`Empty input: "github.com" expected, got "%s".`, v)
+	if v := AbsoluteImport(""); v != "" {
+		t.Errorf(`Empty input: empty output expected, got "%s".`, v)
 	}
 }
 
