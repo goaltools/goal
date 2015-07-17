@@ -46,7 +46,11 @@ type controller struct {
 
 // Package returns a unique package name that may be used in templates
 // concatenated with some arbitarry suffix strings.
-// If parent is a from the local package, empty string will be returned.
+// If parent is from the local package, empty string will be returned.
+// This method is useful to generate in templates things like:
+//	uniquePkgName "github.com/user/project"
+// and:
+//	uniquePkgName.Application.Index() // Package name and dot suffix.
 func (p parent) Package(suffices ...string) string {
 	if p.Import == "" {
 		return ""
