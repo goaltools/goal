@@ -35,7 +35,7 @@ func (t tApp) New() *contr.App {
 // that are extracted from r.Form and converted to appropriate types.
 func (t tApp) Before(c *contr.App, w http.ResponseWriter, r *http.Request) a.Result {
 	// Execute magic Before actions of embedded controllers.
-	if res := Controller.Before(c.Controller, w, r); r != nil {
+	if res := Controller.Before(c.Controller, w, r); res != nil {
 		return res
 	}
 	// Call magic Before action of (github.com/anonx/sunplate/skeleton/controllers).App.
@@ -52,7 +52,7 @@ func (t tApp) Before(c *contr.App, w http.ResponseWriter, r *http.Request) a.Res
 // calls (github.com/anonx/sunplate/skeleton/controllers).App.After.
 func (t tApp) After(c *contr.App, w http.ResponseWriter, r *http.Request) a.Result {
 	// Execute magic After actions of embedded controllers.
-	if res := Controller.After(c.Controller, w, r); r != nil {
+	if res := Controller.After(c.Controller, w, r); res != nil {
 		return res
 	}
 	// Call magic After action of (github.com/anonx/sunplate/skeleton/controllers).App.
