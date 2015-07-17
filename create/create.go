@@ -21,6 +21,7 @@ var Handler = command.Handler{
 	Usage: "new {path}",
 	Desc: `New creates files and directories to get a new Sunplate toolkit
 based application running quickly.
+All files and directories will be put into the given import path.
 
 The path must be a directory that does not exist yet, e.g.:
 	./sample
@@ -28,7 +29,12 @@ The path must be a directory that does not exist yet, e.g.:
 or alternatively:
 	github.com/anonx/sample
 
-All files and directories will be put into the given import path.
+Moreover, it is required to be located inside $GOPATH.
+
+Examples:
+	sunplate new github.com/anonx/sample
+	sunplate new ./sample
+	sunplate new ../anonx/sample
 `,
 
 	Main: start,
