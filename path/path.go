@@ -49,20 +49,25 @@ func WorkingDir() string {
 }
 
 // AbsoluteImport gets an import path and returns its absolute representation.
-// So, if it is already absolute it is returned as is.
+// So, if it is already absolute or empty it is returned as is.
 // Otherwise, it's assumed the path is relative to the current working directory.
 // If something goes wrong AbsoluteImport panics.
 func AbsoluteImport(path string) string {
-	// If it is an absolute path, return it as is.
-	if !strings.HasPrefix(path, ".") && path != "" {
-		return Prefixless(path, "/") // Import path never starts with a slash.
+	// If path is empty, do nothing.
+	if path == "" {
+		return path
 	}
 
-	// Detect import path of the working directory
-	// by removing "$GOPATH/src" at the beginning.
+	// If it is an absolute path, remove the starting slashes, if any.
+	if !strings.HasPrefix(path, ".") {
+		return strings.TrimLeft(path, "/")
+	}
+
+	// Get absolute import path by removing "$GOPATH/src" at the beginning
+	// of working dir + relative path.
 	gopath := PackageDir("")
 	pkgPath := filepath.Join(WorkingDir(), path)
-	if !strings.HasPrefix(pkgPath, gopath) { // Check whether working dir is within $GOPATH.
+	if !strings.HasPrefix(pkgPath, gopath) { // If there is no $GOPATH at the beginning.
 		log.Error.Panicf("Your project must be located inside of $GOPATH.")
 	}
 	imp := Prefixless(pkgPath, gopath)
