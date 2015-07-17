@@ -55,7 +55,7 @@ func Start(params command.Data) {
 			for i, p := range ps[imp][name].Parents {
 				// Make sure it is a controller rather than just some embedded struct.
 				check := p.Import
-				if check == "" {
+				if check == "" { // Embedded parent is a local structure.
 					check = absImport
 				}
 				if _, ok := ps[check]; !ok { // Such package is not in the list of scanned ones.

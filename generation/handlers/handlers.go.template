@@ -140,7 +140,7 @@ func init() {
 :	<@if .dot.ctx.parents>\
 :		// Execute magic <@.name> actions of embedded controllers.
 :	:	<@range $i, $v := .dot.ctx.parents>\
-:	:		if res := <@$v.Package "."><@$v.Name>.<@$.name>(c.<@$v.Name>, w, r); r != nil {
+:	:		if res := <@$v.Package "."><@$v.Name>.<@$.name>(c.<@$v.Name>, w, r); res != nil {
 :	:			return res
 :	:		}
 :	:	<@end>\

@@ -13,6 +13,19 @@ func TestProcessPackage(t *testing.T) {
 	ps.processPackage("github.com/anonx/sunplate/generation/handlers/testdata/controllers")
 }
 
+func TestParentPackage(t *testing.T) {
+	p := parent{}
+	s := p.Package()
+	if s != "" {
+		// E.g. if we are using it for generation of:
+		//	uniquePkgName.Application.Index.
+		// In case the Application is local (i.e. its import is empty) we need:
+		//	Application.Index.
+		// I.e. the method must return empty string.
+		t.Errorf("Packages with empty imports must have no names.")
+	}
+}
+
 func assertDeepEqualController(c1, c2 *controller) {
 	if c1 == nil || c2 == nil {
 		if c1 != c2 {
