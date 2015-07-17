@@ -11,8 +11,24 @@ import (
 
 // Handler is an instance of generate subcommand.
 var Handler = command.Handler{
-	Name: "generate",
-	Info: `automatic generation of golang code (for use with "go generate")`,
+	Name:  "generate",
+	Info:  `automatic generation of golang code (for use with "go generate")`,
+	Usage: "generate {command} [arguments]",
+	Desc: `The commands are:
+	handlers    generate golang handler functions for a controllers package
+	listing     generate a map of file names and paths found in a requested directory
+
+Possible arguments include:
+	--input     a path to directory that should be scanned
+	--output    a directory where to save generated .go files
+	--package   name of the package that should be created
+
+All paths are expected to be relative to the root of your project.
+
+If no arguments are received the default values will be used:
+	generate handlers --input ./controllers --output ./assets/handlers --package handlers
+	generate listing --input ./views --output ./assets/views --package views
+`,
 
 	Main: start,
 }
