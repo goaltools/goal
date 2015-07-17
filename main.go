@@ -22,15 +22,13 @@ func main() {
 	// Do not show stacktrace if something goes wrong
 	// in case tracing is turned off.
 	defer func() {
-		if err := recover(); err != nil {
-			if trace {
-				log.Warn.Fatalf("TRACE: %v.", err)
+		if !trace {
+			if err := recover(); err != nil {
+				// Do nothing, error message has already been printed
+				// and we do not need stack trace.
 			}
 		}
 	}()
-
-	// Show header message.
-	log.Info.Println(header)
 
 	// Enabling tracing if that is requested by a user.
 	command.Helpers["--trace"] = func(val string) {
@@ -56,6 +54,17 @@ func init() {
 	Handlers.Register(create.Handler)
 	Handlers.Register(generation.Handler)
 	Handlers.Register(helpHandler)
+
+	// Show header message when using new or help
+	// commands.
+	command.Helpers["new"] = showHeader
+	command.Helpers["help"] = showHeader
+}
+
+// showHeader prints a header message
+// with the name of the project.
+func showHeader(val string) {
+	log.Trace.Println(header)
 }
 
 var unknownCmd = `Unknown command "%s".

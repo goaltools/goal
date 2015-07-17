@@ -16,7 +16,20 @@ import (
 
 // Handler is an instance of new subcommand.
 var Handler = command.Handler{
-	Name: "new",
+	Name:  "new",
+	Info:  "create a skeleton application",
+	Usage: "new {path}",
+	Desc: `New creates files and directories to get a new Sunplate toolkit
+based application running quickly.
+
+The path must be a directory that does not exist yet, e.g.:
+	./sample
+
+or alternatively:
+	github.com/anonx/sample
+
+All files and directories will be put into the given import path.
+`,
 
 	Main: start,
 }

@@ -5,7 +5,6 @@ package log
 
 import (
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 
@@ -67,7 +66,7 @@ func init() {
 	Trace = log.New(
 		&context{
 			c: color.New(color.FgCyan),
-			w: ioutil.Discard,
+			w: os.Stdout,
 		}, "", 0,
 	)
 }

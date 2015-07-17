@@ -34,13 +34,13 @@ func TestRegister(t *testing.T) {
 	c.Register(Handler{
 		Name: "new",
 	})
-	if _, ok := (*c)["new"]; !ok {
+	if _, ok := c["new"]; !ok {
 		t.Errorf("The first handler was not registered. Context is %v.", c)
 	}
 	c.Register(Handler{
 		Name: "create",
 	})
-	if _, ok := (*c)["create"]; !ok {
+	if _, ok := c["create"]; !ok {
 		t.Errorf("The second handler was not registered. Context is %v.", c)
 	}
 }
