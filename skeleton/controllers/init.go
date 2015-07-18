@@ -1,45 +1,28 @@
 package controllers
 
 import (
-	"github.com/anonx/sunplate/action"
-	"github.com/anonx/sunplate/middleware/template"
 	"github.com/anonx/sunplate/skeleton/assets/views"
 
-	t "github.com/revel/revel/testing"
+	a "github.com/anonx/sunplate/action"
+	"github.com/anonx/sunplate/controllers/rendering"
 )
 
 // Controller is a struct that should be embedded into every controller
 // of your app to make methods provided by middlewares available.
 type Controller struct {
-	*template.Middleware
-
-	*t.TestSuite
-
-	HeyWorld   TestType `tag:"smth_cool=xxx"`
-	Bullshit   *string
-	GPA, Grade float64
+	*rendering.Template
 }
 
-// Before ...
-func (c *Controller) Before() action.Result {
+// Before is a magic action that is executed on every request
+// before any other action.
+//
+// Only structures with at least one action are treated as controllers.
+// So, do not delete this method.
+func (c *Controller) Before() a.Result {
 	return nil
-}
-
-// Finally ...
-func (c *Controller) Finally(page int) action.Result {
-	return nil
-}
-
-// TestType ...
-type TestType struct {
-}
-
-// Yahooooooo is cool...
-func (c *Controller) Yahooooooo(ctx1 *Controller, ctx2 Controller, name, lastname string, age int) bool {
-	return true
 }
 
 func init() {
 	// Define the templates that should be loaded.
-	template.Paths = views.Context
+	rendering.TemplatePaths = views.Context
 }

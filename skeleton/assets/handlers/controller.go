@@ -5,7 +5,7 @@ package handlers
 import (
 	"net/http"
 
-	c0 "github.com/anonx/sunplate/skeleton/assets/handlers/github.com/anonx/sunplate/middleware/template"
+	c0 "github.com/anonx/sunplate/skeleton/assets/handlers/github.com/anonx/sunplate/controllers/rendering"
 	contr "github.com/anonx/sunplate/skeleton/controllers"
 
 	a "github.com/anonx/sunplate/action"
@@ -28,7 +28,7 @@ type tController struct {
 // initializes its parents; then returns the controller.
 func (t tController) New() *contr.Controller {
 	c := &contr.Controller{}
-	c.Middleware = c0.Middleware.New()
+	c.Template = c0.Template.New()
 	return c
 }
 
@@ -36,7 +36,7 @@ func (t tController) New() *contr.Controller {
 // calls (github.com/anonx/sunplate/skeleton/controllers).Controller.Before.
 func (t tController) Before(c *contr.Controller, w http.ResponseWriter, r *http.Request) a.Result {
 	// Execute magic Before actions of embedded controllers.
-	if res := c0.Middleware.Before(c.Middleware, w, r); res != nil {
+	if res := c0.Template.Before(c.Template, w, r); res != nil {
 		return res
 	}
 	// Call magic Before action of (github.com/anonx/sunplate/skeleton/controllers).Controller.
@@ -50,7 +50,7 @@ func (t tController) Before(c *contr.Controller, w http.ResponseWriter, r *http.
 // After executes magic actions of embedded controllers.
 func (t tController) After(c *contr.Controller, w http.ResponseWriter, r *http.Request) a.Result {
 	// Execute magic After actions of embedded controllers.
-	if res := c0.Middleware.After(c.Middleware, w, r); res != nil {
+	if res := c0.Template.After(c.Template, w, r); res != nil {
 		return res
 	}
 	return nil
@@ -59,7 +59,7 @@ func (t tController) After(c *contr.Controller, w http.ResponseWriter, r *http.R
 // Finally executes magic actions of embedded controllers.
 func (t tController) Finally(c *contr.Controller, w http.ResponseWriter, r *http.Request) {
 	// Execute magic Finally actions of embedded controllers.
-	c0.Middleware.Finally(c.Middleware, w, r)
+	c0.Template.Finally(c.Template, w, r)
 }
 
 func init() {
