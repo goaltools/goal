@@ -15,7 +15,7 @@ func TestStart(t *testing.T) {
 		"--package": "handlers",
 	})
 
-	cmd := exec.Command("go", "build", "./testdata/assets/handlers")
+	cmd := exec.Command("go", "get", "-t", "./testdata/assets/handlers/...")
 	cmd.Stderr = os.Stderr // Show the output of the program we run.
 	if err := cmd.Run(); err != nil {
 		t.Errorf(`There are problems with generated handlers, error: "%s".`, err)
