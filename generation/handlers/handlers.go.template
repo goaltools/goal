@@ -87,9 +87,7 @@ func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWri
 :		defer <@$.ctx.name>.Finally(c, w, r)
 :		if res := <@$.ctx.name>.Before(c, w, r); res != nil {
 :			res.Apply(w, r)
-:			if res.Finish() {
-:				return
-:			}
+:			return
 :		}
 :		if res := c.<@$f.Name>( // "Binding" parameters.
 :	:	:	<@range $i, $v := $f.Params>\
@@ -97,15 +95,11 @@ func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWri
 :	:	:	<@end>\
 :		); res != nil {
 :			res.Apply(w, r)
-:			if res.Finish() {
-:				return
-:			}
+:			return
 :		}
 :		if res := <@$.ctx.name>.After(c, w, r); res != nil {
 :			res.Apply(w, r)
-:			if res.Finish() {
-:				return
-:			}
+:			return
 :		}
 :	}
 

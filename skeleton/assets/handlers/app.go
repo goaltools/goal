@@ -90,22 +90,16 @@ func (t tApp) Index(w http.ResponseWriter, r *http.Request) {
 	defer App.Finally(c, w, r)
 	if res := App.Before(c, w, r); res != nil {
 		res.Apply(w, r)
-		if res.Finish() {
-			return
-		}
+		return
 	}
 	if res := c.Index( // "Binding" parameters.
 	); res != nil {
 		res.Apply(w, r)
-		if res.Finish() {
-			return
-		}
+		return
 	}
 	if res := App.After(c, w, r); res != nil {
 		res.Apply(w, r)
-		if res.Finish() {
-			return
-		}
+		return
 	}
 }
 
@@ -121,23 +115,17 @@ func (t tApp) PostGreet(w http.ResponseWriter, r *http.Request) {
 	defer App.Finally(c, w, r)
 	if res := App.Before(c, w, r); res != nil {
 		res.Apply(w, r)
-		if res.Finish() {
-			return
-		}
+		return
 	}
 	if res := c.PostGreet( // "Binding" parameters.
 		strconv.String(r.Form, "name"),
 	); res != nil {
 		res.Apply(w, r)
-		if res.Finish() {
-			return
-		}
+		return
 	}
 	if res := App.After(c, w, r); res != nil {
 		res.Apply(w, r)
-		if res.Finish() {
-			return
-		}
+		return
 	}
 }
 
