@@ -1,4 +1,4 @@
-package template
+package rendering
 
 import (
 	"net/http"
@@ -11,10 +11,4 @@ type HTML struct {
 
 // Apply writes to response the result received from action.
 func (t *HTML) Apply(w http.ResponseWriter, r *http.Request) {
-}
-
-// Finish means that ResponseWriter should be used to return
-// result to the user immidiately.
-func (t *HTML) Finish() bool {
-	return true
 }

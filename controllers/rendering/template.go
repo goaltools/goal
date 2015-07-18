@@ -1,7 +1,6 @@
-// Package template provides functions for work
+// Package rendering provides abstractions for work
 // with standard Go template engine.
-// It should be embeded into Controller struct.
-package template
+package rendering
 
 import (
 	"html/template"
@@ -10,26 +9,26 @@ import (
 )
 
 var (
-	// Paths is a map of templates.
+	// TemplatePaths is a map of templates.
 	// Template names are represented as keys and their paths as values.
 	// Initialize it from your init.go as follows:
 	//	import (
-	//		"github.com/anonx/sunplate/assets/views"
-	//		"github.com/anonx/sunplate/middleware/template"
+	//		"github.com/user/project/assets/views"
+	//		"github.com/anonx/sunplate/controllers/rendering"
 	//	)
 	//
 	//	type Controller struct {
 	//		// ...
-	//		template.Middleware
+	//		rendering.Template
 	//	}
 	//
 	//	func init() {
-	//		template.Paths = views.Context
+	//		rendering.TemplatePaths = views.Context
 	//	}
-	Paths = map[string]string{}
+	TemplatePaths = map[string]string{}
 
 	// Delims are action delimiters that are used for call to Parse.
-	// Empty delimiters activate default: {{ and }}.
+	// Empty delimiters activate default: {% and %}.
 	Delims struct {
 		Left, Right string
 	}
@@ -40,13 +39,21 @@ var (
 	Funcs template.FuncMap
 )
 
-// Middleware is a main type that should be embeded into controller structs.
-type Middleware struct {
+// Template is a main type that should be embeded into controller structs.
+type Template struct {
 	// Context is used for passing variables to templates.
 	Context map[string]interface{}
 }
 
 // RenderTemplate initializes and returns HTML type that implements Result interface.
-func (t *Middleware) RenderTemplate(templatePath string) action.Result {
+func (t *Template) RenderTemplate(templatePath string) action.Result {
 	return &HTML{}
+}
+
+func init() {
+	// Use {% and %} instead of {{ and }} as default delimiters.
+	if Delims.Left == "" || Delims.Right == "" {
+		Delims.Left = "{%"
+		Delims.Right = "%}"
+	}
 }
