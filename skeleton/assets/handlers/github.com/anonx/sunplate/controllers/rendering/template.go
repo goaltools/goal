@@ -29,8 +29,13 @@ func (t tTemplate) New() *contr.Template {
 	return c
 }
 
-// Before is a dump method that always returns nil.
+// Before calls (github.com/anonx/sunplate/controllers/rendering).Template.Before.
 func (t tTemplate) Before(c *contr.Template, w http.ResponseWriter, r *http.Request) a.Result {
+	// Call magic Before action of (github.com/anonx/sunplate/controllers/rendering).Template.
+	if res := c.Before( // "Binding" parameters.
+	); res != nil {
+		return res
+	}
 	return nil
 }
 

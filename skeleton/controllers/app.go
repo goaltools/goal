@@ -22,7 +22,8 @@ func (c *App) Index() action.Result {
 // PostGreet prints received user fullname. If it is not valid,
 // user is redirected back to index page.
 func (c *App) PostGreet(name string) action.Result {
-	return nil
+	c.Context["name"] = name
+	return c.RenderTemplate("app/greet.html")
 }
 
 // After is a magic method that is executed after every request.

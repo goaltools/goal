@@ -45,6 +45,12 @@ type Template struct {
 	Context map[string]interface{}
 }
 
+// Before initializes Context that will be passed to template.
+func (t *Template) Before() action.Result {
+	t.Context = map[string]interface{}{}
+	return nil
+}
+
 // RenderTemplate initializes and returns HTML type that implements Result interface.
 func (t *Template) RenderTemplate(templatePath string) action.Result {
 	return &HTML{
