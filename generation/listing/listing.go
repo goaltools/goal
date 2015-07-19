@@ -48,6 +48,7 @@ func Start(params command.Data) {
 // of found files. Successfully validated ones are stored to the files variable.
 func walkFunc(dir string) (map[string]string, func(string, os.FileInfo, error) error) {
 	files := map[string]string{}
+	dir = p.Prefixless(dir, "./") + "/" // This is required to get right file names.
 
 	return files, func(path string, info os.FileInfo, err error) error {
 		// Make sure there are no any errors.
