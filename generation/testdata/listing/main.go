@@ -26,6 +26,6 @@ func main() {
 }
 
 var expectedValues = map[string]string{
-	"testdata/views/test1.template": "testdata/views/test1.template",
-	"testdata/views/test2.template": "testdata/views/test2.template",
+	"test1.template": "testdata/views/test1.template",
+	"test2.template": "testdata/views/test2.template",
 }
