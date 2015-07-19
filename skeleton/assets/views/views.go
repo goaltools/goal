@@ -6,4 +6,8 @@ package views
 // "./views".
 // File name is used as a key and file path relative to the root
 // of project is a value.
-var Context = map[string]string{}
+var Context = map[string]string{
+	"app/index.html": "views/app/index.html",
+
+	"base.html": "views/base.html",
+}

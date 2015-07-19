@@ -9,23 +9,23 @@ import (
 )
 
 var (
-	// TemplatePaths is a map of templates.
-	// Template names are represented as keys and their paths as values.
-	// Initialize it from your init.go as follows:
-	//	import (
-	//		"github.com/user/project/assets/views"
-	//		"github.com/anonx/sunplate/controllers/rendering"
-	//	)
-	//
-	//	type Controller struct {
-	//		// ...
-	//		rendering.Template
-	//	}
-	//
-	//	func init() {
-	//		rendering.TemplatePaths = views.Context
-	//	}
-	TemplatePaths = map[string]string{}
+	// BaseTemplate is a name of the file that will be loaded
+	// with every template to make extends pattern possible.
+	// So, if you have the following structure:
+	//	./base.html
+	//	./home.html
+	//	./profile/base.html
+	//	./profile/index.html
+	// You will get pairs of (base.html, home.html) and
+	// (profile/base.html, profile/index.html).
+	// If no base template is found in ./profile/ directory,
+	// one in a previous level (./) will be used.
+	BaseTemplate = "base.html"
+
+	// TemplateName is name of the template that will be executed.
+	// By-default, your base.html should have {%define "base"%}
+	// that will be the entry point of every of your templates.
+	TemplateName = "base"
 
 	// Delims are action delimiters that are used for call to Parse.
 	// Empty delimiters activate default: {% and %}.
@@ -47,7 +47,10 @@ type Template struct {
 
 // RenderTemplate initializes and returns HTML type that implements Result interface.
 func (t *Template) RenderTemplate(templatePath string) action.Result {
-	return &HTML{}
+	return &HTML{
+		context:  t.Context,
+		template: templatePath,
+	}
 }
 
 func init() {

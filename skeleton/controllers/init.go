@@ -24,5 +24,5 @@ func (c *Controller) Before() a.Result {
 
 func init() {
 	// Define the templates that should be loaded.
-	rendering.TemplatePaths = views.Context
+	rendering.SetTemplatePaths(views.Context)
 }

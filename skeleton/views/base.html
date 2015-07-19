@@ -1,0 +1,15 @@
+{% define "base" %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>{% template "title" %}</title>
+	</head>
+
+	<body>
+		<h1>{% template "title" %}</h1>
+
+		{% template "body" %}
+	</body>
+</html>
+{% end %}
