@@ -3,6 +3,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 	"runtime"
 
 	"github.com/anonx/sunplate/skeleton/routes"
@@ -10,20 +11,29 @@ import (
 	"github.com/anonx/sunplate/log"
 )
 
-// Comments below are used by `go generate`.
-// Please, DO NOT EDIT if you do not know what you are doing.
-//
-//go:generate sunplate generate handlers
-//go:generate sunplate generate listing
-
 func main() {
 	// Set max procs for multi-thread executing.
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	// Build the routes and run the app.
+	// Use either default HTTP address, or get it
+	// from the arguments list (the first one is a file name,
+	// the second argument is what we need).
+	addr := ":8080"
+	if len(os.Args) > 1 {
+		addr = os.Args[1]
+	}
+
+	// Build the routes and handler.
 	handler, err := routes.List.Build()
 	if err != nil {
 		log.Error.Fatal(err)
 	}
-	log.Error.Fatal(http.ListenAndServe(":8080", handler))
+
+	// Prepare a server and run it.
+	go log.Info.Printf(`Listening on "%s".`, addr)
+	s := http.Server{
+		Addr:    addr,
+		Handler: handler,
+	}
+	log.Error.Fatal(s.ListenAndServe())
 }
