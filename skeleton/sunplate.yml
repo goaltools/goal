@@ -1,0 +1,17 @@
+version: 0.0.1
+proxy:
+  host: localhost
+  port: 8080
+init:
+  # Commands of this section will be executed once at the start time of `sunplate run`.
+  #- npm install coffeescript
+watch:
+  # Watcher commands will be started every time their related files are modified.
+  ./controllers/*.go:
+    - go generate routes/routes.go
+  ./views/*:
+    - go generate controllers/init.go
+run:
+  # This section describes how `sunplate run` should start the application.
+  # Argument ":addr" has a special semantics and will be replaced by a value.
+  - go run main.go :addr
