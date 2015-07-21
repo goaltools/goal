@@ -40,6 +40,15 @@ Examples:
 	Main: start,
 }
 
+// sourceFiles contains extensions of files that should be process
+// rather than just copied, a replacement of import path is expected
+// in them. As an example there should be github.com/user/project
+// instead of github.com/anonx/sunplate/skeleton.
+var sourceFiles = map[string]bool{
+	".go":  true,
+	".yml": true,
+}
+
 // start is an entry point of the command.
 var start = func(action string, params command.Data) {
 	oldImport := p.SunplateImport("skeleton")
@@ -105,8 +114,9 @@ func walkFunc(dir string) (result, func(string, os.FileInfo, error) error) {
 			return err
 		}
 
-		// Find out whether it is a static file or a go source.
-		if filepath.Ext(path) == ".go" {
+		// Find out whether it is a static file or a go / some other source.
+		ext := filepath.Ext(path)
+		if sourceFiles[ext] {
 			rs.srcs[path] = relPath
 			return err
 		}
