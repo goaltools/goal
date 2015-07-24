@@ -14,54 +14,33 @@ At the same time Sunplate is very customizable (you can bring your own router, t
 and any other component). But without prejudice to the easiness and seamless of experience
 thanks to good defaults.
 
-Status of the project: **WIP** (mostly, it does't work yet).
+Status of the project: **PoC** (not ready for use in the wild).
 
 [![GoDoc](https://godoc.org/github.com/anonx/sunplate?status.svg)](https://godoc.org/github.com/anonx/sunplate)
 [![Build Status](https://travis-ci.org/anonx/sunplate.svg?branch=master)](https://travis-ci.org/anonx/sunplate)
 [![Coverage Status](https://coveralls.io/repos/anonx/sunplate/badge.svg?branch=master)](https://coveralls.io/r/anonx/sunplate?branch=master)
 [![Go Report Card](http://goreportcard.com/badge/anonx/sunplate?t=3)](http:/goreportcard.com/report/anonx/sunplate)
 
-## Commands
-The list of currently planned commands include:
-
-#### General commands
-##### - `sunplate new path/to/app` - Create a new skeleton application.
-##### - `sunplate run path/to/app` - Run a tool that watches the app files and rebuilds if necessary. It can be used as a task runner, too (Planned).
-##### - `sunplate help` - Show information about the tool and supported commands.
-
-#### Code generation
-These commands are not implied to be run manually but rather using `go generate` mechanism. To do so, include in your `.go` file the following line:
-```go
-//go:generate sunplate generate {command} [arguments]
+## Installation
+```sh
+go install github.com/anonx/sunplate
 ```
 
-##### - `sunplate generate handlers`- Scan controllers, generate handlers.
-Default parameters are:
-* `--input ./controllers`
-* `--output ./assets/handlers`
-* `--package handlers`
-
-Read more about controllers and actions [here](https://github.com/anonx/concept/blob/master/basics.md#basics).
-The idea is to have automatically generated handlers (just usual golang handlers) from Revel framework like controllers.
-**TODO**: better architecture of `handlers` package, increase of test coverage.
-
-##### - `sunplate generate listing`- Scan a directory, generate a mapping of file names to their paths.
-Default parameters are:
-* `--input ./views`
-* `--output ./assets/views`
-* `--package views`
-
-This command generates a listing of all found files in a requested directory.
-To to advantage of the generated package import it and use the `Context map[string]string` variable.
-Its format is:
-```go
-map[string]string{
-	"main.html":          "./views/main.html",
-	"accounts/info.html": "./views/accounts/info.html",
-}
+## Getting started
+**Step 1**: Create a skeleton application
+```sh
+sunplate new {path}    # e.g. "github.com/anonx/sample" or "./sample"
 ```
 
-##### - `sunplate generate autoforms`- Scan models, generate a package for easy validation, binding, and rendering of forms (Planned, will be implemented after MVP).
+**Step 2**: Start a task runner
+```sh
+sunplate run {path}
+```
+
+**Step 3**: Start making changes you need to the generated skeleton app.
+
+**Step 4**: Use `sunplate help` to get more information about supported commands
+and `sunplate help {command}` to find out more about a specific command.
 
 ## License
 Distributed under the BSD 2-clause "Simplified" License unless otherwise noted.
