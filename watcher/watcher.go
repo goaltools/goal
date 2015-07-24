@@ -67,7 +67,6 @@ func (t *Type) NotifyOnUpdate(watcherIndex int, fn func()) {
 	for {
 		select {
 		case ev := <-t.watchers[watcherIndex].Events:
-			log.Trace.Println(ev.String())
 			if restartRequired(ev) {
 				t.mu.Lock()
 				fn()

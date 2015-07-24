@@ -24,4 +24,4 @@ _testmain.go
 *.prof
 
 # Binaries
-skeleton/skeleton
+bin
