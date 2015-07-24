@@ -4,6 +4,8 @@
 package watcher
 
 import (
+	"errors"
+	"os"
 	"path/filepath"
 	"sync"
 
@@ -36,16 +38,16 @@ func (t *Type) Listen(pattern string, fn func()) {
 	w.Events = make(chan fsnotify.Event, 100)
 	w.Errors = make(chan error, 10)
 
-	// Find files matching the pattern.
-	ms, err := filepath.Glob(pattern)
+	// Find directories matching the pattern.
+	ds := glob(pattern)
 	if err != nil {
 		log.Error.Panicf("Pattern `%s` is malformed. Error: %v.", pattern, err)
 	}
 
 	// Add the files to the watcher.
-	for i := range ms {
-		log.Trace.Printf(`Adding "%s" to the list of watched files & directories...`, ms[i])
-		err := w.Add(ms[i])
+	for i := range ds {
+		log.Trace.Printf(`Adding "%s" to the list of watched directories...`, ds[i])
+		err := w.Add(ds[i])
 		if err != nil {
 			log.Warn.Println(err)
 		}
@@ -73,7 +75,6 @@ func (t *Type) NotifyOnUpdate(watcherIndex int, fn func()) {
 			}
 		case err := <-t.watchers[watcherIndex].Errors:
 			log.Warn.Println(err)
-			continue
 		}
 	}
 }
@@ -85,4 +86,40 @@ func restartRequired(event fsnotify.Event) bool {
 		return true
 	}
 	return false
+}
+
+// glob returns names of all directories matching pattern or nil.
+// The only supported special character is an asterisk at the end.
+// It means that the directory is expected to be scanned recursively.
+// There is no way for fsnotify to watch individual files (see #17),
+// do we support only directories.
+// File system errors such as I/O reading are ignored.
+func glob(pattern string) (ds []string) {
+	// Check whether recursive scan is expected.
+	l := len(pattern)
+	if l == 0 || pattern[l-1] != '*' {
+		ds = append(ds, pattern)
+		return // Return as is.
+	}
+
+	// Otherwise, trim the asterisk at the end.
+	pattern = pattern[:l-1]
+
+	// Start searching directories recursively.
+	filepath.Walk(pattern, func(path string, info os.FileInfo, err error) error {
+		// Make sure there are no any errors.
+		if err != nil {
+			return err
+		}
+
+		// Make sure the path represents a directory.
+		if info.IsDir() {
+			ds = append(ds, path) // Add current path to the list.
+			return nil
+		}
+
+		// Otherwise, return an error.
+		return errors.New("not a directory")
+	})
+	return
 }

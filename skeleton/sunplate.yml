@@ -6,18 +6,17 @@ init:
   - echo "Starting work on github.com/anonx/sunplate/skeleton..."
 watch:
   # Watcher commands will be started every time their related files are modified.
-  # Patterns are allowed to use special syntax:
-  # "*"      matches any sequence of non-Separator characters;
-  # "?"      matches any single non-Separator character;
-  # "([]{})" character class and range;
-  ./controllers/*.go:
+  # Expected format of the pattern is "directory: tasks...".
+  # "*" at the end of means watch recursively.
+  # Empty tasks are not allowed.
+  ./controllers/*:
     - go generate routes/routes.go
   ./views/*:
     - go generate controllers/init.go
-  ./*.go:
-    - echo "Updated .go files, rebuilding..."
-  ./routes/*.go:
-    - echo "Updated routes, rebuilding..."
+  ./:
+    - echo "Some of project files at the root directory were updated, rebuilding..."
+  ./routes/*:
+    - echo "Routes were updated, rebuilding..."
 after:
   # This commands are executed every time watcher functions have been called.
   - go build github.com/anonx/sunplate/skeleton
