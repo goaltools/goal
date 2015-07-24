@@ -1,0 +1,14 @@
+init:
+  - echo "init 1"
+  - echo "init 2"
+watch:
+  "test":
+    - echo "watch:test:1"
+    - echo "watch:test:2"
+  "test2":
+    - echo "watch:test2:1"
+    - echo "watch:test2:2"
+after:
+  - echo "after 1"
+  - echo "after 2"
+run: echo "run"

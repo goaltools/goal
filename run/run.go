@@ -38,7 +38,8 @@ var Handler = command.Handler{
 }
 
 var (
-	// started indicates whether user app is started.
+	// started indicates whether a previous instance of user
+	// app already exists.
 	started bool
 
 	// stopChannel and stopped are channels that are used to let us know
@@ -46,6 +47,8 @@ var (
 	// so we can safely start it again.
 	stopChannel = make(chan bool, 1)
 	stopped     = make(chan bool, 1)
+
+	notify = make(chan os.Signal, 1)
 )
 
 // start is an entry point of the command.
@@ -71,40 +74,51 @@ var start = func(action string, params command.Data) {
 	after, _ := config.GetList("after")
 
 	// Build and start the user app for the first time.
+	cmd, _ := config.GetString("run")
 	execute(after)
-	run(userCommand(imp))
+	run(userCommand(cmd, imp))
 
 	// Extract patterns and tasks from watch section of config file.
 	// And add them to watcher.
 	w := watcher.NewType()
 	ws, err := config.Get("watch")
 	log.AssertNil(err)
-	m := ws.(map[interface{}]interface{})
-	for k := range m {
-		p := k.(string)
+	switch t := ws.(type) {
+	case map[interface{}]interface{}:
+		for k := range t {
+			p := k.(string)
 
-		ts, err := config.GetList("watch:" + p)
-		log.AssertNil(err)
+			ts, err := config.GetList("watch:" + p)
+			log.AssertNil(err)
 
-		w.Listen(p, func() {
-			execute(ts)
-			execute(after)
-			run(userCommand(imp))
-		})
+			w.Listen(p, rebuildFunc(ts, after, userCommand(cmd, imp)))
+		}
+	default:
+		log.Warn.Printf(`No watch rules found in "%s".`, ConfigFile)
 	}
 
 	// Cleaning up after we are done.
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	signal.Notify(notify, os.Interrupt, syscall.SIGTERM)
+	<-notify
+	log.Warn.Panic("Application has been stopped.")
+}
 
-	<-c
-	log.Warn.Fatal("Application has been stopped.")
+// rebuildFunc returns a function that
+// gets and starts tasks, after-tasks, and a start command
+// to run a process again after rebuilding.
+func rebuildFunc(tasks, after []string, start string) func() {
+	return func() {
+		execute(tasks)
+		execute(after)
+		run(start)
+	}
 }
 
 // userCommand returns a command that should be used for
 // starting user application.
-func userCommand(imp string) string {
-	return filepath.Base(imp)
+func userCommand(s, imp string) string {
+	s = strings.Replace(s, "%application", filepath.Base(imp), -1)
+	return s
 }
 
 // execute gets a list of tasks and starts them.
@@ -123,15 +137,12 @@ func execute(tasks []string) {
 
 // run starts a new instance of a task. At the same time
 // its previous instance is stopped.
-func run(t string) {
-	// Stopping previous instance of the app.
+func run(t string) *exec.Cmd {
+	// Stopping the previous instance
+	// if it already exists.
 	if started {
 		stopChannel <- true
-		<-stopped
 	}
-
-	// Show message about starting a new instance.
-	started = true
 
 	// Parse the input task, prepare a command.
 	n, as := task(t)
@@ -144,18 +155,17 @@ func run(t string) {
 	if err != nil {
 		log.Error.Panicf("Failed to start a command `%s`, error: %v.", t, err)
 	}
+	started = true
 
 	// Make sure we'll be able to stop the app.
 	go func() {
 		<-stopChannel
 
 		cmd.Process.Kill()
-		_, err := cmd.Process.Wait()
-		log.AssertNil(err)
-
-		stopped <- true
-		started = false
+		cmd.Process.Wait()
 	}()
+
+	return cmd
 }
 
 // task gets a string representation and returns
