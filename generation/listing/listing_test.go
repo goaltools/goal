@@ -16,14 +16,14 @@ func TestStart(t *testing.T) {
 }
 
 func TestWalkFunc(t *testing.T) {
-	files, fn := walkFunc("")
+	files, fn := walkFunc("", "")
 	TestError := errors.New("this is a test error")
 	if err := fn("", nil, TestError); err != TestError {
 		t.Errorf(`walkFunc expected to return TestError, returned "%s".`, err)
 	}
 	fn("/myfile", testFile{}, nil)
-	if len(files) == 0 || files["/myfile"] != "/myfile" {
-		t.Error("Failed to add path to files list.")
+	if len(files) == 0 || files["/myfile"] != "myfile" {
+		t.Errorf("Failed to add path to files list: %v.", files)
 	}
 	err := fn("", testFile{dir: true}, nil)
 	if err != nil {
