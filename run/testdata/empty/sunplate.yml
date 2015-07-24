@@ -1,0 +1,4 @@
+init:
+watch:
+after:
+run: echo "run"
