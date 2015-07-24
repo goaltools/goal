@@ -2,26 +2,19 @@
 package main
 
 import (
+	"flag"
 	"net/http"
-	"os"
 	"runtime"
 
 	"github.com/anonx/sunplate/skeleton/routes"
 
 	"github.com/anonx/sunplate/log"
+	"github.com/facebookgo/grace/gracehttp"
 )
 
 func main() {
 	// Set max procs for multi-thread executing.
 	runtime.GOMAXPROCS(runtime.NumCPU())
-
-	// Use either default HTTP address, or get it
-	// from the arguments list (the first one is a file name,
-	// the second argument is what we need).
-	addr := ":8080"
-	if len(os.Args) > 1 {
-		addr = os.Args[1]
-	}
 
 	// Build the routes and handler.
 	handler, err := routes.List.Build()
@@ -29,11 +22,18 @@ func main() {
 		log.Error.Fatal(err)
 	}
 
-	// Prepare a server and run it.
-	go log.Info.Printf(`Listening on "%s".`, addr)
-	s := http.Server{
-		Addr:    addr,
+	// Prepare a new server.
+	s := &http.Server{
+		Addr:    ":8080", // This is the default value of HTTP address.
 		Handler: handler,
 	}
-	log.Error.Fatal(s.ListenAndServe())
+
+	// Try to get some parameters from the received list of arguments,
+	// e.g. "--addr=localhost:80".
+	flag.StringVar(&s.Addr, "addr", s.Addr, "HTTP address that should be used by the app")
+	flag.Parse()
+
+	// Starting the server.
+	log.Info.Printf(`Listening on "%s".`, s.Addr)
+	log.Error.Fatal(gracehttp.Serve(s)) // Using graceful restarts and shutdown.
 }
