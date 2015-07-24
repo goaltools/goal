@@ -70,6 +70,10 @@ var start = func(action string, params command.Data) {
 	// Get after tasks if they exist.
 	after, _ := config.GetList("after")
 
+	// Build and start the user app for the first time.
+	execute(after)
+	run(userCommand(imp))
+
 	// Extract patterns and tasks from watch section of config file.
 	// And add them to watcher.
 	w := watcher.NewType()
@@ -88,10 +92,6 @@ var start = func(action string, params command.Data) {
 			run(userCommand(imp))
 		})
 	}
-
-	// Build and start the user app for the first time.
-	execute(after)
-	run(userCommand(imp))
 
 	// Cleaning up after we are done.
 	c := make(chan os.Signal, 1)
@@ -161,10 +161,10 @@ func run(t string) {
 // task gets a string representation and returns
 // a name of the command and arguments.
 func task(s string) (string, []string) {
-	ps := strings.Split(s, " ")      // No spaces are allowed between arguments.
-	if len(ps) == 1 && ps[0] == "" { // If Split returns 1, the current task is empty.
-		return "", nil
-	}
+	ps := strings.Split(s, " ") // No spaces are allowed between arguments.
+	// We are not checking the length of ps as
+	// a garanteed minimum is 1.
+	// tsuru/config returns <nil> instead of empty string.
 	var as []string
 	if len(ps) > 1 { // If the task has not only command but also arguments.
 		as = ps[1:]
