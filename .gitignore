@@ -23,4 +23,5 @@ _testmain.go
 *.test
 *.prof
 
-# Auto generated packages.
+# Binaries
+skeleton/skeleton
