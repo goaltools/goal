@@ -21,3 +21,4 @@ watch:
 after:
   # This commands are executed every time watcher functions have been called.
   - go build github.com/anonx/sunplate/skeleton
+run: %application
