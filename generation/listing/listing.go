@@ -17,16 +17,18 @@ import (
 // It expects two parameters.
 // basePath is where to find files necessary for generation of listing.
 // params is a map with the following keys:
+// --root defines a directory of the project, paths are relative to it (default is "./").
 // --path defines what directory to analyze ("./views" by-default).
 // --output is a path to directory where to create a new package ("./assets" by-default).
 // --package is what package should be created as a result ("views" by-default).
 func Start(params command.Data) {
+	rootDir := params.Default("--root", "./")
 	inputDir := params.Default("--input", "./views")
 	outputDir := params.Default("--output", "./assets/views")
 	outPkg := params.Default("--package", "views")
 
 	// Start search of files.
-	fs, fn := walkFunc(inputDir)
+	fs, fn := walkFunc(rootDir, inputDir)
 	filepath.Walk(inputDir, fn)
 
 	// Generate and save a new package.
@@ -46,7 +48,7 @@ func Start(params command.Data) {
 
 // walkFunc returns a map of files and a function that may be used for validation
 // of found files. Successfully validated ones are stored to the files variable.
-func walkFunc(dir string) (map[string]string, func(string, os.FileInfo, error) error) {
+func walkFunc(root, dir string) (map[string]string, func(string, os.FileInfo, error) error) {
 	files := map[string]string{}
 	dir = p.Prefixless(dir, "./") + "/" // This is required to get right file names.
 
@@ -63,8 +65,16 @@ func walkFunc(dir string) (map[string]string, func(string, os.FileInfo, error) e
 		}
 
 		// Add files to the list.
+		// We are using dirty hack to let it possible use
+		// --input and --output parameters relative to any directory
+		// but have result relative to the root directory.
 		log.Trace.Printf(`Path "%s" discovered.`, path)
-		files[p.Prefixless(path, dir)] = path
+		r := p.Prefixless(p.Prefixless(
+			p.AbsoluteImport(path),
+			p.AbsoluteImport(root),
+		), "/")
+		log.Trace.Printf(`Saving it as "%s"...`, r)
+		files[p.Prefixless(path, dir)] = r
 		return nil
 	}
 }
