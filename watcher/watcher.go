@@ -44,6 +44,7 @@ func (t *Type) Listen(pattern string, fn func()) {
 
 	// Add the files to the watcher.
 	for i := range ms {
+		log.Trace.Printf(`Adding "%s" to the list of watched files & directories...`, ms[i])
 		err := w.Add(ms[i])
 		if err != nil {
 			log.Warn.Println(err)
