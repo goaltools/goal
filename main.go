@@ -10,6 +10,7 @@ import (
 	"github.com/anonx/sunplate/create"
 	"github.com/anonx/sunplate/generation"
 	"github.com/anonx/sunplate/log"
+	"github.com/anonx/sunplate/run"
 )
 
 // Handlers is a map of registered subcommands
@@ -52,12 +53,14 @@ func main() {
 func init() {
 	// Register the supported subcommands.
 	Handlers.Register(create.Handler)
+	Handlers.Register(run.Handler)
 	Handlers.Register(generation.Handler)
 	Handlers.Register(helpHandler)
 
 	// Show header message when using new or help
 	// commands.
 	command.Helpers["new"] = showHeader
+	command.Helpers["run"] = showHeader
 	command.Helpers["help"] = showHeader
 }
 
