@@ -117,7 +117,7 @@ func rebuildFunc(tasks, after []string, start string) func() {
 // userCommand returns a command that should be used for
 // starting user application.
 func userCommand(s, imp string) string {
-	s = strings.Replace(s, "%application", filepath.Base(imp), -1)
+	s = strings.Replace(s, ":application", filepath.Base(imp), -1)
 	return s
 }
 
