@@ -27,17 +27,17 @@ go install github.com/anonx/sunplate
 ```
 
 ## Getting started
-**Step 1**: Create a skeleton application
+**Step 1**: Create a skeleton application.
 ```sh
 sunplate new {path}    # e.g. "github.com/anonx/sample" or "./sample"
 ```
 
-**Step 2**: Start a task runner
+**Step 2**: Start a task runner.
 ```sh
 sunplate run {path}
 ```
 
-**Step 3**: Start making changes you need to the generated skeleton app.
+**Step 3**: Start making changes you need to the app generated at step 1.
 
 **Step 4**: Use `sunplate help` to get more information about supported commands
 and `sunplate help {command}` to find out more about a specific command.
