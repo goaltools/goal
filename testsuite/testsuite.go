@@ -34,7 +34,8 @@ type Request struct {
 // Server's URL is expected as an input argument.
 func New(url string) *Type {
 	return &Type{
-		URL: url,
+		Client: &http.Client{},
+		URL:    url,
 	}
 }
 
@@ -64,7 +65,7 @@ func (t *Type) Request(req *http.Request) *Request {
 func (t *Type) Get(urn string) {
 	log.Trace.Printf(`GET "%s"...`, urn)
 	t.GetCustom(t.URL + urn).Send()
-	log.Trace.Println("\tDONE.")
+	log.Trace.Println("DONE.")
 }
 
 // GetCustom returns a GET request to the given URI in
