@@ -12,7 +12,7 @@ watch:
   ./controllers/*:
     - go generate routes/routes.go
   ./views/*:
-    - go generate controllers/init.go
+    - go generate main.go
   ./:
     - echo "Some of project files at the root directory were updated, rebuilding..."
   ./routes/*:
