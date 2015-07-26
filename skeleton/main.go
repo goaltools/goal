@@ -6,8 +6,10 @@ import (
 	"net/http"
 	"runtime"
 
+	"github.com/anonx/sunplate/skeleton/assets/views"
 	"github.com/anonx/sunplate/skeleton/routes"
 
+	"github.com/anonx/sunplate/controllers/rendering"
 	"github.com/anonx/sunplate/log"
 	"github.com/facebookgo/grace/gracehttp"
 )
@@ -36,4 +38,15 @@ func main() {
 	// Starting the server.
 	log.Info.Printf(`Listening on "%s".`, s.Addr)
 	log.Error.Fatal(gracehttp.Serve(s)) // Using graceful restarts and shutdown.
+}
+
+// The line below tells golang's generate command you want
+// it to generate a list of views (views.Context) for you.
+// Please, do not delete it unless you know what you are doing.
+//
+//go:generate sunplate generate listing
+
+func init() {
+	// Define the templates that should be loaded.
+	rendering.SetTemplatePaths(views.Context)
 }

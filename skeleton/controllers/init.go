@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"github.com/anonx/sunplate/skeleton/assets/views"
-
 	a "github.com/anonx/sunplate/action"
 	"github.com/anonx/sunplate/controllers/rendering"
 )
@@ -20,15 +18,4 @@ type Controller struct {
 // So, do not delete this method.
 func (c *Controller) Before() a.Result {
 	return nil
-}
-
-// The line below tells golang's generate command you want
-// it to generate a list of views (views.Context) for you.
-// Please, do not delete it unless you know what you are doing.
-//
-//go:generate sunplate generate listing --root ../ --input ../views --output ../assets/views
-
-func init() {
-	// Define the templates that should be loaded.
-	rendering.SetTemplatePaths(views.Context)
 }
