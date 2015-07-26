@@ -2,6 +2,7 @@ package rendering
 
 import (
 	"html/template"
+	"os"
 	"path/filepath"
 
 	"github.com/anonx/sunplate/log"
@@ -79,5 +80,9 @@ func showError(base, path string, err error) {
 	if err == nil {
 		return
 	}
-	log.Error.Panicf(`Cannot parse "%s" with "%s" as a base template. Error: %v.`, path, base, err)
+	pwd, _ := os.Getwd()
+	log.Error.Panicf(
+		`Cannot parse "%s" with "%s" as a base template (pwd "%s"). Error: %v.`,
+		path, base, pwd, err,
+	)
 }
