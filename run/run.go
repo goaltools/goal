@@ -31,7 +31,14 @@ var Handler = command.Handler{
 	Name:  "run",
 	Info:  "start a task runner",
 	Usage: "run [path]",
-	Desc: `
+	Desc: `Run is a watcher and task runner. It uses sunplate.yml
+file at the root of your project to find out what it should watch
+and how to build / start your application.
+
+Tasks of "init" section are run first, but only once per starting "sunplate run"
+command. "watch" section is to inform that when some files in the specified
+directories are modified, a rebuild / restart process is expected.
+"run" is used to show how to start your app.
 `,
 
 	Main: start,
