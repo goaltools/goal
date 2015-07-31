@@ -49,7 +49,7 @@ func (p path) DirStructName() string {
 
 // String returns a path of a file / directory as a string.
 func (p path) String() string {
-	return filepath.Join(p.Value...)
+	return filepath.ToSlash(filepath.Join(p.Value...))
 }
 
 // addFile gets a path to some file as a string
@@ -57,7 +57,7 @@ func (p path) String() string {
 func (l listing) addFile(file string) {
 	// Split path into segments and get a dir name (opposite of Base).
 	ss := strings.Split(file, string(filepath.Separator))
-	dir := filepath.Join(ss[:len(ss)-1]...) // If path is "path/to/smth.txt", use "path/to".
+	dir := filepath.ToSlash(filepath.Join(ss[:len(ss)-1]...)) // If path is "path/to/smth.txt", use "path/to".
 
 	// Check whether such path already exists.
 	if _, ok := l[dir]; !ok {
@@ -82,7 +82,7 @@ func (l listing) addDir(dir string) {
 
 	// Split path into segments and get a root dir name (opposite of Base).
 	ss := strings.Split(dir, string(filepath.Separator))
-	root := filepath.Join(ss[:len(ss)-1]...) // If path is "path/to/dir", use "path/to".
+	root := filepath.ToSlash(filepath.Join(ss[:len(ss)-1]...)) // If path is "path/to/dir", use "path/to".
 
 	// Check whether such path already exists.
 	if _, ok := l[root]; !ok {
