@@ -13,6 +13,9 @@ install:
   - sunplate new github.com/anonx/sample # Creating a project.
   - sleep 4 && killall sunplate & # Make sure we'll stop all instances of sunplate.
   - sunplate run github.com/anonx/sample # Run the sample app.
+
+  # Running tests of a sample application.
+  - go test github.com/anonx/sunplate/skeleton/tests -v
 script:
   - cd ${GOPATH%%:*}/src/github.com/anonx/sunplate
   - COVERALLS="-service=travis-ci -repotoken $COVERALLS_TOKEN" ./coverage.sh
