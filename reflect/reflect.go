@@ -117,7 +117,7 @@ func ParseDir(path string) *Package {
 		}
 
 		// Add imports of the current file.
-		p.Imports[name] = is
+		p.Imports[filepath.ToSlash(name)] = is
 	}
 	return p
 }
