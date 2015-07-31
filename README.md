@@ -23,7 +23,7 @@ Status of the project: **PoC** (not ready for use in the wild).
 
 ## Installation
 ```sh
-go install github.com/anonx/sunplate
+go get github.com/anonx/sunplate
 ```
 
 ## Getting started
