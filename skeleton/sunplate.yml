@@ -3,7 +3,8 @@ proxy:
   addr: localhost:8080
 init:
   # Commands of this section will be executed once, at the start time of `sunplate run`.
-  - echo "Starting work on github.com/anonx/sunplate/skeleton..."
+  # You may use it for something like "npm install".
+  - pass # Do nothing.
 watch:
   # Watcher commands will be started every time their related files are modified.
   # Expected format of the pattern is "directory: tasks...".
@@ -11,12 +12,14 @@ watch:
   # Empty tasks are not allowed.
   ./controllers/*:
     - go generate routes/routes.go
+    - go get github.com/anonx/sunplate/skeleton/assets/handlers
   ./views/*:
     - go generate main.go
+    - go get github.com/anonx/sunplate/skeleton/assets/views
   ./:
-    - echo "Some of project files at the root directory were updated, rebuilding..."
+    - pass # Do nothing.
   ./routes/*:
-    - echo "Routes were updated, rebuilding..."
+    - pass # Do nothing.
 after:
   # These commands are executed every time watcher functions have been called.
   - go build -o ./bin/run github.com/anonx/sunplate/skeleton

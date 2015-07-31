@@ -22,6 +22,11 @@ import (
 	"github.com/tsuru/config"
 )
 
+// passCommand is a statement that is ignored by execute function.
+// It is used when something is required syntactically by yaml
+// but no command is needed.
+const passCommand = "pass"
+
 // ConfigFile is a name of the file that is located at the
 // root of user project and describes what the test runner should do.
 var ConfigFile = "sunplate.yml"
@@ -60,6 +65,14 @@ var (
 
 // start is an entry point of the command.
 var start = func(action string, params command.Data) {
+	defer func() {
+		if err := recover(); err != nil {
+			stopChannel <- true
+			<-stopped
+			log.Trace.Panic("All subprograms are stopped.")
+		}
+	}()
+
 	imp := p.AbsoluteImport(params.Default(action, "./"))
 	dir := p.PackageDir(imp)
 	cf := filepath.Join(dir, ConfigFile)
@@ -107,7 +120,7 @@ var start = func(action string, params command.Data) {
 	// Cleaning up after we are done.
 	signal.Notify(notify, os.Interrupt, syscall.SIGTERM)
 	<-notify
-	log.Warn.Panic("Application has been stopped.")
+	log.Warn.Panic("Application will be terminated...")
 }
 
 // rebuildFunc returns a function that
@@ -133,6 +146,9 @@ func execute(tasks []string) {
 	// Iterate over all available tasks.
 	for i := range tasks {
 		n, as := task(tasks[i])
+		if n == passCommand && len(as) == 0 {
+			continue
+		}
 		cmd := exec.Command(n, as...)
 		bs, err := cmd.Output()
 		if err != nil {
@@ -170,6 +186,8 @@ func run(t string) *exec.Cmd {
 
 		cmd.Process.Kill()
 		cmd.Process.Wait()
+
+		stopped <- true
 	}()
 
 	return cmd
