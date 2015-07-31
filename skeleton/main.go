@@ -11,7 +11,6 @@ import (
 
 	"github.com/anonx/sunplate/controllers/rendering"
 	"github.com/anonx/sunplate/log"
-	"github.com/facebookgo/grace/gracehttp"
 )
 
 func main() {
@@ -37,7 +36,7 @@ func main() {
 
 	// Starting the server.
 	log.Info.Printf(`Listening on "%s".`, s.Addr)
-	log.Error.Fatal(gracehttp.Serve(s)) // Using graceful restarts and shutdown.
+	log.Error.Fatal(serve(s))
 }
 
 // The line below tells golang's generate command you want
