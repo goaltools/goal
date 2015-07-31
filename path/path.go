@@ -78,7 +78,8 @@ func AbsoluteImport(path string) string {
 
 // PackageDir gets a golang import path and returns its full path.
 func PackageDir(imp string) string {
-	return filepath.Join(build.Default.GOPATH, "src", imp)
+	gopaths := filepath.SplitList(build.Default.GOPATH)
+	return filepath.Join(gopaths[0], "src", imp) // We are always using the first GOPATH in a list.
 }
 
 // Prefixless cuts a prefix of a path and returns the result
