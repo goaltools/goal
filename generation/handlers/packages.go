@@ -2,8 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"go/build"
-	"path/filepath"
 
 	"github.com/anonx/sunplate/path"
 	"github.com/anonx/sunplate/reflect"
@@ -65,7 +63,7 @@ func (p parent) Package(suffices ...string) string {
 // processPackage gets an import path of a package, processes it, and
 // extracts controllers + actions.
 func (ps packages) processPackage(importPath string) {
-	p := reflect.ParseDir(filepath.Join(build.Default.GOPATH, "src", importPath))
+	p := reflect.ParseDir(path.PackageDir(importPath))
 	cs := ps.extractControllers(p)
 	if len(cs) > 0 {
 		ps[importPath] = cs
