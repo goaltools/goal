@@ -1,4 +1,4 @@
 init:
 watch:
 after:
-run: echo "run"
+run: sunplate echo "run"

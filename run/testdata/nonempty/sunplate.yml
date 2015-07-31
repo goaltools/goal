@@ -1,15 +1,15 @@
 init:
-  - echo "init 1"
-  - echo "init 2"
+  - sunplate echo "init 1"
+  - sunplate echo "init 2"
 watch:
   ../empty:
-    - echo "watch:test:1"
-    - echo "watch:test:2"
+    - sunplate echo "watch:test:1"
+    - sunplate echo "watch:test:2"
   ../nonempty:
-    - echo "watch:test2:1"
-    - echo "watch:test2:2"
+    - sunplate echo "watch:test2:1"
+    - sunplate echo "watch:test2:2"
   emptyPattern: "incorrectValue"
 after:
-  - echo "after 1"
-  - echo "after 2"
-run: echo "run"
+  - sunplate echo "after 1"
+  - sunplate echo "after 2"
+run: sunplate echo "run"

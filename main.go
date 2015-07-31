@@ -8,6 +8,7 @@ import (
 
 	"github.com/anonx/sunplate/command"
 	"github.com/anonx/sunplate/create"
+	"github.com/anonx/sunplate/echo"
 	"github.com/anonx/sunplate/generation"
 	"github.com/anonx/sunplate/log"
 	"github.com/anonx/sunplate/run"
@@ -53,6 +54,7 @@ func main() {
 func init() {
 	// Register the supported subcommands.
 	Handlers.Register(create.Handler)
+	Handlers.Register(echo.Handler)
 	Handlers.Register(run.Handler)
 	Handlers.Register(generation.Handler)
 	Handlers.Register(helpHandler)
