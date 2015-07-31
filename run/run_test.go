@@ -19,8 +19,8 @@ func TestExecute_IncorrectTask(t *testing.T) {
 func TestExecute(t *testing.T) {
 	ts := []string{
 		passCommand,
-		`echo "Hello, world!"`,
-		`echo "This is test"`,
+		`sunplate echo "Hello, world!"`,
+		`sunplate echo "This is test"`,
 	}
 	execute(ts)
 }
@@ -65,9 +65,9 @@ func TestStart(t *testing.T) {
 }
 
 func TestRebuildFunc(t *testing.T) {
-	ts := []string{`echo "task 1"`, `echo "task 2"`}
-	as := []string{`echo "after 1"`, `echo "after 2"`}
-	c := `echo "command"`
+	ts := []string{`sunplate echo "task 1"`, `sunplate echo "task 2"`}
+	as := []string{`sunplate echo "after 1"`, `sunplate echo "after 2"`}
+	c := `sunplate echo "command"`
 	fn := rebuildFunc(ts, as, c)
 	fn()
 }
