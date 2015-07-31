@@ -5,7 +5,6 @@ package generation
 import (
 	"github.com/anonx/sunplate/command"
 	"github.com/anonx/sunplate/generation/handlers"
-	"github.com/anonx/sunplate/generation/listing"
 	"github.com/anonx/sunplate/generation/views"
 	"github.com/anonx/sunplate/log"
 )
@@ -17,7 +16,7 @@ var Handler = command.Handler{
 	Usage: "generate {command} [arguments]",
 	Desc: `The commands are:
 	handlers    generate golang handler functions for a controllers package
-	listing     generate a map of file names and paths found in a requested directory
+	views       generate a list of file paths found in a requested directory
 
 Possible arguments include:
 	--input     a path to directory that should be scanned
@@ -39,8 +38,6 @@ func start(action string, params command.Data) {
 	switch params[action] {
 	case "handler", "handlers":
 		handlers.Start(params)
-	case "listing":
-		listing.Start(params)
 	case "view", "views":
 		views.Start(params)
 	default:
