@@ -9,13 +9,14 @@ import (
 
 func TestStart(t *testing.T) {
 	Start(map[string]string{
-		"--output": "./assets/views",
+		"--input":  "../testdata/views",
+		"--output": "../testdata/assets/views",
 	})
 
 	// This function is tested on the level of "generation" package.
 
 	// Remove the directory we have created.
-	os.RemoveAll("./assets/views")
+	os.RemoveAll("../testdata/assets")
 }
 
 func TestWalkFunc(t *testing.T) {
@@ -36,6 +37,11 @@ func TestWalkFunc(t *testing.T) {
 	}
 
 	err = fn("views/index.html", testFile{}, nil)
+	if err != nil {
+		t.Errorf("Correct name. Nil expected, got error: %v.", err)
+	}
+
+	err = fn("./", testFile{}, nil)
 	if err != nil {
 		t.Errorf("Correct name. Nil expected, got error: %v.", err)
 	}

@@ -60,7 +60,7 @@ func Start(params command.Data) {
 // of found files. Successfully validated ones are stored to the listing variable.
 func walkFunc(dir string) (listing, func(string, os.FileInfo, error) error) {
 	l := listing{}
-	dir = p.Prefixless(dir, "./") // No "./" is allowed at the beginning.
+	dir = p.Prefixless(p.Prefixless(dir, "./"), ".") // No "./" is allowed at the beginning.
 
 	return l, func(path string, info os.FileInfo, err error) error {
 		// Make sure there are no any errors.
@@ -69,23 +69,30 @@ func walkFunc(dir string) (listing, func(string, os.FileInfo, error) error) {
 			return err
 		}
 
-		// Make sure file name is of supported format.
-		ss := strings.Split(path, "/")
-		for _, s := range ss {
-			if !fileNamePattern.MatchString(s) {
-				log.Warn.Printf(`"%s" is ignored as "%s" is of unsupported format.`, path, s)
-				return fmt.Errorf(`"%s" is of unsupported type`, s)
-			}
-
-			if !ast.IsExported(s) {
-				log.Trace.Printf(`"%s" will not be exported as "%s" starts with a lower case letter.`, path, s)
-			}
-		}
-
 		// Get filepath without the dir path at the beginning.
 		// So, when we are scanning "views/app/index.html" our generated
 		// result will be "app/index.html" instead.
 		rel, _ := filepath.Rel(dir, path)
+
+		// Make sure file name is of supported format.
+		ss := strings.Split(rel, "/")
+		for _, s := range ss {
+			// Ignore root directory.
+			if s == "." {
+				continue
+			}
+
+			// Check whether file / directory name is supported.
+			if !fileNamePattern.MatchString(s) {
+				log.Warn.Printf(`"%s" is ignored as "%s" is of unsupported format.`, rel, s)
+				return fmt.Errorf(`"%s" is of unsupported type`, s)
+			}
+
+			// Notify user if file / directory's name is not exported.
+			if !ast.IsExported(s) {
+				log.Trace.Printf(`"%s" will not be exported as "%s" starts with a lower case letter.`, rel, s)
+			}
+		}
 
 		// Add the directory to the list (if it is a dir).
 		if info.IsDir() {

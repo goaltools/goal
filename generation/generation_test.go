@@ -30,18 +30,18 @@ func TestStart_Handlers(t *testing.T) {
 	os.RemoveAll("./assets")
 }
 
-func TestStart_Listing(t *testing.T) {
+func TestStart_Views(t *testing.T) {
 	start("generate", map[string]string{
-		"generate":  "listing",
+		"generate":  "views",
 		"--input":   "./testdata/views",
 		"--output":  "./testdata/assets/views",
 		"--package": "views",
 	})
 
-	cmd := exec.Command("go", "run", "testdata/listing/main.go")
+	cmd := exec.Command("go", "run", "testdata/app/views/main.go")
 	cmd.Stderr = os.Stderr // Show the output of the program we run.
 	if err := cmd.Run(); err != nil {
-		t.Errorf("There are problems with generated listing, error: '%s'.", err)
+		t.Errorf("There are problems with generated views, error: '%s'.", err)
 	}
 
 	// Remove the directory we have created.
