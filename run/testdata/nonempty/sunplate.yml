@@ -8,6 +8,7 @@ watch:
   ../nonempty:
     - echo "watch:test2:1"
     - echo "watch:test2:2"
+  emptyPattern: "incorrectValue"
 after:
   - echo "after 1"
   - echo "after 2"

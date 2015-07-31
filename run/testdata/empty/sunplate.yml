@@ -1,5 +1,4 @@
 init:
 watch:
-  emptyPattern: pass
 after:
 run: echo "run"
