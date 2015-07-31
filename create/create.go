@@ -93,6 +93,7 @@ type result struct {
 // walkFunc returns a result instance and a function that may be used for validation
 // of found elements. Successfully validated ones are stored to the returned result.
 func walkFunc(dir string) (result, func(string, os.FileInfo, error) error) {
+	dir = p.Prefixless(p.Prefixless(dir, "./"), ".") // No "./" is allowed at the beginning.
 	rs := result{
 		dirs:  map[string]string{},
 		files: map[string]string{},
@@ -106,23 +107,26 @@ func walkFunc(dir string) (result, func(string, os.FileInfo, error) error) {
 			return err
 		}
 
-		relPath := p.Prefixless(path, dir)
+		// Get filepath without the dir path at the beginning.
+		// So, when we are scanning "controllers/app/init.go" our generated
+		// result will be "app/init.go" instead.
+		rel, _ := filepath.Rel(dir, path)
 
 		// Check whether current element is a directory.
 		if info.IsDir() {
-			rs.dirs[path] = relPath
+			rs.dirs[path] = rel
 			return err
 		}
 
 		// Find out whether it is a static file or a go / some other source.
 		ext := filepath.Ext(path)
 		if sourceFiles[ext] {
-			rs.srcs[path] = relPath
+			rs.srcs[path] = rel
 			return err
 		}
 
 		// If it is a static file, add it to the list.
-		rs.files[path] = relPath
+		rs.files[path] = rel
 		return err
 	}
 }
