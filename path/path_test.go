@@ -8,13 +8,13 @@ import (
 )
 
 func TestSunplateDir(t *testing.T) {
-	p := filepath.Join(build.Default.GOPATH, "src", spImp)
+	p := filepath.ToSlash(filepath.Join(build.Default.GOPATH, "src", spImp))
 
 	if v := SunplateDir(); v != p {
 		t.Errorf(`Incorrect result. Expected "%s", got "%s".`, p, v)
 	}
 
-	hp := filepath.Join(p, "generation", "handlers")
+	hp := filepath.ToSlash(filepath.Join(p, "generation", "handlers"))
 	if v := SunplateDir("generation", "handlers"); v != hp {
 		t.Errorf(`Incorrect result. Expected "%s", got "%s".`, hp, v)
 	}
@@ -27,14 +27,14 @@ func TestSunplateImport(t *testing.T) {
 		t.Errorf(`Incorrect result. Expected "%s", got "%s".`, p, v)
 	}
 
-	hp := filepath.Join(p, "generation", "handlers")
+	hp := filepath.ToSlash(filepath.Join(p, "generation", "handlers"))
 	if v := SunplateImport("generation", "handlers"); v != hp {
 		t.Errorf(`Incorrect result. Expected "%s", got "%s".`, hp, v)
 	}
 }
 
 func TestWorkingDir(t *testing.T) {
-	p := filepath.Join(build.Default.GOPATH, "src")
+	p := filepath.ToSlash(filepath.Join(build.Default.GOPATH, "src"))
 	os.Chdir(p)
 
 	if v := WorkingDir(); v != p {
@@ -53,7 +53,7 @@ func TestAbsoluteImport_AbsImportArgument(t *testing.T) {
 }
 
 func TestAbsoluteImport_OutsideGOPATH(t *testing.T) {
-	p := filepath.Join(build.Default.GOPATH, "../")
+	p := filepath.ToSlash(filepath.Join(build.Default.GOPATH, "../"))
 	os.Chdir(p)
 
 	defer func() {
@@ -82,7 +82,7 @@ func TestAbsoluteImport(t *testing.T) {
 
 func TestPrefixless(t *testing.T) {
 	p := "/anonx/sunplate"
-	if v := Prefixless(filepath.Join("github.com", p), "github.com"); v != p {
+	if v := Prefixless(filepath.ToSlash(filepath.Join("github.com", p)), "github.com"); v != p {
 		t.Errorf(`Inncorrect result. Expected "%s", got %s.`, p, v)
 	}
 }
