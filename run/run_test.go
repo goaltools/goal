@@ -20,18 +20,9 @@ func TestExecute(t *testing.T) {
 	ts := []string{
 		passCommand,
 		`sunplate echo "Hello, world!"`,
-		`sunplate echo "This is test"`,
+		`sunplate echo "This is test. Ext is '%ext'"`,
 	}
 	execute(ts)
-}
-
-func TestUserCommand(t *testing.T) {
-	imp := "github.com/anonx/sunplate/skeleton"
-	res := userCommand(":application", imp)
-	exp := "skeleton"
-	if res != exp {
-		t.Errorf("Incorrect user command. Expected `%s`, got `%s`.", exp, res)
-	}
 }
 
 func TestRun_IncorrectTask(t *testing.T) {
