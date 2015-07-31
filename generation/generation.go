@@ -6,6 +6,7 @@ import (
 	"github.com/anonx/sunplate/command"
 	"github.com/anonx/sunplate/generation/handlers"
 	"github.com/anonx/sunplate/generation/listing"
+	"github.com/anonx/sunplate/generation/views"
 	"github.com/anonx/sunplate/log"
 )
 
@@ -40,6 +41,8 @@ func start(action string, params command.Data) {
 		handlers.Start(params)
 	case "listing":
 		listing.Start(params)
+	case "view", "views":
+		views.Start(params)
 	default:
 		log.Error.Panicf(errMsg, params[action], action)
 	}
