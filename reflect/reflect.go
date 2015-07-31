@@ -7,6 +7,7 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"path/filepath"
 	"strings"
 
 	"github.com/anonx/sunplate/log"
@@ -98,7 +99,7 @@ func ParseDir(path string) *Package {
 	}
 	for name, file := range pkg.Files {
 		// Extract functions, methods, sructures, and imports from file declarations.
-		fs, ms, ss, is := processDecls(file.Decls, name)
+		fs, ms, ss, is := processDecls(file.Decls, filepath.ToSlash(name))
 
 		// Add functions to the list.
 		if len(fs) > 0 {
