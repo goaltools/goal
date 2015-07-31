@@ -11,5 +11,5 @@ import (
 
 // serve is a wrapper on standard http.Serve method.
 func serve(s *http.Server) error {
-	return http.Serve(s)
+	return s.ListenAndServe()
 }
