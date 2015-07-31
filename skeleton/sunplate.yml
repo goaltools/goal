@@ -22,5 +22,5 @@ watch:
     - pass # Do nothing.
 after:
   # These commands are executed every time watcher functions have been called.
-  - go build -o ./bin/run github.com/anonx/sunplate/skeleton
-run: ./bin/run # This command describes how to run the app.
+  - go build -o ./bin/run%ext github.com/anonx/sunplate/skeleton
+run: ./bin/run%ext # This command describes how to run the app.

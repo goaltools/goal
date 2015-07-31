@@ -27,6 +27,12 @@ import (
 // but no command is needed.
 const passCommand = "pass"
 
+// replaceVars are special variables in tasks list
+// such as "%ext" that will be replaced by values.
+var replaceVars = map[string]string{
+	"%ext": "",
+}
+
 // ConfigFile is a name of the file that is located at the
 // root of user project and describes what the test runner should do.
 var ConfigFile = "sunplate.yml"
@@ -96,7 +102,7 @@ var start = func(action string, params command.Data) {
 	// Build and start the user app for the first time.
 	cmd, _ := config.GetString("run")
 	execute(after)
-	run(userCommand(cmd, imp))
+	run(cmd)
 
 	// Extract patterns and tasks from watch section of config file.
 	// And add them to watcher.
@@ -111,7 +117,7 @@ var start = func(action string, params command.Data) {
 			ts, err := config.GetList("watch:" + p)
 			log.AssertNil(err)
 
-			w.Listen(p, rebuildFunc(ts, after, userCommand(cmd, imp)))
+			w.Listen(p, rebuildFunc(ts, after, cmd))
 		}
 	default:
 		log.Warn.Printf(`No watch rules found in "%s".`, ConfigFile)
@@ -132,13 +138,6 @@ func rebuildFunc(tasks, after []string, start string) func() {
 		execute(after)
 		run(start)
 	}
-}
-
-// userCommand returns a command that should be used for
-// starting user application.
-func userCommand(s, imp string) string {
-	s = strings.Replace(s, ":application", filepath.Base(imp), -1)
-	return s
 }
 
 // execute gets a list of tasks and starts them.
@@ -196,7 +195,12 @@ func run(t string) *exec.Cmd {
 // task gets a string representation and returns
 // a name of the command and arguments.
 func task(s string) (string, []string) {
+	// Replace variables by their values.
+	for k, v := range replaceVars {
+		s = strings.Replace(s, k, v, -1)
+	}
 	ps := strings.Split(s, " ") // No spaces are allowed between arguments.
+
 	// We are not checking the length of ps as
 	// a garanteed minimum is 1.
 	// tsuru/config returns <nil> instead of empty string.
