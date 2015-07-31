@@ -18,6 +18,7 @@ func TestExecute_IncorrectTask(t *testing.T) {
 
 func TestExecute(t *testing.T) {
 	ts := []string{
+		passCommand,
 		`echo "Hello, world!"`,
 		`echo "This is test"`,
 	}
