@@ -41,8 +41,8 @@ func TestRun_IncorrectTask(t *testing.T) {
 }
 
 func TestRun(t *testing.T) {
-	run("sleep 10")
-	cmd := run("sleep 1") // Starting a new instance.
+	run("sunplate run github.com/anonx/sunplate/skeleton") // A program that runs forever.
+	cmd := run(`sunplate echo "Starting a new instance"`)  // This should kill the previous instance.
 	err := cmd.Wait()
 	if err != nil {
 		t.Error("Command is not started at the time of check.")
