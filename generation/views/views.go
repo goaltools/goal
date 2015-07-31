@@ -75,7 +75,7 @@ func walkFunc(dir string) (listing, func(string, os.FileInfo, error) error) {
 		rel, _ := filepath.Rel(dir, path)
 
 		// Make sure file name is of supported format.
-		ss := strings.Split(rel, "/")
+		ss := strings.Split(rel, string(filepath.Separator))
 		for _, s := range ss {
 			// Ignore root directory.
 			if s == "." {
