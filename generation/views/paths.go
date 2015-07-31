@@ -56,7 +56,7 @@ func (p path) String() string {
 // and registers it.
 func (l listing) addFile(file string) {
 	// Split path into segments and get a dir name (opposite of Base).
-	ss := strings.Split(file, string(filepath.Separator))
+	ss := strings.Split(filepath.ToSlash(file), "/")
 	dir := filepath.ToSlash(filepath.Join(ss[:len(ss)-1]...)) // If path is "path/to/smth.txt", use "path/to".
 
 	// Check whether such path already exists.
@@ -81,7 +81,7 @@ func (l listing) addDir(dir string) {
 	}
 
 	// Split path into segments and get a root dir name (opposite of Base).
-	ss := strings.Split(dir, string(filepath.Separator))
+	ss := strings.Split(filepath.ToSlash(dir), "/")
 	root := filepath.ToSlash(filepath.Join(ss[:len(ss)-1]...)) // If path is "path/to/dir", use "path/to".
 
 	// Check whether such path already exists.
