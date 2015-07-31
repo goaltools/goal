@@ -68,7 +68,7 @@ func TestAbsoluteImport(t *testing.T) {
 	os.Chdir(filepath.Join(build.Default.GOPATH, "src", spImp))
 
 	d := "./generation"
-	exp := filepath.Join(spImp, d)
+	exp := filepath.ToSlash(filepath.Join(spImp, d))
 	if v := AbsoluteImport(d); v != exp {
 		t.Errorf(`Incorrect result. Expected "%s", got "%s".`, exp, v)
 	}
