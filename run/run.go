@@ -69,7 +69,7 @@ var start = func(action string, params command.Data) {
 		if err := recover(); err != nil {
 			stopChannel <- true
 			<-stopped
-			log.Trace.Panic("All subprograms are stopped.")
+			log.Warn.Panic("Application has been terminated.")
 		}
 	}()
 
@@ -120,7 +120,7 @@ var start = func(action string, params command.Data) {
 	// Cleaning up after we are done.
 	signal.Notify(notify, os.Interrupt, syscall.SIGTERM)
 	<-notify
-	log.Warn.Panic("Application will be terminated...")
+	log.Trace.Println("Application has been stopped.")
 }
 
 // rebuildFunc returns a function that

@@ -2,10 +2,10 @@ init:
   - echo "init 1"
   - echo "init 2"
 watch:
-  "test":
+  ../empty:
     - echo "watch:test:1"
     - echo "watch:test:2"
-  "test2":
+  ../nonempty:
     - echo "watch:test2:1"
     - echo "watch:test2:2"
 after:
