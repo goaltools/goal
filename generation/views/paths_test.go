@@ -116,18 +116,18 @@ func TestListingDirs(t *testing.T) {
 	l.addFile("Path/To/Dir/Subdir/Index.html")
 
 	exp := map[string][]path{
-		"Path": []path{
+		"Path": {
 			{Value: []string{"Path", "To"}, Dir: true},
 		},
-		"PathTo": []path{
+		"PathTo": {
 			{Value: []string{"Path", "To", "Dir"}, Dir: true},
 		},
-		"PathToDir": []path{
+		"PathToDir": {
 			{Value: []string{"Path", "To", "Dir", "Index.html"}, Dir: false},
 			{Value: []string{"Path", "To", "Dir", "Index2.html"}, Dir: false},
 			{Value: []string{"Path", "To", "Dir", "Subdir"}, Dir: true},
 		},
-		"PathToDirSubdir": []path{
+		"PathToDirSubdir": {
 			{Value: []string{"Path", "To", "Dir", "Subdir", "Index.html"}, Dir: false},
 		},
 	}
