@@ -20,7 +20,7 @@ var (
 	// (profile/base.html, profile/index.html).
 	// If no base template is found in ./profile/ directory,
 	// one in a previous level (./) will be used.
-	BaseTemplate = "base.html"
+	BaseTemplate = "Base.html"
 
 	// TemplateName is name of the template that will be executed.
 	// By-default, your base.html should have {%define "base"%}
