@@ -49,19 +49,18 @@ func TestRun(t *testing.T) {
 	}
 }
 
+func TestStart(t *testing.T) {
+	notify <- syscall.SIGTERM
+	start("run", command.Data{
+		"run": "github.com/anonx/sunplate/run/testdata/nonempty",
+	})
+}
+
 func TestStart_EmptyFile(t *testing.T) {
 	defer expectPanic("Application has been killed, panic expected.")
 	notify <- syscall.SIGTERM
 	start("run", command.Data{
 		"run": "github.com/anonx/sunplate/run/testdata/empty",
-	})
-}
-
-func TestStart(t *testing.T) {
-	defer expectPanic("Application has been killed, panic expected.")
-	notify <- syscall.SIGTERM
-	start("run", command.Data{
-		"run": "github.com/anonx/sunplate/run/testdata/nonempty",
 	})
 }
 
