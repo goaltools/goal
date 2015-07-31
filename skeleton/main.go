@@ -44,9 +44,9 @@ func main() {
 // it to generate a list of views (views.Context) for you.
 // Please, do not delete it unless you know what you are doing.
 //
-//go:generate sunplate generate listing
+//go:generate sunplate generate views
 
 func init() {
 	// Define the templates that should be loaded.
-	rendering.SetTemplatePaths(views.Context)
+	rendering.SetTemplatePaths(views.Root, views.List)
 }

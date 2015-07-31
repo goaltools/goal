@@ -23,7 +23,7 @@ func init() {
 	os.Chdir("../")
 
 	// Initialize a list of templates to use.
-	rendering.SetTemplatePaths(views.Context)
+	rendering.SetTemplatePaths(views.Root, views.List)
 
 	// Build a handler and prepare a test server.
 	h, err := routes.List.Build()

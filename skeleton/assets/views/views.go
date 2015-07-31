@@ -2,14 +2,48 @@
 // Please, do not edit it manually.
 package views
 
-// Context is a map[string]string of all files found in
-// "./views".
-// File name is used as a key and file path relative to the root
-// of project is a value.
-var Context = map[string]string{
-	"app/greet.html": "views/app/greet.html",
+// Root is a directory where templates are located.
+var Root = "./views"
 
-	"app/index.html": "views/app/index.html",
+// List is a list of files that were found at "./views"
+// in a form of slice of strings.
+var List []string
 
-	"base.html": "views/base.html",
+// Paths stores information about all files that
+// were found at "./views".
+var Paths tPaths
+
+// tPaths represents a root directory with files.
+type tPaths struct {
+	//
+	// Below are the assets of root directory.
+	//
+
+	// App is a "App" directory.
+	App tPathApp
+	// BaseHTML is a "Base.html" file.
+	BaseHTML string
+}
+
+// tApp is a type that represents a directory.
+type tPathApp struct {
+	//
+	// Below are the assets of this directory.
+	//
+
+	// GreetHTML is a "App/Greet.html" file.
+	GreetHTML string
+	// IndexHTML is a "App/Index.html" file.
+	IndexHTML string
+}
+
+func init() {
+	Paths.App.GreetHTML = "App/Greet.html"
+	Paths.App.IndexHTML = "App/Index.html"
+	Paths.BaseHTML = "Base.html"
+	List = []string{ // Make file paths available in a form of slice of strings.
+		Paths.App.GreetHTML,
+		Paths.App.IndexHTML,
+		Paths.BaseHTML,
+	}
 }
