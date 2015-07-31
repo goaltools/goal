@@ -21,7 +21,7 @@ func SunplateDir(pkgs ...string) string {
 	p := filepath.Join(
 		PackageDir(""), SunplateImport(pkgs...),
 	)
-	return p
+	return filepath.ToSlash(p)
 }
 
 // SunplateImport is equivalent of the SunplateDir except it returns
@@ -31,7 +31,7 @@ func SunplateImport(pkgs ...string) string {
 	for i := range pkgs {
 		p = filepath.Join(p, pkgs[i])
 	}
-	return p
+	return filepath.ToSlash(p)
 }
 
 // WorkingDir returns a path to the directory where sunplate program was run.
@@ -45,7 +45,7 @@ func SunplateImport(pkgs ...string) string {
 func WorkingDir() string {
 	p, err := os.Getwd()
 	log.AssertNil(err)
-	return p
+	return filepath.ToSlash(p)
 }
 
 // AbsoluteImport gets an import path and returns its absolute representation.
@@ -59,6 +59,7 @@ func AbsoluteImport(path string) string {
 	}
 
 	// If it is an absolute path, remove the starting slashes, if any.
+	path = filepath.ToSlash(path)
 	if !strings.HasPrefix(path, ".") {
 		return strings.TrimLeft(path, "/")
 	}
@@ -66,7 +67,7 @@ func AbsoluteImport(path string) string {
 	// Get absolute import path by removing "$GOPATH/src" at the beginning
 	// of working dir + relative path.
 	gopath := PackageDir("")
-	pkgPath := filepath.Join(WorkingDir(), path)
+	pkgPath := filepath.ToSlash(filepath.Join(WorkingDir(), path))
 	if !strings.HasPrefix(pkgPath, gopath) { // If there is no $GOPATH at the beginning.
 		log.Error.Panicf("Your project must be located inside of $GOPATH.")
 	}
@@ -79,11 +80,15 @@ func AbsoluteImport(path string) string {
 // PackageDir gets a golang import path and returns its full path.
 func PackageDir(imp string) string {
 	gopaths := filepath.SplitList(build.Default.GOPATH)
-	return filepath.Join(gopaths[0], "src", imp) // We are always using the first GOPATH in a list.
+	return filepath.ToSlash(
+		filepath.Join(gopaths[0], "src", imp), // We are always using the first GOPATH in a list.
+	)
 }
 
 // Prefixless cuts a prefix of a path and returns the result
 // that is cleaned.
 func Prefixless(path, prefix string) string {
-	return filepath.Clean(strings.TrimPrefix(path, prefix))
+	return filepath.ToSlash(
+		filepath.Clean(strings.TrimPrefix(path, prefix)),
+	)
 }
