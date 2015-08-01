@@ -5,7 +5,7 @@ package handlers
 import (
 	"net/http"
 
-	c0 "github.com/anonx/sunplate/skeleton/assets/handlers/github.com/anonx/sunplate/controllers/rendering"
+	c0 "github.com/anonx/sunplate/skeleton/assets/handlers/github.com/anonx/sunplate/controllers/results"
 	contr "github.com/anonx/sunplate/skeleton/controllers"
 
 	a "github.com/anonx/sunplate/action"

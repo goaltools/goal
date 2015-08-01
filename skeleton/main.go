@@ -9,7 +9,7 @@ import (
 	"github.com/anonx/sunplate/skeleton/assets/views"
 	"github.com/anonx/sunplate/skeleton/routes"
 
-	"github.com/anonx/sunplate/controllers/rendering"
+	"github.com/anonx/sunplate/controllers/results"
 	"github.com/anonx/sunplate/log"
 )
 
@@ -47,5 +47,5 @@ func main() {
 
 func init() {
 	// Define the templates that should be loaded.
-	rendering.SetTemplatePaths(views.Root, views.List)
+	results.SetTemplatePaths(views.Root, views.List)
 }

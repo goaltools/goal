@@ -1,6 +1,6 @@
-// Package rendering provides abstractions for work
+// Package results provides abstractions for work
 // with standard Go template engine.
-package rendering
+package results
 
 import (
 	"html/template"

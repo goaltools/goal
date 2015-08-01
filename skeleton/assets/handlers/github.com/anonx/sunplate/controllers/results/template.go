@@ -5,14 +5,14 @@ package handlers
 import (
 	"net/http"
 
-	contr "github.com/anonx/sunplate/controllers/rendering"
+	contr "github.com/anonx/sunplate/controllers/results"
 
 	a "github.com/anonx/sunplate/action"
 	"github.com/anonx/sunplate/strconv"
 )
 
 // Template is an insance of tTemplate that is automatically generated from Template controller
-// being found at "github.com/anonx/sunplate/controllers/rendering/template.go",
+// being found at "github.com/anonx/sunplate/controllers/results/template.go",
 // and contains methods to be used as handler functions.
 //
 // Template is a main type that should be embeded into controller structs.
@@ -22,16 +22,16 @@ var Template tTemplate
 type tTemplate struct {
 }
 
-// New allocates (github.com/anonx/sunplate/controllers/rendering).Template controller,
+// New allocates (github.com/anonx/sunplate/controllers/results).Template controller,
 // then returns it.
 func (t tTemplate) New() *contr.Template {
 	c := &contr.Template{}
 	return c
 }
 
-// Before calls (github.com/anonx/sunplate/controllers/rendering).Template.Before.
+// Before calls (github.com/anonx/sunplate/controllers/results).Template.Before.
 func (t tTemplate) Before(c *contr.Template, w http.ResponseWriter, r *http.Request) a.Result {
-	// Call magic Before action of (github.com/anonx/sunplate/controllers/rendering).Template.
+	// Call magic Before action of (github.com/anonx/sunplate/controllers/results).Template.
 	if res := c.Before( // "Binding" parameters.
 	); res != nil {
 		return res
@@ -50,7 +50,7 @@ func (t tTemplate) Finally(c *contr.Template, w http.ResponseWriter, r *http.Req
 
 // RenderTemplate is a handler that was generated automatically.
 // It calls Before, After, Finally methods, and RenderTemplate action found at
-// github.com/anonx/sunplate/controllers/rendering/template.go
+// github.com/anonx/sunplate/controllers/results/template.go
 // in appropriate order.
 //
 // RenderTemplate initializes and returns HTML type that implements Result interface.

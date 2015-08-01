@@ -1,4 +1,4 @@
-package rendering
+package results
 
 import (
 	"html/template"
@@ -19,13 +19,13 @@ var templates = map[string]*template.Template{}
 //	import (
 //		"github.com/user/project/assets/views"
 //
-//		"github.com/anonx/sunplate/controllers/rendering"
+//		"github.com/anonx/sunplate/controllers/results"
 //	)
 //
 //	// ...
 //
 //	func init() {
-//		rendering.SetTemplatePaths(views.Root, views.List)
+//		results.SetTemplatePaths(views.Root, views.List)
 //	}
 func SetTemplatePaths(root string, templatePaths []string) {
 	log.Trace.Println("Loading templates...")
