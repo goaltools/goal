@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/anonx/sunplate/skeleton/assets/views"
+	v "github.com/anonx/sunplate/skeleton/assets/views"
 
 	"github.com/anonx/sunplate/action"
 )
@@ -18,14 +18,14 @@ func (c *App) Before(name string, pages []int) action.Result {
 
 // Index is an action that is used for generation of a greeting form.
 func (c *App) Index() action.Result {
-	return c.RenderTemplate(views.Paths.App.IndexHTML)
+	return c.RenderTemplate(v.Paths.App.IndexHTML)
 }
 
 // PostGreet prints received user fullname. If it is not valid,
 // user is redirected back to index page.
 func (c *App) PostGreet(name string) action.Result {
 	c.Context["name"] = name
-	return c.RenderTemplate(views.Paths.App.GreetHTML)
+	return c.RenderTemplate(v.Paths.App.GreetHTML)
 }
 
 // After is a magic method that is executed after every request.
