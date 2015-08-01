@@ -1,4 +1,4 @@
-package rendering
+package results
 
 import (
 	"net/http"
