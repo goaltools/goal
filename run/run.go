@@ -49,10 +49,12 @@ var (
 var main = func(action string, params command.Data) {
 	defer func() {
 		if err := recover(); err != nil {
-			for k := range started {
+			for k := range stopExpected {
 				stopExpected[k] <- true
 			}
-			<-stopped
+			for k := range startExpected {
+				<-startExpected[k]
+			}
 			log.Warn.Panic("Application has been terminated.")
 		}
 	}()

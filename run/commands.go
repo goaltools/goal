@@ -3,24 +3,15 @@ package run
 import (
 	"os"
 	"os/exec"
-	"sync"
 
 	"github.com/anonx/sunplate/log"
 )
 
 var (
-	// started indicates whether a previous instance of user
-	// app with a specific section name already exists.
-	started = map[string]bool{}
+	stopExpected  = map[string]chan bool{}
+	startExpected = map[string]chan bool{}
 
-	// stopExpected, instanceStopped, and stopped are channels that
-	// are used to let us know the user app has to be stopped or has
-	// already been stopped, so we can safely start it again.
-	stopExpected    = map[string]chan bool{}
 	instanceStopped = map[string]chan bool{}
-	stopped         = make(chan bool, 1)
-
-	mu sync.Mutex
 )
 
 // start runs commands but does not wait for them to complete.
@@ -63,19 +54,23 @@ func run(tasks []string) {
 // before running a new one.
 func startSingleInstance(name, task string) *exec.Cmd {
 	// Initialize channels if we haven't done it yet.
-	active := started[name]
+	_, active := stopExpected[name]
 	if !active {
 		stopExpected[name] = make(chan bool, 1)
 		instanceStopped[name] = make(chan bool, 1)
+		startExpected[name] = make(chan bool, 1)
+
+		startExpected[name] <- true
 	}
 
-	// Stopping the previous instance
-	// if it already exists.
+	// Stopping the previous instance if it already exists.
 	if active {
 		log.Trace.Printf(`Terminating the old instance of "%s"...`, name)
 		stopExpected[name] <- true
 		<-instanceStopped[name]
 	}
+
+	<-startExpected[name]
 	log.Trace.Printf(`Starting a new instance of "%s"...`, name)
 
 	// Parse the input task, prepare a command.
@@ -90,25 +85,25 @@ func startSingleInstance(name, task string) *exec.Cmd {
 	if err != nil {
 		log.Error.Panicf("Failed to start a command `%s`, error: %v.", task, err)
 	}
-	started[name] = true
 
 	// Make sure we'll be able to stop the app.
 	go func() {
+		// Wait till we are asked to stop this instance.
 		<-stopExpected[name]
-		mu.Lock()
-		defer mu.Unlock()
 
+		// Kill the command and wait it.
 		pid := cmd.Process.Pid
 		cmd.Process.Kill()
 		cmd.Process.Wait()
 		log.Trace.Printf("\tProcess with PID %d has been killed.", pid)
 
-		delete(started, name)
+		// A new instance can be safely started.
+		startExpected[name] <- true
 
+		// Inform other goroutines the instance
+		// (and, if necessary, all instances) has been
+		// stopped.
 		instanceStopped[name] <- true
-		if len(started) == 0 {
-			stopped <- true
-		}
 	}()
 
 	return cmd

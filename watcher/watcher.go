@@ -59,7 +59,6 @@ func (t *Type) NotifyOnUpdate(watcher *fsnotify.Watcher, fn func()) {
 		case ev := <-watcher.Events:
 			if restartRequired(ev) {
 				t.mu.Lock()
-				log.Warn.Println("Cought event...")
 				fn()
 				t.mu.Unlock()
 			}
