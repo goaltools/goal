@@ -1,10 +1,23 @@
-version: 0.0.1
-proxy:
-  addr: localhost:8080
+# sunplate.yml is a configuration file of "sunplate run" task runner
+# and file watcher.
+#
+# A list of built in commands include:
+# /start  {section:list} - run commands in the specified section asynchronously.
+# /run    {section:list} - run commands in the specified section waiting them to complete.
+# /single {section:text} - run exactly one instance of a command of the specified section.
+# /echo   [text]         - print a line of text.
+# /pass                  - do nothing (it is similar to Python's "pass").
+#
+# A list of supported variables that will be replaced by their values include:
+# :EXT - extension of a binary file (empty on *nix and ".exe" when running on windows).
+#
+# Literals starting with $ (e.g. $PORT) will be replaced by values of ENV variables.
 init:
   # Commands of this section will be executed once, at the start time of `sunplate run`.
   # You may use it for something like "npm install".
-  - pass # Do nothing.
+  - /echo "Starting work on 'github.com/anonx/sunplate/skeleton'"
+  - /run build
+  - /single start
 watch:
   # Watcher commands will be started every time their related files are modified.
   # Expected format of the pattern is "directory: tasks...".
@@ -13,14 +26,19 @@ watch:
   ./controllers/*:
     - go generate routes/routes.go
     - go get github.com/anonx/sunplate/skeleton/assets/handlers
+    - /run build
+    - /single start
   ./views/*:
     - go generate main.go
     - go get github.com/anonx/sunplate/skeleton/assets/views
+    - /run build
+    - /single start
   ./:
-    - pass # Do nothing.
+    - /run build
+    - /single start
   ./routes/*:
-    - pass # Do nothing.
-after:
-  # These commands are executed every time watcher functions have been called.
-  - go build -o ./bin/run%ext github.com/anonx/sunplate/skeleton
-run: ./bin/run%ext # This command describes how to run the app.
+    - /run build
+    - /single start
+build:
+  - go build -o ./bin/run:EXT github.com/anonx/sunplate/skeleton
+start: ./bin/run:EXT
