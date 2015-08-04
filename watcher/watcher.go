@@ -33,11 +33,6 @@ func (t *Type) Listen(pattern string, fn func()) {
 	w, err := fsnotify.NewWatcher()
 	log.AssertNil(err)
 
-	// Replace the unbuffered Event channel with a buffered one.
-	// Otherwise multiple change events only come out one at a time.
-	w.Events = make(chan fsnotify.Event, 100)
-	w.Errors = make(chan error, 10)
-
 	// Find directories matching the pattern.
 	ds := glob(pattern)
 	if err != nil {
@@ -69,6 +64,7 @@ func (t *Type) NotifyOnUpdate(watcherIndex int, fn func()) {
 		case ev := <-t.watchers[watcherIndex].Events:
 			if restartRequired(ev) {
 				t.mu.Lock()
+				log.Warn.Println("Cought event...")
 				fn()
 				t.mu.Unlock()
 			}
