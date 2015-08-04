@@ -17,8 +17,7 @@ import (
 // Type is a watcher type that allows registering new
 // pattern - actions pairs.
 type Type struct {
-	mu       sync.Mutex
-	watchers []*fsnotify.Watcher
+	mu sync.Mutex
 }
 
 // NewType allocates and returns a new instance of watcher Type.
@@ -48,27 +47,23 @@ func (t *Type) Listen(pattern string, fn func()) {
 		}
 	}
 
-	// Add watcher to the list.
-	i := len(t.watchers)
-	t.watchers = append(t.watchers, w)
-
 	// Start watching process.
-	go t.NotifyOnUpdate(i, fn)
+	go t.NotifyOnUpdate(w, fn)
 }
 
 // NotifyOnUpdate starts the function every time a file change
 // event is received. Start it as a goroutine.
-func (t *Type) NotifyOnUpdate(watcherIndex int, fn func()) {
+func (t *Type) NotifyOnUpdate(watcher *fsnotify.Watcher, fn func()) {
 	for {
 		select {
-		case ev := <-t.watchers[watcherIndex].Events:
+		case ev := <-watcher.Events:
 			if restartRequired(ev) {
 				t.mu.Lock()
 				log.Warn.Println("Cought event...")
 				fn()
 				t.mu.Unlock()
 			}
-		case err := <-t.watchers[watcherIndex].Errors:
+		case err := <-watcher.Errors:
 			log.Warn.Println(err)
 		}
 	}
