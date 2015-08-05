@@ -1,0 +1,6 @@
+init:
+  - /pass
+watch:
+  smth:
+    - /pass
+  smth_else: "not a list but a string value"

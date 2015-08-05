@@ -1,0 +1,6 @@
+init:
+  - /run test
+watch:
+  smth:
+    - /pass
+test: "a single value rather than a list that was expected"

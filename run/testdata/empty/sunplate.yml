@@ -1,4 +1,0 @@
-init:
-watch:
-after:
-run: sunplate echo "run"

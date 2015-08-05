@@ -1,0 +1,8 @@
+init:
+  - /run test anotherArg
+watch:
+  smth:
+    - /pass
+test:
+  - /pass
+  - /pass

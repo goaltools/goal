@@ -1,0 +1,6 @@
+init:
+  - /single test anotherArg
+watch:
+  smth:
+    - /pass
+test: /echo "smth"
