@@ -1,0 +1,13 @@
+init:
+  - sunplate help xxx
+  - /pass
+  - /echo "Hello, world!"
+  - /start test
+  - /run test
+  - /single help
+watch:
+  ./testdata:
+    - /start test
+test:
+  - sunplate help test
+help: sunplate help xxx

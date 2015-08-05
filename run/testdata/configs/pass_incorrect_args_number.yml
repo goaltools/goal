@@ -1,0 +1,5 @@
+init:
+  - /pass smth smthElse
+watch:
+  smth:
+    - /pass

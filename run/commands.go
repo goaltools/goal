@@ -73,6 +73,13 @@ func startSingleInstance(name, task string) {
 // as a separate goroutine. It starts and stops instances
 // of user apps.
 func instanceController() {
+	// Clean up on termination.
+	defer func() {
+		if err := recover(); err != nil {
+			stopped <- true
+		}
+	}()
+
 	// terminate is used for killing an instance of a task.
 	var terminate = func(name string, cmd *exec.Cmd) {
 		pid := cmd.Process.Pid

@@ -1,0 +1,17 @@
+init:
+  - sunplate help
+  - /pass
+  - /echo "Init section"
+  - /pass
+  - /run watch:smth
+watch:
+  smth:
+    - /pass
+    - /start smth
+    - sunplate help test
+  smth_else:
+    - /pass
+    - /single smth_else
+smth:
+  - /pass
+smth_else: /echo "Single instance"
