@@ -49,12 +49,10 @@ var (
 var main = func(action string, params command.Data) {
 	defer func() {
 		if err := recover(); err != nil {
-			for k := range stopExpected {
-				stopExpected[k] <- true
+			channel <- message{
+				action: "exit",
 			}
-			for k := range startExpected {
-				<-startExpected[k]
-			}
+			<-stopped
 			log.Warn.Panic("Application has been terminated.")
 		}
 	}()
@@ -74,6 +72,9 @@ var main = func(action string, params command.Data) {
 	// we need.
 	log.Trace.Printf(`Starting to parse "%s"...`, cf)
 	c := parseConf(cf)
+
+	// Start a user tasks runner and instances controller.
+	go instanceController()
 
 	// Start init tasks.
 	c.init()

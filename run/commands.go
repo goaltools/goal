@@ -8,11 +8,20 @@ import (
 )
 
 var (
-	stopExpected  = map[string]chan bool{}
-	startExpected = map[string]chan bool{}
+	// stopped is a channel that is used for notifying the main program
+	// that all subprograms have been terminated.
+	stopped = make(chan bool, 1)
 
-	instanceStopped = map[string]chan bool{}
+	// channel is used for communication with a user tasks starter
+	// and their instances controller.
+	channel = make(chan message, 1)
 )
+
+type message struct {
+	action string
+	name   string
+	task   string
+}
 
 // start runs commands but does not wait for them to complete.
 func start(tasks []string) {
@@ -52,59 +61,65 @@ func run(tasks []string) {
 // as start. However, if there is already an instance with
 // the same name, it will be stopped first
 // before running a new one.
-func startSingleInstance(name, task string) *exec.Cmd {
-	// Initialize channels if we haven't done it yet.
-	_, active := stopExpected[name]
-	if !active {
-		stopExpected[name] = make(chan bool, 1)
-		instanceStopped[name] = make(chan bool, 1)
-		startExpected[name] = make(chan bool, 1)
-
-		startExpected[name] <- true
+func startSingleInstance(name, task string) {
+	channel <- message{
+		action: "start",
+		name:   name,
+		task:   task,
 	}
+}
 
-	// Stopping the previous instance if it already exists.
-	if active {
-		log.Trace.Printf(`Terminating the old instance of "%s"...`, name)
-		stopExpected[name] <- true
-		<-instanceStopped[name]
-	}
-
-	<-startExpected[name]
-	log.Trace.Printf(`Starting a new instance of "%s"...`, name)
-
-	// Parse the input task, prepare a command.
-	n, as := parseTask(task)
-	cmd := exec.Command(n, as...)
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = os.Stdout
-	log.Trace.Printf("\t`%s`", replaceVars(task))
-
-	// Starting the user task.
-	err := cmd.Start()
-	if err != nil {
-		log.Error.Panicf("Failed to start a command `%s`, error: %v.", task, err)
-	}
-
-	// Make sure we'll be able to stop the app.
-	go func() {
-		// Wait till we are asked to stop this instance.
-		<-stopExpected[name]
-
-		// Kill the command and wait it.
+// instanceController is a function that is expected to be run
+// as a separate goroutine. It starts and stops instances
+// of user apps.
+func instanceController() {
+	// terminate is used for killing an instance of a task.
+	var terminate = func(name string, cmd *exec.Cmd) {
 		pid := cmd.Process.Pid
-		cmd.Process.Kill()
+		err := cmd.Process.Kill()
+		log.AssertNil(err)
+
 		cmd.Process.Wait()
-		log.Trace.Printf("\tProcess with PID %d has been killed.", pid)
+		log.Trace.Printf(`Active instance of "%s" (PID %d) has been terminated.`, name, pid)
+		cmd.Process = nil
+	}
 
-		// A new instance can be safely started.
-		startExpected[name] <- true
+	// Waiting till we are asked to run/restart some tasks or exit
+	// and following the orders.
+	commands := map[string]*exec.Cmd{}
+	for {
+		switch m := <-channel; m.action {
+		case "start":
+			// Check whether we have already had an instance of the
+			// requested task.
+			cmd, ok := commands[m.name]
+			if ok {
+				// If so, terminate it first.
+				terminate(m.name, cmd)
+			}
 
-		// Inform other goroutines the instance
-		// (and, if necessary, all instances) has been
-		// stopped.
-		instanceStopped[name] <- true
-	}()
+			// If this is the first time this command is requested
+			// to be run, initialize things.
+			if !ok {
+				n, as := parseTask(m.task)
+				log.Trace.Printf(`Preparing "%s"...`, n)
+				commands[m.name] = exec.Command(n, as...)
+				commands[m.name].Stderr = os.Stderr
+				commands[m.name].Stdout = os.Stdout
+			}
 
-	return cmd
+			// Starting the task.
+			t := replaceVars(m.task)
+			log.Trace.Printf("Starting a new instance of `%s`...", t)
+			err := commands[m.name].Start()
+			if err != nil {
+				log.Error.Panicf("Failed to start a command `%s`, error: %v.", t, err)
+			}
+		case "exit":
+			for name, cmd := range commands {
+				terminate(name, cmd)
+			}
+			stopped <- true
+		}
+	}
 }
