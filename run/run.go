@@ -47,6 +47,11 @@ var (
 
 // main is an entry point of the command.
 var main = func(action string, params command.Data) {
+	// Start a user tasks runner and instances controller.
+	go instanceController()
+
+	// Show user friendly errors and terminate subprograms
+	// in case of panics.
 	defer func() {
 		if err := recover(); err != nil {
 			channel <- message{
@@ -72,9 +77,6 @@ var main = func(action string, params command.Data) {
 	// we need.
 	log.Trace.Printf(`Starting to parse "%s"...`, cf)
 	c := parseConf(cf)
-
-	// Start a user tasks runner and instances controller.
-	go instanceController()
 
 	// Start init tasks.
 	c.init()
