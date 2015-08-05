@@ -29,7 +29,7 @@ watch:
     - /run build
     - /single start
   ./views/*:
-    - go generate main.go
+    - go generate init.go
     - go get github.com/anonx/sunplate/skeleton/assets/views
     - /run build
     - /single start
