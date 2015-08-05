@@ -73,27 +73,27 @@ func startSingleInstance(name, task string) {
 // as a separate goroutine. It starts and stops instances
 // of user apps.
 func instanceController() {
-	// Clean up on termination.
-	defer func() {
-		if err := recover(); err != nil {
-			stopped <- true
-		}
-	}()
-
 	// terminate is used for killing an instance of a task.
 	var terminate = func(name string, cmd *exec.Cmd) {
 		pid := cmd.Process.Pid
-		err := cmd.Process.Kill()
-		log.AssertNil(err)
+		cmd.Process.Kill()
 
 		cmd.Process.Wait()
-		log.Trace.Printf(`Active instance of "%s" (PID %d) has been terminated.`, name, pid)
 		cmd.Process = nil
+		log.Trace.Printf(`Active instance of "%s" (PID %d) has been terminated.`, name, pid)
 	}
+	commands := map[string]*exec.Cmd{}
+
+	// Clean up on termination.
+	defer func() {
+		for name, cmd := range commands {
+			terminate(name, cmd)
+		}
+		stopped <- true
+	}()
 
 	// Waiting till we are asked to run/restart some tasks or exit
 	// and following the orders.
-	commands := map[string]*exec.Cmd{}
 	for {
 		switch m := <-channel; m.action {
 		case "start":
@@ -110,23 +110,28 @@ func instanceController() {
 			if !ok {
 				n, as := parseTask(m.task)
 				log.Trace.Printf(`Preparing "%s"...`, n)
-				commands[m.name] = exec.Command(n, as...)
-				commands[m.name].Stderr = os.Stderr
-				commands[m.name].Stdout = os.Stdout
+				cmd = exec.Command(n, as...)
+				cmd.Stderr = os.Stderr
+				cmd.Stdout = os.Stdout
 			}
 
 			// Starting the task.
 			t := replaceVars(m.task)
 			log.Trace.Printf("Starting a new instance of `%s`...", t)
-			err := commands[m.name].Start()
+			err := cmd.Start()
 			if err != nil {
-				log.Error.Panicf("Failed to start a command `%s`, error: %v.", t, err)
+				log.Error.Printf("Failed to start a command `%s`, error: %v.", t, err)
+				return
+			}
+
+			// If this is the first time this command is requested
+			// and the program has been started successfully, register it
+			// so we'll be able to terminate it.
+			if !ok {
+				commands[m.name] = cmd
 			}
 		case "exit":
-			for name, cmd := range commands {
-				terminate(name, cmd)
-			}
-			stopped <- true
+			return
 		}
 	}
 }

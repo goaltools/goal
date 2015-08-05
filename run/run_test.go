@@ -8,6 +8,7 @@ import (
 )
 
 func TestMain_TestData(t *testing.T) {
+	defer expectPanic(`Application was terminated, panic expected.`)
 	notify <- syscall.SIGTERM
 	main("run", command.Data{
 		"run": "./testdata/configs",
@@ -22,6 +23,7 @@ func TestMain_IncorrectConfig(t *testing.T) {
 }
 
 func TestMain(t *testing.T) {
+	defer expectPanic(`Application was terminated, panic expected.`)
 	notify <- syscall.SIGTERM
 	main("run", command.Data{
 		"run": "github.com/anonx/sunplate/skeleton",
