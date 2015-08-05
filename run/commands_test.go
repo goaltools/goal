@@ -38,9 +38,13 @@ func TestRun(t *testing.T) {
 }
 
 func TestStartSingleInstance_IncorrectCommand(t *testing.T) {
-	go instanceController()
+	c := "gxgbhsjdjdduuhdhsh"
+	go func() {
+		//defer expectPanic(fmt.Sprintf(`Command "%s" does not exist. Panic expected.`, c))
+		instanceController()
+	}()
 
-	startSingleInstance("smth", "gxgbhsjdjdduuhdhsh")
+	startSingleInstance("smth", c)
 	<-stopped
 }
 

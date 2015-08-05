@@ -53,13 +53,11 @@ var main = func(action string, params command.Data) {
 	// Show user friendly errors and terminate subprograms
 	// in case of panics.
 	defer func() {
-		if err := recover(); err != nil {
-			channel <- message{
-				action: "exit",
-			}
-			<-stopped
-			log.Warn.Panic("Application has been terminated.")
+		channel <- message{
+			action: "exit",
 		}
+		<-stopped
+		log.Trace.Panicln("Application has been terminated.")
 	}()
 
 	imp := p.AbsoluteImport(params.Default(action, "./"))
@@ -90,5 +88,4 @@ var main = func(action string, params command.Data) {
 	// Cleaning up after we are done.
 	signal.Notify(notify, os.Interrupt, syscall.SIGTERM)
 	<-notify
-	log.Trace.Println("Application has been stopped.")
 }
