@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/anonx/sunplate/command"
+	"github.com/anonx/sunplate/internal/command"
 	"github.com/anonx/sunplate/log"
 )
 

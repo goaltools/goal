@@ -6,11 +6,11 @@ package main
 import (
 	"os"
 
-	"github.com/anonx/sunplate/command"
-	"github.com/anonx/sunplate/create"
-	"github.com/anonx/sunplate/generation"
+	"github.com/anonx/sunplate/internal/command"
+	"github.com/anonx/sunplate/internal/programs/create"
+	"github.com/anonx/sunplate/internal/programs/generation"
+	"github.com/anonx/sunplate/internal/programs/run"
 	"github.com/anonx/sunplate/log"
-	"github.com/anonx/sunplate/run"
 )
 
 // Handlers is a map of registered subcommands
