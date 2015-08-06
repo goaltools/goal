@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/anonx/sunplate/internal/command"
+	"github.com/anonx/sunplate/internal/generation"
 	"github.com/anonx/sunplate/internal/path"
-	"github.com/anonx/sunplate/internal/programs/generation/output"
 	"github.com/anonx/sunplate/strconv"
 )
 
@@ -28,8 +28,8 @@ func Start(params command.Data) {
 	ps.processPackage(absImport)
 
 	// Start generation of handler packages.
-	t := output.NewType(
-		"", filepath.Join(path.SunplateDir("internal", "programs", "generation", "handlers"), "./handlers.go.template"),
+	t := generation.NewType(
+		"", filepath.Join(path.SunplateDir("internal", "programs", "generate", "handlers"), "./handlers.go.template"),
 	)
 	t.Extension = ".go" // Save generated files as a .go source.
 

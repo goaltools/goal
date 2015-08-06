@@ -2,7 +2,7 @@ package controllers
 
 import (
 	a "github.com/anonx/sunplate/action"
-	"github.com/anonx/sunplate/internal/programs/generation/handlers/testdata/controllers/subpackage"
+	"github.com/anonx/sunplate/internal/programs/generate/handlers/testdata/controllers/subpackage"
 
 	"github.com/naoina/denco"
 	"github.com/revel/revel/testing"

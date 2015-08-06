@@ -1,11 +1,11 @@
-// Package generation is a runner of subcommands
+// Package generate is a runner of subcommands
 // related to code generation.
-package generation
+package generate
 
 import (
 	"github.com/anonx/sunplate/internal/command"
-	"github.com/anonx/sunplate/internal/programs/generation/handlers"
-	"github.com/anonx/sunplate/internal/programs/generation/views"
+	"github.com/anonx/sunplate/internal/programs/generate/handlers"
+	"github.com/anonx/sunplate/internal/programs/generate/views"
 	"github.com/anonx/sunplate/log"
 )
 

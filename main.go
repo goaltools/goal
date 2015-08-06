@@ -8,7 +8,7 @@ import (
 
 	"github.com/anonx/sunplate/internal/command"
 	"github.com/anonx/sunplate/internal/programs/create"
-	"github.com/anonx/sunplate/internal/programs/generation"
+	"github.com/anonx/sunplate/internal/programs/generate"
 	"github.com/anonx/sunplate/internal/programs/run"
 	"github.com/anonx/sunplate/log"
 )
@@ -54,7 +54,7 @@ func init() {
 	// Register the supported subcommands.
 	Handlers.Register(create.Handler)
 	Handlers.Register(run.Handler)
-	Handlers.Register(generation.Handler)
+	Handlers.Register(generate.Handler)
 	Handlers.Register(helpHandler)
 
 	// Show header message when using new or help
