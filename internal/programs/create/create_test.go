@@ -26,7 +26,7 @@ func TestStart(t *testing.T) {
 	rs1, fn1 := walkFunc(dst)
 	filepath.Walk(dst, fn1)
 
-	p := path.SunplateDir("skeleton")
+	p := path.SunplateDir("internal", "skeleton")
 	rs2, fn2 := walkFunc(p)
 	filepath.Walk(p, fn2)
 
