@@ -1,5 +1,5 @@
 package run
 
 func init() {
-	replaceVars[":EXT"] = ".exe"
+	varList[":EXT"] = ".exe"
 }
