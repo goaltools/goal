@@ -13,11 +13,13 @@ func TestActionFunc(t *testing.T) {
 			"app.go": map[string]string{
 				"action": "github.com/anonx/sunplate/action",
 			},
+			"init.go": map[string]string{},
 		},
 	})
 
 	res := fn(&reflect.Func{
 		Name: "Test",
+		File: "app.go",
 	})
 	if res {
 		t.Errorf("Incorrect result: actions are methods that return at least one result.")
@@ -32,6 +34,26 @@ func TestActionFunc(t *testing.T) {
 	res = fn(f)
 	if res {
 		t.Errorf("Unexported methods cannot be actions.")
+	}
+
+	fn(&reflect.Func{ // Trying a file without action imports for the first time.
+		Name: "Test",
+		File: "init.go",
+	})
+	res = fn(&reflect.Func{ // The second try must be ignored immidiately.
+		Name: "Test",
+		File: "init.go",
+	})
+	if res {
+		t.Errorf("Incorrect result: file without action import cannot contain actions.")
+	}
+
+	f1 := actionFn
+	f1.Name = "Something"
+	f1.Results[0].Type.Name = "NotActionInterface"
+	res = fn(f1)
+	if res {
+		t.Errorf("Not an action interface is returned as a first result: %#v. False expected, got true.", f1)
 	}
 }
 
@@ -49,6 +71,25 @@ func TestBuiltin(t *testing.T) {
 	}
 	if builtin(f) != true {
 		t.Errorf("Parameters of %#v are builtin. True expected, got false.", f)
+	}
+
+	f = &reflect.Func{
+		Name: "Test",
+		Params: []reflect.Arg{
+			{
+				Name: "name",
+				Type: &reflect.Type{
+					Name:    "Test",
+					Package: "test",
+				},
+			},
+		},
+		Recv: &reflect.Arg{
+			Type: &reflect.Type{},
+		},
+	}
+	if builtin(f) != false {
+		t.Errorf("Parameter `test.Test` of %#v is not builtin. False expected, got true.", f)
 	}
 }
 
