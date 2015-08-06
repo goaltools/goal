@@ -7,7 +7,7 @@ package main
 import (
 	"reflect"
 
-	"github.com/anonx/sunplate/internal/programs/generation/testdata/assets/views"
+	"github.com/anonx/sunplate/internal/programs/generate/testdata/assets/views"
 	"github.com/anonx/sunplate/log"
 )
 

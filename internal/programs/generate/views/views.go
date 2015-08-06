@@ -17,8 +17,8 @@ import (
 	"strings"
 
 	"github.com/anonx/sunplate/internal/command"
+	"github.com/anonx/sunplate/internal/generation"
 	p "github.com/anonx/sunplate/internal/path"
-	"github.com/anonx/sunplate/internal/programs/generation/output"
 	"github.com/anonx/sunplate/log"
 )
 
@@ -42,9 +42,9 @@ func Start(params command.Data) {
 	filepath.Walk(inputDir, fn)
 
 	// Generate and save a new package.
-	t := output.NewType(
+	t := generation.NewType(
 		outPkg, filepath.Join(
-			p.SunplateDir("internal", "programs", "generation", "views"), "./views.go.template",
+			p.SunplateDir("internal", "programs", "generate", "views"), "./views.go.template",
 		),
 	)
 	t.CreateDir(outputDir)

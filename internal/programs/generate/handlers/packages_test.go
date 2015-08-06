@@ -10,7 +10,7 @@ import (
 
 func TestProcessPackage(t *testing.T) {
 	ps := packages{}
-	ps.processPackage("github.com/anonx/sunplate/internal/programs/generation/handlers/testdata/controllers")
+	ps.processPackage("github.com/anonx/sunplate/internal/programs/generate/handlers/testdata/controllers")
 }
 
 func TestParentPackage(t *testing.T) {
@@ -85,7 +85,7 @@ func assertDeepEqualPkgs(ps1, ps2 packages) {
 }
 
 var ps = packages{
-	"github.com/anonx/sunplate/internal/programs/generation/handlers/testdata/controllers": controllers{
+	"github.com/anonx/sunplate/internal/programs/generate/handlers/testdata/controllers": controllers{
 		"Controller": controller{
 			After: &reflect.Func{
 				Comments: []string{"// After is a magic method that is executed after every request."},
@@ -179,13 +179,13 @@ var ps = packages{
 			File: "init.go",
 			Parents: []parent{
 				{
-					Import: "github.com/anonx/sunplate/internal/programs/generation/handlers/testdata/controllers/subpackage",
+					Import: "github.com/anonx/sunplate/internal/programs/generate/handlers/testdata/controllers/subpackage",
 					Name:   "Controller",
 				},
 			},
 		},
 		"App": controller{
-			Actions: reflect.Funcs{
+			Actions: []reflect.Func{
 				{
 					Comments: []string{"// Index is a sample action."},
 					File:     "init.go",
@@ -252,15 +252,15 @@ var ps = packages{
 			File: "app.go",
 			Parents: []parent{
 				{
-					Import: "github.com/anonx/sunplate/internal/programs/generation/handlers/testdata/controllers",
+					Import: "github.com/anonx/sunplate/internal/programs/generate/handlers/testdata/controllers",
 					Name:   "Controller",
 				},
 			},
 		},
 	},
-	"github.com/anonx/sunplate/internal/programs/generation/handlers/testdata/controllers/subpackage": controllers{
+	"github.com/anonx/sunplate/internal/programs/generate/handlers/testdata/controllers/subpackage": controllers{
 		"Controller": controller{
-			Actions: reflect.Funcs{
+			Actions: []reflect.Func{
 				{
 					Comments: []string{"// Index is a sample action."},
 					File:     "app.go",
