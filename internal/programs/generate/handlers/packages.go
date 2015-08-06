@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 
+	a "github.com/anonx/sunplate/internal/action"
 	"github.com/anonx/sunplate/internal/path"
 	"github.com/anonx/sunplate/internal/reflect"
 )
@@ -108,7 +109,7 @@ func (ps packages) scanAnonEmbStructs(pkg *reflect.Package, i int) (prs []parent
 // a slice of controllers that are found there.
 func (ps packages) extractControllers(pkg *reflect.Package) controllers {
 	// Initialize a function that will be used for detection of actions.
-	action := actionFunc(pkg)
+	action := a.Func(pkg)
 
 	// Iterating through all available structures and checking
 	// whether those structures are controllers (i.e. whether they have actions).
@@ -122,7 +123,7 @@ func (ps packages) extractControllers(pkg *reflect.Package) controllers {
 
 		// Check whether there are actions among those methods.
 		// If there are no any, this is not a controller; ignore it.
-		as, count := ms.FilterGroups(action, notMagicAction, after, before, finally)
+		as, count := ms.FilterGroups(action, a.NotMagicAction, a.After, a.Before, a.Finally)
 		if count == 0 {
 			continue
 		}

@@ -6,14 +6,11 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/anonx/sunplate/internal/action"
 	"github.com/anonx/sunplate/internal/command"
 	"github.com/anonx/sunplate/internal/generation"
 	"github.com/anonx/sunplate/internal/path"
-	"github.com/anonx/sunplate/internal/strconv"
 )
-
-// Mappings of supported types and reflect functions.
-var strconvContext = strconv.Context()
 
 // Start is an entry point of the generate handlers command.
 func Start(params command.Data) {
@@ -76,9 +73,9 @@ func Start(params command.Data) {
 			// Initialize parameters and generate a package.
 			t.Package = strings.ToLower(name)
 			t.Context = map[string]interface{}{
-				"after":   magicActionAfter,
-				"before":  magicActionBefore,
-				"finally": magicActionFinally,
+				"after":   action.MagicActionAfter,
+				"before":  action.MagicActionBefore,
+				"finally": action.MagicActionFinally,
 
 				"controller":   ps[imp][name],
 				"import":       imp,
@@ -89,9 +86,9 @@ func Start(params command.Data) {
 				"package":      outPkg,
 				"parents":      cs,
 
-				"actionImport":    actionInterfaceImport,
-				"actionInterface": actionInterfaceName,
-				"strconv":         strconvContext,
+				"actionImport":    action.InterfaceImport,
+				"actionInterface": action.InterfaceName,
+				"strconv":         action.StrconvContext,
 			}
 			t.Generate()
 		}

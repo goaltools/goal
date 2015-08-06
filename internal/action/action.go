@@ -1,37 +1,41 @@
-package handlers
+package action
 
 import (
 	"go/ast"
 
 	"github.com/anonx/sunplate/internal/reflect"
+	"github.com/anonx/sunplate/internal/strconv"
 	"github.com/anonx/sunplate/log"
 )
 
 const (
-	// actionInterfaceImport is a GOPATH to the Result interface
+	// InterfaceImport is a GOPATH to the Result interface
 	// that should be implemented by types returned by actions.
-	actionInterfaceImport = "github.com/anonx/sunplate/action"
+	InterfaceImport = "github.com/anonx/sunplate/action"
 
-	// actionInterfaceName is an interface that should be implemented
+	// InterfaceName is an interface that should be implemented
 	// by types that are returned from actions.
-	actionInterfaceName = "Result"
+	InterfaceName = "Result"
 
-	// magicActionBefore is a name of the magic method that will be executed
+	// MagicActionBefore is a name of the magic method that will be executed
 	// before every action.
-	magicActionBefore = "Before"
+	MagicActionBefore = "Before"
 
-	// magicActionAfter is a name of the magic method that will be executed
+	// MagicActionAfter is a name of the magic method that will be executed
 	// after every action.
-	magicActionAfter = "After"
+	MagicActionAfter = "After"
 
-	// magicActionFinally is a name of the magic method that will be executed
+	// MagicActionFinally is a name of the magic method that will be executed
 	// after every action no matter what.
-	magicActionFinally = "Finally"
+	MagicActionFinally = "Finally"
 )
 
-// actionFunc returns a function that may be used to check whether
+// StrconvContext is a mapping of supported by strconv types and reflect functions.
+var StrconvContext = strconv.Context()
+
+// Func returns a function that may be used to check whether
 // specific Func represents an action (or one of magic method) or not.
-func actionFunc(pkg *reflect.Package) func(f *reflect.Func) bool {
+func Func(pkg *reflect.Package) func(f *reflect.Func) bool {
 	// Actions are required to return action.Result as the first argument.
 	// actionImportName is used to store information on how the action package is named.
 	// For illustration, here is an example:
@@ -60,7 +64,7 @@ func actionFunc(pkg *reflect.Package) func(f *reflect.Func) bool {
 		// how action subpackage is imported (its name).
 		if _, ok := actionImportName[f.File]; !ok {
 			// If not, try to find it out.
-			n, ok := pkg.Imports.Name(f.File, actionInterfaceImport)
+			n, ok := pkg.Imports.Name(f.File, InterfaceImport)
 			if !ok {
 				// Action subpackage import path is not found in this file.
 				// So, this is not an action method.
@@ -84,7 +88,7 @@ func actionFunc(pkg *reflect.Package) func(f *reflect.Func) bool {
 
 		// Make sure the first result is of type action.Result.
 		correctPackage := f.Results[0].Type.Package == actionImportName[f.File]
-		correctName := f.Results[0].Type.Name == actionInterfaceName
+		correctName := f.Results[0].Type.Name == InterfaceName
 		if !correctPackage || !correctName {
 			return false
 		}
@@ -98,7 +102,7 @@ func actionFunc(pkg *reflect.Package) func(f *reflect.Func) bool {
 // If not, it prints a warning message and returns false.
 func builtin(f *reflect.Func) bool {
 	fn := func(a *reflect.Arg) bool {
-		if _, ok := strconvContext[a.Type.String()]; !ok {
+		if _, ok := StrconvContext[a.Type.String()]; !ok {
 			log.Warn.Printf(
 				`Method "%s.%s" in file "%s" cannot be treated as action because argument "%s" is of unsupported type "%s".`,
 				f.Recv.Type.Name, f.Name, f.File, a.Name, a.Type,
@@ -110,33 +114,33 @@ func builtin(f *reflect.Func) bool {
 	return len(f.Params.Filter(fn)) == len(f.Params)
 }
 
-// before gets a Func and checks whether it is a Before magic action.
-func before(f *reflect.Func) bool {
-	if f.Name == magicActionBefore {
+// Before gets a Func and checks whether it is a Before magic action.
+func Before(f *reflect.Func) bool {
+	if f.Name == MagicActionBefore {
 		return true
 	}
 	return false
 }
 
-// after gets a Func and checks whether it is an After magic action.
-func after(f *reflect.Func) bool {
-	if f.Name == magicActionAfter {
+// After gets a Func and checks whether it is an After magic action.
+func After(f *reflect.Func) bool {
+	if f.Name == MagicActionAfter {
 		return true
 	}
 	return false
 }
 
-// finally gets a Func and checks whether it is a Finally magic action.
-func finally(f *reflect.Func) bool {
-	if f.Name == magicActionFinally {
+// Finally gets a Func and checks whether it is a Finally magic action.
+func Finally(f *reflect.Func) bool {
+	if f.Name == MagicActionFinally {
 		return true
 	}
 	return false
 }
 
-// notMagicAction gets a Func and makes sure it is not a magic method but a usual action.
-func notMagicAction(f *reflect.Func) bool {
-	if before(f) || after(f) || finally(f) {
+// NotMagicAction gets a Func and makes sure it is not a magic method but a usual action.
+func NotMagicAction(f *reflect.Func) bool {
+	if Before(f) || After(f) || Finally(f) {
 		return false
 	}
 	return true

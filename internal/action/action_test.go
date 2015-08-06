@@ -1,4 +1,4 @@
-package handlers
+package action
 
 import (
 	"testing"
@@ -8,7 +8,7 @@ import (
 
 func TestActionFunc(t *testing.T) {
 	f := actionFn
-	fn := actionFunc(&reflect.Package{
+	fn := Func(&reflect.Package{
 		Imports: reflect.Imports{
 			"app.go": map[string]string{
 				"action": "github.com/anonx/sunplate/action",
@@ -54,13 +54,13 @@ func TestBuiltin(t *testing.T) {
 
 func TestBefore(t *testing.T) {
 	f := actionFn
-	res := before(f)
+	res := Before(f)
 	if res {
 		t.Errorf("Incorrect result: action is not a magic Before method.")
 	}
 
 	f.Name = "Before"
-	res = before(f)
+	res = Before(f)
 	if !res {
 		t.Errorf("Incorrect result: action is a magic Before method.")
 	}
@@ -68,13 +68,13 @@ func TestBefore(t *testing.T) {
 
 func TestAfter(t *testing.T) {
 	f := actionFn
-	res := after(f)
+	res := After(f)
 	if res {
 		t.Errorf("Incorrect result: action is not a magic After method.")
 	}
 
 	f.Name = "After"
-	res = after(f)
+	res = After(f)
 	if !res {
 		t.Errorf("Incorrect result: action is a magic After method.")
 	}
@@ -82,13 +82,13 @@ func TestAfter(t *testing.T) {
 
 func TestFinally(t *testing.T) {
 	f := actionFn
-	res := finally(f)
+	res := Finally(f)
 	if res {
 		t.Errorf("Incorrect result: action is not a magic Finally method.")
 	}
 
 	f.Name = "Finally"
-	res = finally(f)
+	res = Finally(f)
 	if !res {
 		t.Errorf("Incorrect result: action is a magic Finally method.")
 	}
@@ -97,13 +97,13 @@ func TestFinally(t *testing.T) {
 func TestNotMagicAction(t *testing.T) {
 	f := actionFn
 	f.Name = "Before"
-	res := notMagicAction(f)
+	res := NotMagicAction(f)
 	if res {
 		t.Errorf("Incorrect result: action is a magic method.")
 	}
 
 	f.Name = "Index"
-	res = notMagicAction(f)
+	res = NotMagicAction(f)
 	if !res {
 		t.Errorf("Incorrect result: action is not a magic method.")
 	}
