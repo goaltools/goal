@@ -9,7 +9,7 @@ import (
 var funcs = template.FuncMap{
 	"base":    filepath.Base,
 	"dict":    dict,
-	"join":    filepath.Join,
+	"join":    join,
 	"set":     set,
 	"sprintf": fmt.Sprintf,
 }
@@ -32,4 +32,9 @@ func set(k string, v interface{}) map[string]interface{} {
 		k: v,
 	}
 	return m
+}
+
+// join is a wrapper on filepath.Join and filepath.ToSlash.
+func join(args ...string) string {
+	return filepath.ToSlash(filepath.Join(args...))
 }

@@ -20,3 +20,10 @@ func TestDict(t *testing.T) {
 		t.Errorf("Incorrect dict result: %v.", r)
 	}
 }
+
+func TestJoin(t *testing.T) {
+	exp := "a/b/c"
+	if r := join("a", "b", "c"); r != exp {
+		t.Errorf(`Incorrect result of join. Expected "%s", got "%s".`, exp, r)
+	}
+}
