@@ -37,12 +37,16 @@ func (t tController) New() *contr.Controller {
 func (t tController) Before(c *contr.Controller, w http.ResponseWriter, r *http.Request) a.Result {
 	// Execute magic Before actions of embedded controllers.
 	if res := c0.Template.Before(c.Template, w, r); res != nil {
-		return res
+		if res.Finish() {
+			return res
+		}
 	}
 	// Call magic Before action of (github.com/anonx/sunplate/internal/skeleton/controllers).Controller.
 	if res := c.Before( // "Binding" parameters.
 	); res != nil {
-		return res
+		if res.Finish() {
+			return res
+		}
 	}
 	return nil
 }
@@ -51,7 +55,9 @@ func (t tController) Before(c *contr.Controller, w http.ResponseWriter, r *http.
 func (t tController) After(c *contr.Controller, w http.ResponseWriter, r *http.Request) a.Result {
 	// Execute magic After actions of embedded controllers.
 	if res := c0.Template.After(c.Template, w, r); res != nil {
-		return res
+		if res.Finish() {
+			return res
+		}
 	}
 	return nil
 }
