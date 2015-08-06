@@ -9,7 +9,7 @@ import (
 	"github.com/anonx/sunplate/internal/command"
 	"github.com/anonx/sunplate/internal/generation"
 	"github.com/anonx/sunplate/internal/path"
-	"github.com/anonx/sunplate/strconv"
+	"github.com/anonx/sunplate/internal/strconv"
 )
 
 // Mappings of supported types and reflect functions.
