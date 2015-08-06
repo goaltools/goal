@@ -6,11 +6,6 @@ import (
 	r "github.com/anonx/sunplate/internal/reflect"
 )
 
-/*
-	Below are tests for code generation related functions and methods
-	of strconv package.
-*/
-
 func TestRender(t *testing.T) {
 	c := Context()
 	a := r.Arg{Name: "names", Type: &r.Type{Name: "[]string"}}
