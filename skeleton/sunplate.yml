@@ -1,5 +1,6 @@
 # sunplate.yml is a configuration file of "sunplate run" task runner
 # and file watcher.
+# Note: changes to this file require restart.
 #
 # A list of built in commands include:
 # /start  {section:list} - run commands in the specified section asynchronously.
@@ -25,12 +26,12 @@ watch:
   # Empty tasks are not allowed.
   ./controllers/*:
     - go generate routes/routes.go
-    - go get github.com/anonx/sunplate/skeleton/assets/handlers
+    - /start get
     - /run build
     - /single start
   ./views/*:
     - go generate init.go
-    - go get github.com/anonx/sunplate/skeleton/assets/views
+    - /start get
     - /run build
     - /single start
   ./:
@@ -41,4 +42,8 @@ watch:
     - /single start
 build:
   - go build -o ./bin/run:EXT github.com/anonx/sunplate/skeleton
+get:
+  # Getting dependencies for correct work of autocomplete
+  # in editors and IDEs.
+  - go get github.com/anonx/sunplate/skeleton/assets/...
 start: ./bin/run:EXT
