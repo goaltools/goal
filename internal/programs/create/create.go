@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 
 	"github.com/anonx/sunplate/internal/command"
+	"github.com/anonx/sunplate/internal/generation"
 	p "github.com/anonx/sunplate/internal/path"
-	"github.com/anonx/sunplate/internal/programs/generation/output"
 	"github.com/anonx/sunplate/log"
 )
 
@@ -66,7 +66,7 @@ var start = func(action string, params command.Data) {
 	filepath.Walk(inputDir, fn)
 
 	for _, v := range rs.dirs {
-		t := output.Type{}
+		t := generation.Type{}
 		t.CreateDir(filepath.Join(outputDir, v))
 	}
 
