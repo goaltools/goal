@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/anonx/sunplate/path"
-	"github.com/anonx/sunplate/reflect"
+	"github.com/anonx/sunplate/internal/path"
+	"github.com/anonx/sunplate/internal/reflect"
 )
 
 /*

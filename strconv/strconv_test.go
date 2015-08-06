@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	r "github.com/anonx/sunplate/reflect"
+	r "github.com/anonx/sunplate/internal/reflect"
 )
 
 /*

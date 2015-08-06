@@ -1,0 +1,51 @@
+# sunplate.yml is a configuration file of "sunplate run" task runner
+# and file watcher.
+# Note: changes to this file require restart.
+#
+# A list of built in commands include:
+# /start  {section:list} - run commands in the specified section asynchronously.
+# /run    {section:list} - run commands in the specified section waiting them to complete.
+# /single {section:text} - run exactly one instance of a command of the specified section.
+# /echo   [text]         - print a line of text.
+# /pass                  - do nothing (it is similar to Python's "pass").
+#
+# A list of supported variables that will be replaced by their values include:
+# :EXT - extension of a binary file (empty on *nix and ".exe" when running on windows).
+#
+# Literals starting with $ (e.g. $PORT) will be replaced by values of ENV variables.
+init:
+  # Commands of this section will be executed once, at the start time of `sunplate run`.
+  # You may use it for something like "npm install".
+  - /echo "Starting work on 'github.com/anonx/sunplate/internal/skeleton'"
+  - go generate ./...
+  - /start get
+  - /run build
+  - /single start
+watch:
+  # Watcher commands will be started every time their related files are modified.
+  # Expected format of the pattern is "directory: tasks...".
+  # "*" at the end of path means watch recursively.
+  # Empty tasks are not allowed.
+  ./controllers/*:
+    - go generate routes/routes.go
+    - /start get
+    - /run build
+    - /single start
+  ./views/*:
+    - go generate init.go
+    - /start get
+    - /run build
+    - /single start
+  ./:
+    - /run build
+    - /single start
+  ./routes/*:
+    - /run build
+    - /single start
+build:
+  - go build -o ./bin/run:EXT github.com/anonx/sunplate/internal/skeleton
+get:
+  # Getting dependencies for correct work of autocomplete
+  # in editors and IDEs.
+  - go get github.com/anonx/sunplate/internal/skeleton/assets/...
+start: ./bin/run:EXT
