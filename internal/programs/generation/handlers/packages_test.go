@@ -172,7 +172,7 @@ var ps = packages{
 				},
 			},
 
-			Comments: reflect.Comments{
+			Comments: []string{
 				"// Controller is a struct that should be embedded into every controller",
 				"// of your app to make methods provided by middleware controllers available.",
 			},
@@ -246,7 +246,7 @@ var ps = packages{
 			Before:  &reflect.Func{},
 			Finally: &reflect.Func{},
 
-			Comments: reflect.Comments{
+			Comments: []string{
 				"// App is a sample controller.",
 			},
 			File: "app.go",
@@ -296,7 +296,7 @@ var ps = packages{
 				},
 				File:   "app.go",
 				Name:   "After",
-				Params: reflect.Args{},
+				Params: []reflect.Arg{},
 				Recv: &reflect.Arg{
 					Name: "c",
 					Type: &reflect.Type{
@@ -319,7 +319,7 @@ var ps = packages{
 				},
 				File:   "app.go",
 				Name:   "Before",
-				Params: reflect.Args{},
+				Params: []reflect.Arg{},
 				Recv: &reflect.Arg{
 					Name: "c",
 					Type: &reflect.Type{
@@ -368,7 +368,7 @@ var ps = packages{
 				},
 			},
 
-			Comments: reflect.Comments{
+			Comments: []string{
 				"// Controller is some controller.",
 			},
 			File:    "app.go",

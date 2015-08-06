@@ -38,7 +38,7 @@ func TestActionFunc(t *testing.T) {
 func TestBuiltin(t *testing.T) {
 	f := &reflect.Func{
 		Name: "Test",
-		Params: reflect.Args{
+		Params: []reflect.Arg{
 			{
 				Name: "name",
 				Type: &reflect.Type{
@@ -110,12 +110,12 @@ func TestNotMagicAction(t *testing.T) {
 }
 
 var actionFn = &reflect.Func{
-	Comments: reflect.Comments{
+	Comments: []string{
 		"// Something is a sample action.",
 	},
 	Name: "Something",
 	File: "app.go",
-	Params: reflect.Args{
+	Params: []reflect.Arg{
 		{
 			Name: "page",
 			Type: &reflect.Type{
@@ -130,7 +130,7 @@ var actionFn = &reflect.Func{
 			Star: true,
 		},
 	},
-	Results: reflect.Args{
+	Results: []reflect.Arg{
 		{
 			Type: &reflect.Type{
 				Name:    "Result",
