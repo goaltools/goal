@@ -36,14 +36,18 @@ func (t tApp) New() *contr.App {
 func (t tApp) Before(c *contr.App, w http.ResponseWriter, r *http.Request) a.Result {
 	// Execute magic Before actions of embedded controllers.
 	if res := Controller.Before(c.Controller, w, r); res != nil {
-		return res
+		if res.Finish() {
+			return res
+		}
 	}
 	// Call magic Before action of (github.com/anonx/sunplate/internal/skeleton/controllers).App.
 	if res := c.Before( // "Binding" parameters.
 		strconv.String(r.Form, "name"),
 		strconv.Ints(r.Form, "pages"),
 	); res != nil {
-		return res
+		if res.Finish() {
+			return res
+		}
 	}
 	return nil
 }
@@ -53,12 +57,16 @@ func (t tApp) Before(c *contr.App, w http.ResponseWriter, r *http.Request) a.Res
 func (t tApp) After(c *contr.App, w http.ResponseWriter, r *http.Request) a.Result {
 	// Execute magic After actions of embedded controllers.
 	if res := Controller.After(c.Controller, w, r); res != nil {
-		return res
+		if res.Finish() {
+			return res
+		}
 	}
 	// Call magic After action of (github.com/anonx/sunplate/internal/skeleton/controllers).App.
 	if res := c.After( // "Binding" parameters.
 	); res != nil {
-		return res
+		if res.Finish() {
+			return res
+		}
 	}
 	return nil
 }
@@ -90,16 +98,22 @@ func (t tApp) Index(w http.ResponseWriter, r *http.Request) {
 	defer App.Finally(c, w, r)
 	if res := App.Before(c, w, r); res != nil {
 		res.Apply(w, r)
-		return
+		if res.Finish() {
+			return
+		}
 	}
 	if res := c.Index( // "Binding" parameters.
 	); res != nil {
 		res.Apply(w, r)
-		return
+		if res.Finish() {
+			return
+		}
 	}
 	if res := App.After(c, w, r); res != nil {
 		res.Apply(w, r)
-		return
+		if res.Finish() {
+			return
+		}
 	}
 }
 
@@ -115,17 +129,23 @@ func (t tApp) PostGreet(w http.ResponseWriter, r *http.Request) {
 	defer App.Finally(c, w, r)
 	if res := App.Before(c, w, r); res != nil {
 		res.Apply(w, r)
-		return
+		if res.Finish() {
+			return
+		}
 	}
 	if res := c.PostGreet( // "Binding" parameters.
 		strconv.String(r.Form, "name"),
 	); res != nil {
 		res.Apply(w, r)
-		return
+		if res.Finish() {
+			return
+		}
 	}
 	if res := App.After(c, w, r); res != nil {
 		res.Apply(w, r)
-		return
+		if res.Finish() {
+			return
+		}
 	}
 }
 

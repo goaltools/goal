@@ -30,3 +30,9 @@ func (t *HTML) Apply(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("500 Internal Server Error"))
 	go log.Warn.Printf(`Template "%s" does not exist.`, t.template)
 }
+
+// Finish indicates that the next (magic) action should be started
+// after this one.
+func (t *HTML) Finish() bool {
+	return false
+}

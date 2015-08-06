@@ -34,7 +34,9 @@ func (t tTemplate) Before(c *contr.Template, w http.ResponseWriter, r *http.Requ
 	// Call magic Before action of (github.com/anonx/sunplate/controllers/results).Template.
 	if res := c.Before( // "Binding" parameters.
 	); res != nil {
-		return res
+		if res.Finish() {
+			return res
+		}
 	}
 	return nil
 }
@@ -59,17 +61,23 @@ func (t tTemplate) RenderTemplate(w http.ResponseWriter, r *http.Request) {
 	defer Template.Finally(c, w, r)
 	if res := Template.Before(c, w, r); res != nil {
 		res.Apply(w, r)
-		return
+		if res.Finish() {
+			return
+		}
 	}
 	if res := c.RenderTemplate( // "Binding" parameters.
 		strconv.String(r.Form, "templatePath"),
 	); res != nil {
 		res.Apply(w, r)
-		return
+		if res.Finish() {
+			return
+		}
 	}
 	if res := Template.After(c, w, r); res != nil {
 		res.Apply(w, r)
-		return
+		if res.Finish() {
+			return
+		}
 	}
 }
 
