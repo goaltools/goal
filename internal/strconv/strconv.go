@@ -1,3 +1,5 @@
+// Package strconv contains code generation staff related
+// to github.com/anonx/sunplate/strconv package.
 package strconv
 
 import (
@@ -8,11 +10,6 @@ import (
 	"github.com/anonx/sunplate/internal/path"
 	"github.com/anonx/sunplate/internal/reflect"
 )
-
-/*
-	Below are code generation related functions, methods, and types
-	for strconv package.
-*/
 
 // UnsupportedTypeErr is an error that indicates that there is no conversion
 // function for the requested type.
