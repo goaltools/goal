@@ -31,8 +31,8 @@ func (t *HTML) Apply(w http.ResponseWriter, r *http.Request) {
 	go log.Warn.Printf(`Template "%s" does not exist.`, t.template)
 }
 
-// Finish indicates that the next (magic) action should be started
-// after this one.
+// Finish indicates that no other (magic) actions should be started
+// after a non-nil one is returned.
 func (t *HTML) Finish() bool {
-	return false
+	return true
 }
