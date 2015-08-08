@@ -3,6 +3,7 @@
 package handlers
 
 import (
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -17,6 +18,9 @@ func Start(params command.Data) {
 	inputDir := params.Default("--input", "./controllers")
 	outputDir := params.Default("--output", "./assets/handlers")
 	outPkg := params.Default("--package", "handlers")
+
+	// Clean the out directory.
+	os.RemoveAll(outputDir)
 
 	// Start processing of controllers.
 	ps := packages{}
