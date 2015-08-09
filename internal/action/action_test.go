@@ -121,20 +121,6 @@ func TestAfter(t *testing.T) {
 	}
 }
 
-func TestFinally(t *testing.T) {
-	f := actionFn
-	res := Finally(f)
-	if res {
-		t.Errorf("Incorrect result: action is not a magic Finally method.")
-	}
-
-	f.Name = "Finally"
-	res = Finally(f)
-	if !res {
-		t.Errorf("Incorrect result: action is a magic Finally method.")
-	}
-}
-
 func TestNotMagicAction(t *testing.T) {
 	f := actionFn
 	f.Name = "Before"
