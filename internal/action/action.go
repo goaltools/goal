@@ -7,6 +7,7 @@ package action
 import (
 	"go/ast"
 
+	"github.com/anonx/sunplate/internal/method"
 	"github.com/anonx/sunplate/internal/path"
 	"github.com/anonx/sunplate/internal/reflect"
 	"github.com/anonx/sunplate/internal/strconv"
@@ -96,6 +97,15 @@ func Func(pkg *reflect.Package) func(f *reflect.Func) bool {
 			return false
 		}
 
+		// Make sure function name does not use reserved words.
+		if f.Name == method.FinallyName || f.Name == method.InitiallyName {
+			log.Warn.Printf(
+				`Method "%s" in file "%s" cannot be treated as action because "%s" is a reserved word.`,
+				f.Name, f.File, f.Name,
+			)
+			return false
+		}
+
 		// Check whether only builtin types are among input parameters.
 		return builtin(f)
 	}
@@ -104,15 +114,11 @@ func Func(pkg *reflect.Package) func(f *reflect.Func) bool {
 // builtin gets a function and makes sure its arguments are of builtin type.
 // If not, it prints a warning message and returns false.
 func builtin(f *reflect.Func) bool {
-	recv := ""
-	if f.Recv != nil {
-		recv = f.Recv.Type.String() + "."
-	}
 	fn := func(a *reflect.Arg) bool {
 		if _, ok := StrconvContext[a.Type.String()]; !ok {
 			log.Warn.Printf(
-				`Method "%s%s" in file "%s" cannot be treated as action because argument "%s" is of unsupported type "%s".`,
-				recv, f.Name, f.File, a.Name, a.Type,
+				`Method "%s" in file "%s" cannot be treated as action because argument "%s" is of unsupported type "%s".`,
+				f.Name, f.File, a.Name, a.Type,
 			)
 			return false
 		}
