@@ -31,10 +31,11 @@ func start(tasks []string) {
 		cmd := exec.Command(n, as...)
 		cmd.Stderr = os.Stderr
 		cmd.Stdout = os.Stdout
-		log.Trace.Printf("Starting `%s`...", replaceVars(tasks[i]))
+		t := replaceVars(tasks[i])
+		log.Trace.Printf("Starting `%s`...", t)
 		err := cmd.Start()
 		if err != nil {
-			log.Error.Panicf(`Failed to start a command "%s", error: %v.`, tasks[i], err)
+			log.Error.Printf(`Failed to start a command "%s", error: %v.`, t, err)
 		}
 	}
 }
@@ -49,10 +50,11 @@ func run(tasks []string) {
 		cmd := exec.Command(n, as...)
 		cmd.Stderr = os.Stderr
 		cmd.Stdout = os.Stdout
-		log.Trace.Printf("Running `%s`...", replaceVars(tasks[i]))
+		t := replaceVars(tasks[i])
+		log.Trace.Printf("Running `%s`...", t)
 		err := cmd.Run()
 		if err != nil {
-			log.Error.Panicf(`Failed to run a command "%s", error: %v.`, tasks[i], err)
+			log.Error.Printf(`Failed to run a command "%s", error: %v.`, t, err)
 		}
 	}
 }
@@ -75,11 +77,17 @@ func startSingleInstance(name, task string) {
 func instanceController() {
 	// terminate is used for killing an instance of a task.
 	var terminate = func(name string, cmd *exec.Cmd) {
-		pid := cmd.Process.Pid
-		cmd.Process.Kill()
+		if cmd.Process == nil {
+			return
+		}
 
-		cmd.Process.Wait()
-		cmd.Process = nil
+		pid := cmd.Process.Pid
+		err := cmd.Process.Kill()
+		if err != nil {
+			cmd.Process.Wait()
+		}
+
+		cmd.Process = nil // Manually set it to nil, so we can reuse the command.
 		log.Trace.Printf(`Active instance of "%s" (PID %d) has been terminated.`, name, pid)
 	}
 	commands := map[string]*exec.Cmd{}
@@ -121,7 +129,6 @@ func instanceController() {
 			err := cmd.Start()
 			if err != nil {
 				log.Error.Printf("Failed to start a command `%s`, error: %v.", t, err)
-				return
 			}
 
 			// If this is the first time this command is requested

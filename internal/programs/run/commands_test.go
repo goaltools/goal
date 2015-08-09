@@ -1,15 +1,13 @@
 package run
 
 import (
-	"fmt"
 	"testing"
 )
 
 func TestStart_IncorrectTask(t *testing.T) {
 	ts := []string{
-		"gxgbhsjdjdduuhdhsh", // This is expected to cause a panic.
+		"gxgbhsjdjdduuhdhsh",
 	}
-	defer expectPanic(fmt.Sprintf(`Command "%s" does not exist. Panic expected.`, ts[0]))
 	start(ts)
 }
 
@@ -23,9 +21,8 @@ func TestStart(t *testing.T) {
 
 func TestRun_IncorrectTask(t *testing.T) {
 	ts := []string{
-		"gxgbhsjdjdduuhdhsh", // This is expected to cause a panic.
+		"gxgbhsjdjdduuhdhsh",
 	}
-	defer expectPanic(fmt.Sprintf(`Command "%s" does not exist. Panic expected.`, ts[0]))
 	run(ts)
 }
 
@@ -39,12 +36,11 @@ func TestRun(t *testing.T) {
 
 func TestStartSingleInstance_IncorrectCommand(t *testing.T) {
 	c := "gxgbhsjdjdduuhdhsh"
-	go func() {
-		//defer expectPanic(fmt.Sprintf(`Command "%s" does not exist. Panic expected.`, c))
-		instanceController()
-	}()
+	go instanceController()
 
 	startSingleInstance("smth", c)
+
+	channel <- message{action: "exit"}
 	<-stopped
 }
 
