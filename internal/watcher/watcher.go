@@ -30,7 +30,7 @@ func NewType() *Type {
 
 // Listen gets a pattern and a function. The function will be executed
 // when files matching the pattern will be modified.
-func (t *Type) Listen(pattern string, fn func()) {
+func (t *Type) Listen(pattern string, fn func()) *fsnotify.Watcher {
 	// Create a new watcher.
 	w, err := fsnotify.NewWatcher()
 	log.AssertNil(err)
@@ -48,7 +48,8 @@ func (t *Type) Listen(pattern string, fn func()) {
 	}
 
 	// Start watching process.
-	go t.NotifyOnUpdate(pattern, w, fn)
+	go t.NotifyOnUpdate(filepath.ToSlash(pattern), w, fn)
+	return w
 }
 
 // ListenFile is equivalent of Listen but for files.
@@ -61,10 +62,14 @@ func (t *Type) Listen(pattern string, fn func()) {
 // If "sunplate.yml" file is modified fn2 will be triggered.
 // fn1 may be triggered by changes in any file inside
 // "./" directory except "sunplate.yml".
-func (t *Type) ListenFile(path string, fn func()) {
+func (t *Type) ListenFile(path string, fn func()) *fsnotify.Watcher {
 	// Create a new watcher.
 	w, err := fsnotify.NewWatcher()
 	log.AssertNil(err)
+
+	// Clean path and replace back slashes
+	// to the normal ones.
+	path = filepath.ToSlash(path)
 
 	// Watch a directory instead of file.
 	// See issue #17 of fsnotify to find out more
@@ -75,6 +80,7 @@ func (t *Type) ListenFile(path string, fn func()) {
 	// Start watching process.
 	t.files[path] = true
 	go t.NotifyOnUpdate(path, w, fn)
+	return w
 }
 
 // NotifyOnUpdate starts the function every time a file change
@@ -83,23 +89,35 @@ func (t *Type) NotifyOnUpdate(pattern string, watcher *fsnotify.Watcher, fn func
 	for {
 		select {
 		case ev := <-watcher.Events:
-			// If modified file was added using ListenFile,
-			// allow restarts only of its own function.
-			restartAllowed := true
-			if t.files[ev.Name] && ev.Name != pattern {
-				restartAllowed = false
+			// Convert path to the Linux format.
+			name := filepath.ToSlash(ev.Name)
+
+			// Make sure this is the exact event type that
+			// requires a restart.
+			if !restartRequired(ev) {
+				continue
 			}
 
-			// Check whether file has been modified and
-			// this watcher is allowed to restart function
-			// after changes to this file.
-			if restartRequired(ev) && restartAllowed {
-				t.mu.Lock()
-				fn()
-				t.mu.Unlock()
+			// If this is a directory watcher, but a file that was registered
+			// with ListenFile has been modified,
+			// ignore this event.
+			if !t.files[pattern] && t.files[name] {
+				continue
 			}
-		case err := <-watcher.Errors:
-			log.Warn.Println(err)
+
+			// If this is a single file watcher, make sure this is
+			// exactly the file that should be watched, not
+			// some other.
+			if t.files[pattern] && name != pattern {
+				continue
+			}
+
+			// Trigger the registered functions.
+			t.mu.Lock()
+			fn()
+			t.mu.Unlock()
+		case <-watcher.Errors:
+			return
 		}
 	}
 }
