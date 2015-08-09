@@ -10,6 +10,7 @@ import (
 	"github.com/anonx/sunplate/internal/action"
 	"github.com/anonx/sunplate/internal/command"
 	"github.com/anonx/sunplate/internal/generation"
+	"github.com/anonx/sunplate/internal/method"
 	"github.com/anonx/sunplate/internal/path"
 )
 
@@ -77,9 +78,10 @@ func Start(params command.Data) {
 			// Initialize parameters and generate a package.
 			t.Package = strings.ToLower(name)
 			t.Context = map[string]interface{}{
-				"after":   action.MagicActionAfter,
-				"before":  action.MagicActionBefore,
-				"finally": action.MagicActionFinally,
+				"after":     action.MethodAfter,
+				"before":    action.MethodBefore,
+				"initially": method.InitiallyName,
+				"finally":   method.FinallyName,
 
 				"controller":   ps[imp][name],
 				"import":       imp,
@@ -91,7 +93,7 @@ func Start(params command.Data) {
 				"parents":      cs,
 
 				"actionImport":    action.InterfaceImport,
-				"actionInterface": action.InterfaceName,
+				"actionInterface": action.Interface,
 				"strconv":         action.StrconvContext,
 			}
 			t.Generate()

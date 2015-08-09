@@ -54,26 +54,45 @@ func (t t<@.ctx.name>) <@.ctx.after>(c *contr.<@.ctx.name>, w http.ResponseWrite
 	return nil
 }
 
-<@template "magicActionComments" dict (set "dot" .) (set "name" .ctx.finally) (set "self" .ctx.controller.After) (set "defer" true)>\
-func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request) {
-:	<@if .ctx.controller.After>\
-:		// Call magic <@.ctx.finally> action of (<@.ctx.import>).<@.ctx.name>.
+// <@.ctx.initially> is a method that is started by every handler function at the very beginning
+// of their execution phase.
+func (t t<@.ctx.name>) <@.ctx.initially>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request) (finish bool) {
+:	<@if .ctx.parents>\
+:		// Execute magic <@.ctx.initially> methods of embedded controllers.
+:	:	<@range $i, $v := .ctx.parents>\
+:	:		if finish = <@$v.Package "."><@$v.Name>.<@$.ctx.initially>(c.<@$v.Name>, w, r); finish {
+:	:			return finish
+:	:		}
+:	:	<@end>\
+:	<@end>\
+:	<@if .ctx.controller.Initially>\
+:		// Call magic <@.ctx.initially> method of (<@.ctx.import>).<@.ctx.name>.
+:		return c.<@.ctx.initially>(w, r)
+:	<@else>\
+:		return
+:	<@end>\
+}
+
+// <@.ctx.finally> is a method that is started by every handler function at the very end
+// of their execution phase no matter what.
+func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request) (finish bool) {
+:	<@if .ctx.controller.Finally>\
+:		// Call magic <@.ctx.finally> method of (<@.ctx.import>).<@.ctx.name>.
 :		defer func() {
-:			if res := c.<@.ctx.finally>( // "Binding" parameters.
-:	:	:	:	<@range $i, $v := .ctx.controller.Finally.Params>\
-:	:				<@$.ctx.strconv.Render "strconv" "r.Form" $v>,
-:	:	:	:	<@end>\
-:			); res != nil {
-:				res.Apply(w, r)
+:			if !finish {
+:				finish = c.<@.ctx.finally>(w, r)
 :			}
 :		}()
 :	<@end>\
 :	<@if .ctx.parents>\
-:		// Execute magic <@.ctx.finally> actions of embedded controllers.
+:		// Execute magic <@.ctx.finally> methods of embedded controllers.
 :	:	<@range $i, $v := .ctx.parents>\
-:	:		<@$v.Package "."><@$v.Name>.<@$.ctx.finally>(c.<@$v.Name>, w, r)
+:	:		if finish = <@$v.Package "."><@$v.Name>.<@$.ctx.finally>(c.<@$v.Name>, w, r); finish {
+:	:			return finish
+:	:		}
 :	:	<@end>\
 :	<@end>\
+	return
 }
 
 <@range $i, $f := .ctx.controller.Actions>\
@@ -85,11 +104,12 @@ func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWri
 :	func (t t<@$.ctx.name>) <@$f.Name>(w http.ResponseWriter, r *http.Request) {
 :		c := <@$.ctx.name>.New()
 :		defer <@$.ctx.name>.Finally(c, w, r)
+:		if finish := <@$.ctx.name>.Initially(c, w, r); finish {
+:			return
+:		}
 :		if res := <@$.ctx.name>.Before(c, w, r); res != nil {
 :			res.Apply(w, r)
-:			if res.Finish() {
-:				return
-:			}
+:			return
 :		}
 :		if res := c.<@$f.Name>( // "Binding" parameters.
 :	:	:	<@range $i, $v := $f.Params>\
@@ -97,15 +117,10 @@ func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWri
 :	:	:	<@end>\
 :		); res != nil {
 :			res.Apply(w, r)
-:			if res.Finish() {
-:				return
-:			}
+:			return
 :		}
 :		if res := <@$.ctx.name>.After(c, w, r); res != nil {
 :			res.Apply(w, r)
-:			if res.Finish() {
-:				return
-:			}
 :		}
 :	}
 
@@ -130,9 +145,6 @@ func init() {
 :	<@if .self>\
 :	:	// <@if not .dot.ctx.parents><@.name> <@end>calls (<@.dot.ctx.import>).<@.dot.ctx.name>.<@.name><@if .self.Params> with arguments
 :	:	// that are extracted from r.Form and converted to appropriate types<@end>.
-:	:	<@if (and .defer .dot.ctx.parents)>\
-:	:	:	// The call is garanteed to be done no matter what happens during execution of parent actions.
-:	:	<@end>\
 :	<@end>\
 <@end>\
 <@/*First part of before or after magic action`s body.*/>\
@@ -141,9 +153,7 @@ func init() {
 :		// Execute magic <@.name> actions of embedded controllers.
 :	:	<@range $i, $v := .dot.ctx.parents>\
 :	:		if res := <@$v.Package "."><@$v.Name>.<@$.name>(c.<@$v.Name>, w, r); res != nil {
-:	:			if res.Finish() {
-:	:				return res
-:	:			}
+:	:			return res
 :	:		}
 :	:	<@end>\
 :	<@end>\
@@ -157,9 +167,7 @@ func init() {
 :	:			<@$.dot.ctx.strconv.Render "strconv" "r.Form" $v>,
 :	:	:	<@end>\
 :		); res != nil {
-:			if res.Finish() {
-:				return res
-:			}
+:			return res
 :		}
 :	<@end>\
 <@end>\

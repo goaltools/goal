@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/anonx/sunplate/action"
 
 	"github.com/revel/revel/testing"
@@ -30,9 +32,14 @@ func (c App) HelloWorld(page int) action.Result {
 	return nil
 }
 
+// Initially is a magic method that is executed before every request.
+func (c *Controller) Initially(w http.ResponseWriter, r *http.Request) bool {
+	return false
+}
+
 // Finally is a magic method that is executed after every request.
-func (c *Controller) Finally(name string) action.Result {
-	return nil
+func (c *Controller) Finally(w http.ResponseWriter, r *http.Request) bool {
+	return false
 }
 
 // UnsupportedAction is not an action as it requires argument that is not

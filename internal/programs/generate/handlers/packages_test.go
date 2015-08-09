@@ -24,6 +24,15 @@ func TestParentPackage(t *testing.T) {
 		// I.e. the method must return empty string.
 		t.Errorf("Packages with empty imports must have no names.")
 	}
+	p = parent{
+		ID:     1,
+		Import: "net/http",
+		Name:   "Request",
+	}
+	s = p.Package(".XXX")
+	if s != "c1.XXX" {
+		t.Errorf(`Incorrect package name. Expected "c1.XXX", got "%s".`, s)
+	}
 }
 
 func assertDeepEqualController(c1, c2 *controller) {
@@ -149,9 +158,18 @@ var ps = packages{
 				Name:     "Finally",
 				Params: []reflect.Arg{
 					{
-						Name: "name",
+						Name: "w",
 						Type: &reflect.Type{
-							Name: "string",
+							Package: "http",
+							Name:    "ResponseWriter",
+						},
+					},
+					{
+						Name: "r",
+						Type: &reflect.Type{
+							Package: "http",
+							Name:    "Request",
+							Star:    true,
 						},
 					},
 				},
@@ -165,8 +183,43 @@ var ps = packages{
 				Results: []reflect.Arg{
 					{
 						Type: &reflect.Type{
-							Name:    "Result",
-							Package: "action",
+							Name: "bool",
+						},
+					},
+				},
+			},
+			Initially: &reflect.Func{
+				Comments: []string{"// Initially is a magic method that is executed before every request."},
+				File:     "app.go",
+				Name:     "Initially",
+				Params: []reflect.Arg{
+					{
+						Name: "w",
+						Type: &reflect.Type{
+							Package: "http",
+							Name:    "ResponseWriter",
+						},
+					},
+					{
+						Name: "r",
+						Type: &reflect.Type{
+							Package: "http",
+							Name:    "Request",
+							Star:    true,
+						},
+					},
+				},
+				Recv: &reflect.Arg{
+					Name: "c",
+					Type: &reflect.Type{
+						Name: "Controller",
+						Star: true,
+					},
+				},
+				Results: []reflect.Arg{
+					{
+						Type: &reflect.Type{
+							Name: "bool",
 						},
 					},
 				},
@@ -345,9 +398,18 @@ var ps = packages{
 				Name: "Finally",
 				Params: []reflect.Arg{
 					{
-						Name: "userID",
+						Name: "w",
 						Type: &reflect.Type{
-							Name: "string",
+							Package: "http",
+							Name:    "ResponseWriter",
+						},
+					},
+					{
+						Name: "r",
+						Type: &reflect.Type{
+							Package: "http",
+							Name:    "Request",
+							Star:    true,
 						},
 					},
 				},
@@ -361,8 +423,7 @@ var ps = packages{
 				Results: []reflect.Arg{
 					{
 						Type: &reflect.Type{
-							Name:    "Result",
-							Package: "action",
+							Name: "bool",
 						},
 					},
 				},
