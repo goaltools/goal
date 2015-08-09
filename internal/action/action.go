@@ -119,7 +119,7 @@ func builtin(f *reflect.Func) bool {
 	return len(f.Params.Filter(fn)) == len(f.Params)
 }
 
-// Before gets a Func and checks whether it is a Before magic action.
+// Before gets an action Func and checks whether it is a Before magic action.
 func Before(f *reflect.Func) bool {
 	if f.Name == MethodBefore {
 		return true
@@ -127,7 +127,7 @@ func Before(f *reflect.Func) bool {
 	return false
 }
 
-// After gets a Func and checks whether it is an After magic action.
+// After gets an action Func and checks whether it is an After magic action.
 func After(f *reflect.Func) bool {
 	if f.Name == MethodAfter {
 		return true
@@ -135,7 +135,7 @@ func After(f *reflect.Func) bool {
 	return false
 }
 
-// Regular gets a Func and makes sure it is not a magic action but a usual one.
+// Regular gets an action Func and makes sure it is not a magic action but a usual one.
 func Regular(f *reflect.Func) bool {
 	if Before(f) || After(f) {
 		return false
