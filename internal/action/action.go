@@ -1,3 +1,6 @@
+// Package action provides functions for search of actions
+// and checking whether their are actions with special meaning
+// (such as Before or After) or just plain actions.
 package action
 
 import (
@@ -24,10 +27,6 @@ const (
 	// MagicActionAfter is a name of the magic method that will be executed
 	// after every action.
 	MagicActionAfter = "After"
-
-	// MagicActionFinally is a name of the magic method that will be executed
-	// after every action no matter what.
-	MagicActionFinally = "Finally"
 )
 
 // StrconvContext is a mapping of supported by strconv types and reflect functions.
@@ -134,17 +133,9 @@ func After(f *reflect.Func) bool {
 	return false
 }
 
-// Finally gets a Func and checks whether it is a Finally magic action.
-func Finally(f *reflect.Func) bool {
-	if f.Name == MagicActionFinally {
-		return true
-	}
-	return false
-}
-
-// NotMagicAction gets a Func and makes sure it is not a magic method but a usual action.
+// NotMagicAction gets a Func and makes sure it is not a magic action but a usual one.
 func NotMagicAction(f *reflect.Func) bool {
-	if Before(f) || After(f) || Finally(f) {
+	if Before(f) || After(f) {
 		return false
 	}
 	return true
