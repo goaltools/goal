@@ -1,6 +1,7 @@
 // Package action provides functions for search of actions
-// and checking whether their are actions with special meaning
-// (such as Before or After) or just plain actions.
+// among methods of a package and checking whether they are
+// actions with special meaning (such as Before or After)
+// or just plain actions.
 package action
 
 import (
