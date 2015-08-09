@@ -1,13 +1,15 @@
 init:
-  - sunplate help xxx
+  - sunplate generate xxx
   - /pass
   - /echo "Hello, world!"
   - /start test
   - /run test
   - /single help
 watch:
-  ./testdata:
+  ../:
     - /start test
+  ./*:
+    - /pass
 test:
-  - sunplate help test
-help: sunplate help xxx
+  - sunplate generate xxx
+help: sunplate generate xxx

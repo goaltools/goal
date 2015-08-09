@@ -83,7 +83,7 @@ func instanceController() {
 
 		pid := cmd.Process.Pid
 		err := cmd.Process.Kill()
-		if err != nil {
+		if err == nil {
 			cmd.Process.Wait()
 		}
 

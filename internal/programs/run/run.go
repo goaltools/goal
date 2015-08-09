@@ -18,6 +18,7 @@ import (
 	"github.com/anonx/sunplate/log"
 
 	"github.com/tsuru/config"
+	"gopkg.in/fsnotify.v1"
 )
 
 // ConfigFile is a name of the file that is located at the
@@ -42,13 +43,21 @@ directories are modified, some tasks are expected to be executed.
 }
 
 var (
-	notify = make(chan os.Signal, 1)
+	notify  = make(chan os.Signal, 1)
+	restart = make(chan bool, 1)
 )
 
 // main is an entry point of the command.
 var main = func(action string, params command.Data) {
+	imp := p.AbsoluteImport(params.Default(action, "./"))
+	dir := p.PackageDir(imp)
+	cf := filepath.Join(dir, ConfigFile)
+
 	// Start a user tasks runner and instances controller.
 	go instanceController()
+
+	// Start a configuration.
+	go configDaemon(imp, cf)
 
 	// Show user friendly errors and terminate subprograms
 	// in case of panics.
@@ -60,32 +69,65 @@ var main = func(action string, params command.Data) {
 		log.Trace.Panicln("Application has been terminated.")
 	}()
 
-	imp := p.AbsoluteImport(params.Default(action, "./"))
-	dir := p.PackageDir(imp)
-	cf := filepath.Join(dir, ConfigFile)
-
 	// Execute all commands from the requested directory.
 	os.Chdir(dir)
 
-	// Trying to read a configuration file..
-	err := config.ReadConfigFile(cf)
-	log.AssertNil(err)
-
-	// Parsing configuration file and extracting the values
-	// we need.
-	log.Trace.Printf(`Starting to parse "%s"...`, cf)
-	c := parseConf(cf)
-
-	// Start init tasks.
-	c.init()
-
-	// Start watching the requested directories.
-	w := watcher.NewType()
-	for pattern := range c.watch {
-		w.Listen(pattern, c.watch[pattern])
-	}
+	// Load the configuration.
+	reloadConfig()
 
 	// Cleaning up after we are done.
 	signal.Notify(notify, os.Interrupt, syscall.SIGTERM)
 	<-notify
+}
+
+func configDaemon(imp, file string) {
+	var watchers []*fsnotify.Watcher
+
+	// closeWatchers is iterating over available watchers
+	// and closes them.
+	closeWatchers := func() {
+		for i := range watchers {
+			watchers[i].Close()
+		}
+		watchers = []*fsnotify.Watcher{}
+	}
+	defer closeWatchers() // Close watchers when we are done.
+
+	for {
+		// Wait till we are asked to reload the config file.
+		<-restart
+
+		// Closing old watchers to create new ones.
+		closeWatchers()
+
+		// Trying to read a configuration file..
+		err := config.ReadConfigFile(file)
+		if err != nil {
+			log.Error.Printf(
+				`Are you sure "%s" is a path of sunplate project?
+"%s" file is missing.`, imp, file,
+			)
+			notify <- syscall.SIGTERM
+			return
+		}
+
+		// Parsing configuration file and extracting the values
+		// we need.
+		log.Trace.Printf(`Starting to parse "%s"...`, file)
+		c := parseConf(file)
+
+		// Start init tasks.
+		c.init()
+
+		// Start watching the requested directories.
+		w := watcher.NewType()
+		watchers = append(watchers, w.ListenFile("./"+ConfigFile, reloadConfig))
+		for pattern := range c.watch {
+			watchers = append(watchers, w.Listen(pattern, c.watch[pattern]))
+		}
+	}
+}
+
+func reloadConfig() {
+	restart <- true
 }
