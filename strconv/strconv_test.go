@@ -39,7 +39,7 @@ func TestBools(t *testing.T) {
 
 func TestString(t *testing.T) {
 	k := "s"
-	exp := "x"
+	exp := "z"
 	if r := String(vs, k); r != exp {
 		t.Errorf(errMsg, exp, r)
 	}
@@ -59,7 +59,7 @@ func TestStrings(t *testing.T) {
 
 func TestInt(t *testing.T) {
 	k := "i"
-	exp := 5
+	exp := 1
 	if r := Int(vs, k); r != exp {
 		t.Errorf(errMsg, exp, r)
 	}
@@ -76,7 +76,7 @@ func TestInts(t *testing.T) {
 
 func TestInt8(t *testing.T) {
 	k := "i"
-	exp := int8(5)
+	exp := int8(1)
 	if r := Int8(vs, k); r != exp {
 		t.Errorf(errMsg, exp, r)
 	}
@@ -93,7 +93,7 @@ func TestInt8s(t *testing.T) {
 
 func TestInt16(t *testing.T) {
 	k := "i"
-	exp := int16(5)
+	exp := int16(1)
 	if r := Int16(vs, k); r != exp {
 		t.Errorf(errMsg, exp, r)
 	}
@@ -110,7 +110,7 @@ func TestInt16s(t *testing.T) {
 
 func TestInt32(t *testing.T) {
 	k := "i"
-	exp := int32(5)
+	exp := int32(1)
 	if r := Int32(vs, k); r != exp {
 		t.Errorf(errMsg, exp, r)
 	}
@@ -127,7 +127,7 @@ func TestInt32s(t *testing.T) {
 
 func TestInt64(t *testing.T) {
 	k := "i"
-	exp := int64(5)
+	exp := int64(1)
 	if r := Int64(vs, k); r != exp {
 		t.Errorf(errMsg, exp, r)
 	}
@@ -148,7 +148,7 @@ func TestInt64s(t *testing.T) {
 
 func TestUint(t *testing.T) {
 	k := "i"
-	exp := uint(5)
+	exp := uint(1)
 	if r := Uint(vs, k); r != exp {
 		t.Errorf(errMsg, exp, r)
 	}
@@ -165,7 +165,7 @@ func TestUints(t *testing.T) {
 
 func TestUint8(t *testing.T) {
 	k := "i"
-	exp := uint8(5)
+	exp := uint8(1)
 	if r := Uint8(vs, k); r != exp {
 		t.Errorf(errMsg, exp, r)
 	}
@@ -182,7 +182,7 @@ func TestUint8s(t *testing.T) {
 
 func TestUint16(t *testing.T) {
 	k := "i"
-	exp := uint16(5)
+	exp := uint16(1)
 	if r := Uint16(vs, k); r != exp {
 		t.Errorf(errMsg, exp, r)
 	}
@@ -199,7 +199,7 @@ func TestUint16s(t *testing.T) {
 
 func TestUint32(t *testing.T) {
 	k := "i"
-	exp := uint32(5)
+	exp := uint32(1)
 	if r := Uint32(vs, k); r != exp {
 		t.Errorf(errMsg, exp, r)
 	}
@@ -216,7 +216,7 @@ func TestUint32s(t *testing.T) {
 
 func TestUint64(t *testing.T) {
 	k := "i"
-	exp := uint64(5)
+	exp := uint64(1)
 	if r := Uint64(vs, k); r != exp {
 		t.Errorf(errMsg, exp, r)
 	}
@@ -237,7 +237,7 @@ func TestUint64s(t *testing.T) {
 
 func TestFloat32(t *testing.T) {
 	k := "f"
-	exp := float32(1.1)
+	exp := float32(2.2)
 	if r := Float32(vs, k); r != exp {
 		t.Errorf(errMsg, exp, r)
 	}
@@ -254,7 +254,7 @@ func TestFloat32s(t *testing.T) {
 
 func TestFloat64(t *testing.T) {
 	k := "f"
-	exp := float64(1.1)
+	exp := float64(2.2)
 	if r := Float64(vs, k); r != exp {
 		t.Errorf(errMsg, exp, r)
 	}
@@ -289,6 +289,11 @@ func TestGet(t *testing.T) {
 
 	exp = ""
 	if r := get(vs, k, []int{10}); r != exp {
+		t.Errorf(errMsg, exp, r)
+	}
+
+	exp = ""
+	if r := get(vs, "keyThatDoesNotExist", []int{}); r != exp {
 		t.Errorf(errMsg, exp, r)
 	}
 }

@@ -240,10 +240,16 @@ func Float64s(vs url.Values, k string, is ...int) (as []float64) {
 // empty string will be returned.
 func get(vs url.Values, k string, is []int) string {
 	// Get index from the first element of indexes slice
-	// or use the default 0.
-	i := 0
+	// or use the last element's index as a default.
+	i := len(vs[k])
 	if len(is) > 0 {
+		// If a specific index requested, use it.
 		i = is[0]
+	} else if i > 0 {
+		// Otherwise, make sure the index is in range.
+		// it should be len(values) - 1, but only if
+		// len > 0. If it't not, use just 0.
+		i--
 	}
 
 	// Make sure such key does exist and index is in range.
