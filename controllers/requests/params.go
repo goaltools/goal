@@ -2,7 +2,6 @@ package requests
 
 import (
 	"net/http"
-	"net/url"
 
 	"github.com/anonx/sunplate/log"
 )
