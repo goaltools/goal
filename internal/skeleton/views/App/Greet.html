@@ -1,6 +1,7 @@
 {% define "title" %}Hello, {% .name %}{% end %}
 {% define "body" %}
 <div>
-	How are you doing, {% .name %}?
+	{% if .message %}{% .message %}{% end %}
+	<a href="/">Go Back.</a>
 </div>
 {% end %}

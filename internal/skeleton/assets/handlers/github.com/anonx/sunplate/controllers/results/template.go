@@ -34,9 +34,7 @@ func (t tTemplate) Before(c *contr.Template, w http.ResponseWriter, r *http.Requ
 	// Call magic Before action of (github.com/anonx/sunplate/controllers/results).Template.
 	if res := c.Before( // "Binding" parameters.
 	); res != nil {
-		if res.Finish() {
-			return res
-		}
+		return res
 	}
 	return nil
 }
@@ -46,8 +44,16 @@ func (t tTemplate) After(c *contr.Template, w http.ResponseWriter, r *http.Reque
 	return nil
 }
 
-// Finally is a dump method that does nothing.
-func (t tTemplate) Finally(c *contr.Template, w http.ResponseWriter, r *http.Request) {
+// Initially is a method that is started by every handler function at the very beginning
+// of their execution phase.
+func (t tTemplate) Initially(c *contr.Template, w http.ResponseWriter, r *http.Request) (finish bool) {
+	return
+}
+
+// Finally is a method that is started by every handler function at the very end
+// of their execution phase no matter what.
+func (t tTemplate) Finally(c *contr.Template, w http.ResponseWriter, r *http.Request) (finish bool) {
+	return
 }
 
 // RenderTemplate is a handler that was generated automatically.
@@ -59,25 +65,21 @@ func (t tTemplate) Finally(c *contr.Template, w http.ResponseWriter, r *http.Req
 func (t tTemplate) RenderTemplate(w http.ResponseWriter, r *http.Request) {
 	c := Template.New()
 	defer Template.Finally(c, w, r)
+	if finish := Template.Initially(c, w, r); finish {
+		return
+	}
 	if res := Template.Before(c, w, r); res != nil {
 		res.Apply(w, r)
-		if res.Finish() {
-			return
-		}
+		return
 	}
 	if res := c.RenderTemplate( // "Binding" parameters.
 		strconv.String(r.Form, "templatePath"),
 	); res != nil {
 		res.Apply(w, r)
-		if res.Finish() {
-			return
-		}
+		return
 	}
 	if res := Template.After(c, w, r); res != nil {
 		res.Apply(w, r)
-		if res.Finish() {
-			return
-		}
 	}
 }
 
