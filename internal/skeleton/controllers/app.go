@@ -25,6 +25,7 @@ func (c *App) Index() a.Result {
 // user is redirected back to index page.
 func (c *App) PostGreet(name string) a.Result {
 	c.Context["name"] = name
+	c.Context["message"] = c.Request.FormValue("message")
 	return c.RenderTemplate(v.Paths.App.GreetHTML)
 }
 

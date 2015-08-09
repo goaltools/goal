@@ -36,18 +36,14 @@ func (t tApp) New() *contr.App {
 func (t tApp) Before(c *contr.App, w http.ResponseWriter, r *http.Request) a.Result {
 	// Execute magic Before actions of embedded controllers.
 	if res := Controller.Before(c.Controller, w, r); res != nil {
-		if res.Finish() {
-			return res
-		}
+		return res
 	}
 	// Call magic Before action of (github.com/anonx/sunplate/internal/skeleton/controllers).App.
 	if res := c.Before( // "Binding" parameters.
 		strconv.String(r.Form, "name"),
 		strconv.Ints(r.Form, "pages"),
 	); res != nil {
-		if res.Finish() {
-			return res
-		}
+		return res
 	}
 	return nil
 }
@@ -57,34 +53,34 @@ func (t tApp) Before(c *contr.App, w http.ResponseWriter, r *http.Request) a.Res
 func (t tApp) After(c *contr.App, w http.ResponseWriter, r *http.Request) a.Result {
 	// Execute magic After actions of embedded controllers.
 	if res := Controller.After(c.Controller, w, r); res != nil {
-		if res.Finish() {
-			return res
-		}
+		return res
 	}
 	// Call magic After action of (github.com/anonx/sunplate/internal/skeleton/controllers).App.
 	if res := c.After( // "Binding" parameters.
 	); res != nil {
-		if res.Finish() {
-			return res
-		}
+		return res
 	}
 	return nil
 }
 
-// Finally executes magic actions of embedded controllers, and
-// calls (github.com/anonx/sunplate/internal/skeleton/controllers).App.Finally.
-// The call is garanteed to be done no matter what happens during execution of parent actions.
-func (t tApp) Finally(c *contr.App, w http.ResponseWriter, r *http.Request) {
-	// Call magic Finally action of (github.com/anonx/sunplate/internal/skeleton/controllers).App.
-	defer func() {
-		if res := c.Finally( // "Binding" parameters.
-			strconv.String(r.Form, "name"),
-		); res != nil {
-			res.Apply(w, r)
-		}
-	}()
-	// Execute magic Finally actions of embedded controllers.
-	Controller.Finally(c.Controller, w, r)
+// Initially is a method that is started by every handler function at the very beginning
+// of their execution phase.
+func (t tApp) Initially(c *contr.App, w http.ResponseWriter, r *http.Request) (finish bool) {
+	// Execute magic Initially methods of embedded controllers.
+	if finish = Controller.Initially(c.Controller, w, r); finish {
+		return finish
+	}
+	return
+}
+
+// Finally is a method that is started by every handler function at the very end
+// of their execution phase no matter what.
+func (t tApp) Finally(c *contr.App, w http.ResponseWriter, r *http.Request) (finish bool) {
+	// Execute magic Finally methods of embedded controllers.
+	if finish = Controller.Finally(c.Controller, w, r); finish {
+		return finish
+	}
+	return
 }
 
 // Index is a handler that was generated automatically.
@@ -96,24 +92,20 @@ func (t tApp) Finally(c *contr.App, w http.ResponseWriter, r *http.Request) {
 func (t tApp) Index(w http.ResponseWriter, r *http.Request) {
 	c := App.New()
 	defer App.Finally(c, w, r)
+	if finish := App.Initially(c, w, r); finish {
+		return
+	}
 	if res := App.Before(c, w, r); res != nil {
 		res.Apply(w, r)
-		if res.Finish() {
-			return
-		}
+		return
 	}
 	if res := c.Index( // "Binding" parameters.
 	); res != nil {
 		res.Apply(w, r)
-		if res.Finish() {
-			return
-		}
+		return
 	}
 	if res := App.After(c, w, r); res != nil {
 		res.Apply(w, r)
-		if res.Finish() {
-			return
-		}
 	}
 }
 
@@ -127,25 +119,21 @@ func (t tApp) Index(w http.ResponseWriter, r *http.Request) {
 func (t tApp) PostGreet(w http.ResponseWriter, r *http.Request) {
 	c := App.New()
 	defer App.Finally(c, w, r)
+	if finish := App.Initially(c, w, r); finish {
+		return
+	}
 	if res := App.Before(c, w, r); res != nil {
 		res.Apply(w, r)
-		if res.Finish() {
-			return
-		}
+		return
 	}
 	if res := c.PostGreet( // "Binding" parameters.
 		strconv.String(r.Form, "name"),
 	); res != nil {
 		res.Apply(w, r)
-		if res.Finish() {
-			return
-		}
+		return
 	}
 	if res := App.After(c, w, r); res != nil {
 		res.Apply(w, r)
-		if res.Finish() {
-			return
-		}
 	}
 }
 
