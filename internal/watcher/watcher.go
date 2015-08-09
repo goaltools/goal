@@ -17,12 +17,15 @@ import (
 // Type is a watcher type that allows registering new
 // pattern - actions pairs.
 type Type struct {
-	mu sync.Mutex
+	mu    sync.Mutex
+	files map[string]bool
 }
 
 // NewType allocates and returns a new instance of watcher Type.
 func NewType() *Type {
-	return &Type{}
+	return &Type{
+		files: map[string]bool{},
+	}
 }
 
 // Listen gets a pattern and a function. The function will be executed
@@ -34,9 +37,6 @@ func (t *Type) Listen(pattern string, fn func()) {
 
 	// Find directories matching the pattern.
 	ds := glob(pattern)
-	if err != nil {
-		log.Error.Panicf("Pattern `%s` is malformed. Error: %v.", pattern, err)
-	}
 
 	// Add the files to the watcher.
 	for i := range ds {
@@ -48,16 +48,52 @@ func (t *Type) Listen(pattern string, fn func()) {
 	}
 
 	// Start watching process.
-	go t.NotifyOnUpdate(w, fn)
+	go t.NotifyOnUpdate(pattern, w, fn)
+}
+
+// ListenFile is equivalent of Listen but for files.
+// If file is added using ListenFile and the same file
+// is withing a pattern of Listen, only the first one
+// will trigger restarts.
+// I.e. we have the following calls:
+//	w.Listen("./", fn1)
+//	w.ListenFile("./sunplate.yml", fn2)
+// If "sunplate.yml" file is modified fn2 will be triggered.
+// fn1 may be triggered by changes in any file inside
+// "./" directory except "sunplate.yml".
+func (t *Type) ListenFile(path string, fn func()) {
+	// Create a new watcher.
+	w, err := fsnotify.NewWatcher()
+	log.AssertNil(err)
+
+	// Watch a directory instead of file.
+	// See issue #17 of fsnotify to find out more
+	// why we do this.
+	dir := filepath.Join(path, "../")
+	w.Add(dir)
+
+	// Start watching process.
+	t.files[path] = true
+	go t.NotifyOnUpdate(path, w, fn)
 }
 
 // NotifyOnUpdate starts the function every time a file change
 // event is received. Start it as a goroutine.
-func (t *Type) NotifyOnUpdate(watcher *fsnotify.Watcher, fn func()) {
+func (t *Type) NotifyOnUpdate(pattern string, watcher *fsnotify.Watcher, fn func()) {
 	for {
 		select {
 		case ev := <-watcher.Events:
-			if restartRequired(ev) {
+			// If modified file was added using ListenFile,
+			// allow restarts only of its own function.
+			restartAllowed := true
+			if t.files[ev.Name] && ev.Name != pattern {
+				restartAllowed = false
+			}
+
+			// Check whether file has been modified and
+			// this watcher is allowed to restart function
+			// after changes to this file.
+			if restartRequired(ev) && restartAllowed {
 				t.mu.Lock()
 				fn()
 				t.mu.Unlock()
@@ -81,18 +117,37 @@ func restartRequired(event fsnotify.Event) bool {
 // The only supported special character is an asterisk at the end.
 // It means that the directory is expected to be scanned recursively.
 // There is no way for fsnotify to watch individual files (see #17),
-// do we support only directories.
+// so we support only directories.
 // File system errors such as I/O reading are ignored.
 func glob(pattern string) (ds []string) {
-	// Check whether recursive scan is expected.
+	// Make sure pattern is not empty.
 	l := len(pattern)
-	if l == 0 || pattern[l-1] != '*' {
+	if l == 0 {
+		return
+	}
+
+	// Check whether we should scan the directory recursively.
+	recurs := pattern[l-1] == '*'
+	if recurs {
+		// Trim the asterisk at the end.
+		pattern = pattern[:l-1]
+	}
+
+	// Make sure such path exists and it is a directory rather than a file.
+	info, err := os.Stat(pattern)
+	if err != nil {
+		return
+	}
+	if !info.IsDir() {
+		log.Warn.Printf(`"%s" is not a directory, skipping it.`, pattern)
+		return
+	}
+
+	// If not recursive scan was expected, return the path as is.
+	if !recurs {
 		ds = append(ds, pattern)
 		return // Return as is.
 	}
-
-	// Otherwise, trim the asterisk at the end.
-	pattern = pattern[:l-1]
 
 	// Start searching directories recursively.
 	filepath.Walk(pattern, func(path string, info os.FileInfo, err error) error {
