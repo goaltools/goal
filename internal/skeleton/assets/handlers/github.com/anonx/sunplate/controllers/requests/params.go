@@ -15,8 +15,8 @@ import (
 // being found at "github.com/anonx/sunplate/controllers/requests/params.go",
 // and contains methods to be used as handler functions.
 //
-// Params is used for parsing query from the URL
-// and body of requests.
+// Params is a controller that calls request.ParseForm for you
+// and provides the result request as Params.Request.
 var Params tParams
 
 // tParams is a type with handler methods of Params controller.
