@@ -27,7 +27,6 @@ func (c *Params) Initially(w http.ResponseWriter, r *http.Request) bool {
 	// Parse request and make sure there are no errors.
 	err := r.ParseForm()
 	if err != nil {
-		r.Form = url.Values{} // Make sure Form is not nil.
 		go log.Warn.Printf("Error parsing request body: %v.", err)
 	}
 
