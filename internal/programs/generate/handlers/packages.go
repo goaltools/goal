@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	a "github.com/anonx/sunplate/internal/action"
+	m "github.com/anonx/sunplate/internal/method"
 	"github.com/anonx/sunplate/internal/path"
 	"github.com/anonx/sunplate/internal/reflect"
 )
@@ -33,10 +34,11 @@ type parent struct {
 // controller is a type that represents application controller,
 // a structure that has actions.
 type controller struct {
-	Actions reflect.Funcs // Actions are methods that implement action.Result interface.
-	After   *reflect.Func // Magic method that is executed after actions if they return nil.
-	Before  *reflect.Func // Magic method that is executed before every action.
-	Finally *reflect.Func // Finally is executed at the end of every request no matter what.
+	Actions   reflect.Funcs // Actions are methods that implement action.Result interface.
+	After     *reflect.Func // Magic method that is executed after actions if they return nil.
+	Before    *reflect.Func // Magic method that is executed before every action.
+	Finally   *reflect.Func // Finally is executed at the end of every request no matter what.
+	Initially *reflect.Func // Initially is executed at the beginning of every request.
 
 	Comments reflect.Comments // A group of comments right above the controller declaration.
 	File     string           // Name of the file where this controller is located.
@@ -50,13 +52,13 @@ type controller struct {
 //	uniquePkgName "github.com/user/project"
 // and:
 //	uniquePkgName.Application.Index() // Package name and dot suffix.
-func (p parent) Package(suffices ...string) string {
+func (p parent) Package(suffixes ...string) string {
 	if p.Import == "" {
 		return ""
 	}
 	s := fmt.Sprintf("c%d", p.ID)
-	for i := range suffices {
-		s += suffices[i]
+	for i := range suffixes {
+		s += suffixes[i]
 	}
 	return s
 }
@@ -108,8 +110,10 @@ func (ps packages) scanAnonEmbStructs(pkg *reflect.Package, i int) (prs []parent
 // extractControllers gets a reflect.Package type and returns
 // a slice of controllers that are found there.
 func (ps packages) extractControllers(pkg *reflect.Package) controllers {
-	// Initialize a function that will be used for detection of actions.
+	// Initialize functions that will be used for detection of actions
+	// and magic methods.
 	action := a.Func(pkg)
+	method := m.Func(pkg)
 
 	// Iterating through all available structures and checking
 	// whether those structures are controllers (i.e. whether they have actions).
@@ -121,19 +125,22 @@ func (ps packages) extractControllers(pkg *reflect.Package) controllers {
 			continue
 		}
 
-		// Check whether there are actions among those methods.
+		// Check whether there are actions and/or magic method among those methods.
+		as, count1 := ms.FilterGroups(action, a.Regular, a.After, a.Before)
+		mms, count2 := ms.FilterGroups(method, m.Initially, m.Finally)
+
 		// If there are no any, this is not a controller; ignore it.
-		as, count := ms.FilterGroups(action, a.NotMagicAction, a.After, a.Before, a.Finally)
-		if count == 0 {
+		if count1 == 0 && count2 == 0 {
 			continue
 		}
 
 		// Add a new controller to the list of results.
 		cs[pkg.Structs[i].Name] = controller{
-			Actions: as[0],
-			After:   firstFunc(as[1]),
-			Before:  firstFunc(as[2]),
-			Finally: firstFunc(as[3]),
+			Actions:   as[0],
+			After:     firstFunc(as[1]),
+			Before:    firstFunc(as[2]),
+			Initially: firstFunc(mms[0]),
+			Finally:   firstFunc(mms[1]),
 
 			Comments: pkg.Structs[i].Comments,
 			File:     pkg.Structs[i].File,

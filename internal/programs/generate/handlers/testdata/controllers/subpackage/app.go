@@ -1,6 +1,8 @@
 package subpackage
 
 import (
+	"net/http"
+
 	"github.com/anonx/sunplate/action"
 )
 
@@ -25,6 +27,6 @@ func (c *Controller) After() action.Result {
 
 // Finally is a magic function that is executed after any request
 // no matter what.
-func (c *Controller) Finally(userID string) action.Result {
-	return nil
+func (c *Controller) Finally(http.ResponseWriter, *http.Request) bool {
+	return false
 }

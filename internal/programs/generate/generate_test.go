@@ -20,7 +20,7 @@ func TestStart_Handlers(t *testing.T) {
 	start("generate", map[string]string{
 		"generate":  "handlers",
 		"--input":   "./handlers/testdata/controllers",
-		"--output":  "./handlers/testdata/assets/handlers",
+		"--output":  "./assets/handlers",
 		"--package": "handlers",
 	})
 
