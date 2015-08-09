@@ -6,7 +6,7 @@ import (
 	"github.com/anonx/sunplate/internal/reflect"
 )
 
-func TestActionFunc(t *testing.T) {
+func TestFunc(t *testing.T) {
 	f := actionFn
 	fn := Func(&reflect.Package{
 		Imports: reflect.Imports{
@@ -121,16 +121,16 @@ func TestAfter(t *testing.T) {
 	}
 }
 
-func TestNotMagicAction(t *testing.T) {
+func TestRegular(t *testing.T) {
 	f := actionFn
 	f.Name = "Before"
-	res := NotMagicAction(f)
+	res := Regular(f)
 	if res {
 		t.Errorf("Incorrect result: action is a magic method.")
 	}
 
 	f.Name = "Index"
-	res = NotMagicAction(f)
+	res = Regular(f)
 	if !res {
 		t.Errorf("Incorrect result: action is not a magic method.")
 	}

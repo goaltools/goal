@@ -1,34 +1,35 @@
 // Package action provides functions for search of actions
 // among methods of a package and checking whether they are
 // actions with special meaning (such as Before or After)
-// or just plain actions.
+// or just regular actions.
 package action
 
 import (
 	"go/ast"
 
+	"github.com/anonx/sunplate/internal/path"
 	"github.com/anonx/sunplate/internal/reflect"
 	"github.com/anonx/sunplate/internal/strconv"
 	"github.com/anonx/sunplate/log"
 )
 
 const (
-	// InterfaceImport is a GOPATH to the Result interface
-	// that should be implemented by types returned by actions.
-	InterfaceImport = "github.com/anonx/sunplate/action"
+	// Interface is an interface that should be implemented
+	// by types that are being returned from actions.
+	Interface = "Result"
 
-	// InterfaceName is an interface that should be implemented
-	// by types that are returned from actions.
-	InterfaceName = "Result"
-
-	// MagicActionBefore is a name of the magic method that will be executed
+	// MethodBefore is a name of the magic method that will be executed
 	// before every action.
-	MagicActionBefore = "Before"
+	MethodBefore = "Before"
 
-	// MagicActionAfter is a name of the magic method that will be executed
+	// MethodAfter is a name of the magic method that will be executed
 	// after every action.
-	MagicActionAfter = "After"
+	MethodAfter = "After"
 )
+
+// InterfaceImport is a GOPATH to the Result interface that should be
+// implemented by types being returned from actions.
+var InterfaceImport = path.SunplateImport("action")
 
 // StrconvContext is a mapping of supported by strconv types and reflect functions.
 var StrconvContext = strconv.Context()
@@ -88,7 +89,7 @@ func Func(pkg *reflect.Package) func(f *reflect.Func) bool {
 
 		// Make sure the first result is of type action.Result.
 		correctPackage := f.Results[0].Type.Package == actionImportName[f.File]
-		correctName := f.Results[0].Type.Name == InterfaceName
+		correctName := f.Results[0].Type.Name == Interface
 		if !correctPackage || !correctName {
 			return false
 		}
@@ -120,7 +121,7 @@ func builtin(f *reflect.Func) bool {
 
 // Before gets a Func and checks whether it is a Before magic action.
 func Before(f *reflect.Func) bool {
-	if f.Name == MagicActionBefore {
+	if f.Name == MethodBefore {
 		return true
 	}
 	return false
@@ -128,14 +129,14 @@ func Before(f *reflect.Func) bool {
 
 // After gets a Func and checks whether it is an After magic action.
 func After(f *reflect.Func) bool {
-	if f.Name == MagicActionAfter {
+	if f.Name == MethodAfter {
 		return true
 	}
 	return false
 }
 
-// NotMagicAction gets a Func and makes sure it is not a magic action but a usual one.
-func NotMagicAction(f *reflect.Func) bool {
+// Regular gets a Func and makes sure it is not a magic action but a usual one.
+func Regular(f *reflect.Func) bool {
 	if Before(f) || After(f) {
 		return false
 	}
