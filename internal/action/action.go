@@ -36,6 +36,8 @@ var StrconvContext = strconv.Context()
 
 // Func returns a function that may be used to check whether
 // specific Func represents an action (or one of magic method) or not.
+// Returned function assumes it is getting functions with receivers
+// as input parameter.
 func Func(pkg *reflect.Package) func(f *reflect.Func) bool {
 	// Actions are required to return action.Result as the first argument.
 	// actionImportName is used to store information on how the action package is named.
