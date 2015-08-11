@@ -35,6 +35,15 @@ func TestParentPackage(t *testing.T) {
 	}
 }
 
+func TestControllerIgnoredArgs(t *testing.T) {
+	c := controller{}
+	a := ps["github.com/anonx/sunplate/internal/programs/generate/handlers/testdata/controllers"]["App"].Actions[1]
+	exp := ", _, _"
+	if r := c.IgnoredArgs(&a); r != exp {
+		t.Errorf(`Incorrect IgnoreArgs result. Expected "%s", got "%s".`, exp, r)
+	}
+}
+
 func assertDeepEqualController(c1, c2 *controller) {
 	if c1 == nil || c2 == nil {
 		if c1 != c2 {
@@ -290,6 +299,16 @@ var ps = packages{
 							Type: &reflect.Type{
 								Name:    "Result",
 								Package: "action",
+							},
+						},
+						{
+							Type: &reflect.Type{
+								Name: "bool",
+							},
+						},
+						{
+							Type: &reflect.Type{
+								Name: "error",
 							},
 						},
 					},

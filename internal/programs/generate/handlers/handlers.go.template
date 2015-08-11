@@ -111,7 +111,7 @@ func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWri
 :			res.Apply(w, r)
 :			return
 :		}
-:		if res := c.<@$f.Name>( // "Binding" parameters.
+:		if res<@$.ctx.controller.IgnoredArgs $f> := c.<@$f.Name>( // "Binding" parameters.
 :	:	:	<@range $i, $v := $f.Params>\
 :	:			<@$.ctx.strconv.Render "strconv" "r.Form" $v>,
 :	:	:	<@end>\
@@ -162,7 +162,7 @@ func init() {
 <@define "callSelf">\
 :	<@if .self>\
 :		// Call magic <@.name> action of (<@.dot.ctx.import>).<@.dot.ctx.name>.
-:		if res := c.<@.name>( // "Binding" parameters.
+:		if res<@.dot.ctx.controller.IgnoredArgs .self> := c.<@.name>( // "Binding" parameters.
 :	:	:	<@range $i, $v := .self.Params>\
 :	:			<@$.dot.ctx.strconv.Render "strconv" "r.Form" $v>,
 :	:	:	<@end>\

@@ -28,8 +28,8 @@ func (c NotController1) test() {
 }
 
 // HelloWorld is a sample action.
-func (c App) HelloWorld(page int) action.Result {
-	return nil
+func (c App) HelloWorld(page int) (action.Result, bool, error) {
+	return nil, false, nil
 }
 
 // Initially is a magic method that is executed before every request.
