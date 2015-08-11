@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"strings"
 
 	a "github.com/anonx/sunplate/internal/action"
 	m "github.com/anonx/sunplate/internal/method"
@@ -61,6 +62,20 @@ func (p parent) Package(suffixes ...string) string {
 		s += suffixes[i]
 	}
 	return s
+}
+
+// IgnoredArgs gets an action Func as input parameter
+// and returns blank identifiers for parameters
+// other than the first one.
+// E.g. if the action returns action.Result, error, bool,
+// this method will return ", _, _".
+// So it can be used during code generation.
+func (c controller) IgnoredArgs(f *reflect.Func) (s string) {
+	n := len(f.Results) - 1 // Ignore action.Result.
+	if n > 0 {
+		s = strings.Repeat(", _", n)
+	}
+	return
 }
 
 // processPackage gets an import path of a package, processes it, and
