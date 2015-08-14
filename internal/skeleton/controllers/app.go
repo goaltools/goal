@@ -33,9 +33,3 @@ func (c *App) PostGreet(name string) a.Result {
 func (c *App) After() a.Result {
 	return nil
 }
-
-// Finally is a magic method that is executed after every request
-// no matter what.
-func (c *App) Finally(name string) a.Result {
-	return nil
-}
