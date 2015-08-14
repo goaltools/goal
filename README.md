@@ -9,7 +9,7 @@ Status of the project: **PoC** (not ready for use in the wild).
 [![Go Report Card](http://goreportcard.com/badge/anonx/sunplate?t=3)](http:/goreportcard.com/report/anonx/sunplate)
 
 ### Learn More
-* http://anonx.github.io/sunplate/
+* https://sunplate.club/
 
 ### License
 Distributed under the BSD 2-clause "Simplified" License unless otherwise noted.
