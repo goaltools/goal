@@ -14,12 +14,15 @@ import (
 var mu sync.Mutex
 
 func TestMain_TestData(t *testing.T) {
+	createConfig(t)
 	createdFile := make(chan bool, 1)
 
 	defer expectPanic(`Application was terminated, panic expected.`)
-	defer os.Remove("./testdata/tmp.test")
+
+	// Paths relative to the root directory are used here.
+	defer os.Remove("../tmp.test")
 	go func() {
-		ioutil.WriteFile("./testdata/tmp.test", []byte{}, 0644)
+		ioutil.WriteFile("../tmp.test", []byte{}, 0755)
 		createdFile <- true
 	}()
 	go func() {
@@ -33,13 +36,13 @@ func TestMain_TestData(t *testing.T) {
 }
 
 func TestMain_TestData2(t *testing.T) {
+	os.Chdir("../../") // Previous call of main() changed current dir.
+	bs := createConfig(t)
+
 	defer expectPanic(`Application was terminated, panic expected.`)
 	go func() {
-		bs, err := ioutil.ReadFile("./sunplate.yml")
-		if err != nil {
-			t.Error(err)
-		}
-		err = ioutil.WriteFile("./sunplate.yml", bs, 0644)
+		// Paths relative to the root directory are used here.
+		err := ioutil.WriteFile("./sunplate.yml", bs, 0755)
 		if err != nil {
 			t.Error(err)
 		}
@@ -53,6 +56,8 @@ func TestMain_TestData2(t *testing.T) {
 }
 
 func TestMain_IncorrectConfig(t *testing.T) {
+	os.Chdir("../../") // Previous call of main() changed current dir.
+
 	defer expectPanic(`A directory without configuration file. Panic expected.`)
 	main("run", command.Data{
 		"run": "./testdata", // Directory without config file.
@@ -65,6 +70,18 @@ func TestMain(t *testing.T) {
 	main("run", command.Data{
 		"run": "github.com/anonx/sunplate/internal/skeleton",
 	})
+}
+
+func createConfig(t *testing.T) []byte {
+	bs, err := ioutil.ReadFile("./testdata/configs/sunplate.src.yml")
+	if err != nil {
+		t.Error(err)
+	}
+	err = ioutil.WriteFile("./testdata/configs/sunplate.yml", bs, 0755)
+	if err != nil {
+		t.Error(err)
+	}
+	return bs
 }
 
 func expectPanic(msg string) {
