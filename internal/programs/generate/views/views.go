@@ -60,7 +60,7 @@ func Start(params command.Data) {
 // of found files. Successfully validated ones are stored to the listing variable.
 func walkFunc(dir string) (listing, func(string, os.FileInfo, error) error) {
 	l := listing{}
-	dir = p.Prefixless(p.Prefixless(dir, "./"), ".") // No "./" is allowed at the beginning.
+	dir = p.Prefixless(dir, "./") // No "./" is allowed at the beginning.
 
 	return l, func(path string, info os.FileInfo, err error) error {
 		// Make sure there are no any errors.
