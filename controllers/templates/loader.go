@@ -25,7 +25,7 @@ var templates = map[string]*template.Template{}
 //	// ...
 //
 //	func init() {
-//		results.SetTemplatePaths(views.Root, views.List)
+//		results.SetTemplatePaths("./path/to/views", views.List)
 //	}
 func SetTemplatePaths(root string, templatePaths []string) {
 	log.Trace.Println("Loading templates...")
