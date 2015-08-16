@@ -11,7 +11,7 @@ func TestFunc(t *testing.T) {
 	fn := Func(&reflect.Package{
 		Imports: reflect.Imports{
 			"app.go": map[string]string{
-				"action": "github.com/anonx/sunplate/action",
+				"http": "net/http",
 			},
 			"init.go": map[string]string{},
 		},
@@ -166,8 +166,8 @@ var actionFn = &reflect.Func{
 	Results: []reflect.Arg{
 		{
 			Type: &reflect.Type{
-				Name:    "Result",
-				Package: "action",
+				Name:    "Handler",
+				Package: "http",
 			},
 		},
 	},
