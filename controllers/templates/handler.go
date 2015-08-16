@@ -1,4 +1,4 @@
-package results
+package templates
 
 import (
 	"net/http"
