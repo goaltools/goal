@@ -32,7 +32,7 @@ watch:
     - /run build
     - /single start
   ./views/*:
-    - go generate init.go
+    - go generate main.go
     - /start get
     - /run build
     - /single start

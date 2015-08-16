@@ -6,10 +6,9 @@ import (
 	"net/http"
 
 	c0 "github.com/anonx/sunplate/internal/skeleton/assets/handlers/github.com/anonx/sunplate/controllers/requests"
-	c1 "github.com/anonx/sunplate/internal/skeleton/assets/handlers/github.com/anonx/sunplate/controllers/results"
+	c1 "github.com/anonx/sunplate/internal/skeleton/assets/handlers/github.com/anonx/sunplate/controllers/templates"
 	contr "github.com/anonx/sunplate/internal/skeleton/controllers"
 
-	a "github.com/anonx/sunplate/action"
 	"github.com/anonx/sunplate/strconv"
 )
 
@@ -29,19 +28,19 @@ type tController struct {
 // initializes its parents; then returns the controller.
 func (t tController) New() *contr.Controller {
 	c := &contr.Controller{}
-	c.Params = c0.Params.New()
-	c.Template = c1.Template.New()
+	c.Requests = c0.Requests.New()
+	c.Templates = c1.Templates.New()
 	return c
 }
 
 // Before executes magic actions of embedded controllers, and
 // calls (github.com/anonx/sunplate/internal/skeleton/controllers).Controller.Before.
-func (t tController) Before(c *contr.Controller, w http.ResponseWriter, r *http.Request) a.Result {
+func (t tController) Before(c *contr.Controller, w http.ResponseWriter, r *http.Request) http.Handler {
 	// Execute magic Before actions of embedded controllers.
-	if res := c0.Params.Before(c.Params, w, r); res != nil {
+	if res := c0.Requests.Before(c.Requests, w, r); res != nil {
 		return res
 	}
-	if res := c1.Template.Before(c.Template, w, r); res != nil {
+	if res := c1.Templates.Before(c.Templates, w, r); res != nil {
 		return res
 	}
 	// Call magic Before action of (github.com/anonx/sunplate/internal/skeleton/controllers).Controller.
@@ -53,12 +52,12 @@ func (t tController) Before(c *contr.Controller, w http.ResponseWriter, r *http.
 }
 
 // After executes magic actions of embedded controllers.
-func (t tController) After(c *contr.Controller, w http.ResponseWriter, r *http.Request) a.Result {
+func (t tController) After(c *contr.Controller, w http.ResponseWriter, r *http.Request) http.Handler {
 	// Execute magic After actions of embedded controllers.
-	if res := c0.Params.After(c.Params, w, r); res != nil {
+	if res := c0.Requests.After(c.Requests, w, r); res != nil {
 		return res
 	}
-	if res := c1.Template.After(c.Template, w, r); res != nil {
+	if res := c1.Templates.After(c.Templates, w, r); res != nil {
 		return res
 	}
 	return nil
@@ -68,10 +67,10 @@ func (t tController) After(c *contr.Controller, w http.ResponseWriter, r *http.R
 // of their execution phase.
 func (t tController) Initially(c *contr.Controller, w http.ResponseWriter, r *http.Request) (finish bool) {
 	// Execute magic Initially methods of embedded controllers.
-	if finish = c0.Params.Initially(c.Params, w, r); finish {
+	if finish = c0.Requests.Initially(c.Requests, w, r); finish {
 		return finish
 	}
-	if finish = c1.Template.Initially(c.Template, w, r); finish {
+	if finish = c1.Templates.Initially(c.Templates, w, r); finish {
 		return finish
 	}
 	return
@@ -81,10 +80,10 @@ func (t tController) Initially(c *contr.Controller, w http.ResponseWriter, r *ht
 // of their execution phase no matter what.
 func (t tController) Finally(c *contr.Controller, w http.ResponseWriter, r *http.Request) (finish bool) {
 	// Execute magic Finally methods of embedded controllers.
-	if finish = c0.Params.Finally(c.Params, w, r); finish {
+	if finish = c0.Requests.Finally(c.Requests, w, r); finish {
 		return finish
 	}
-	if finish = c1.Template.Finally(c.Template, w, r); finish {
+	if finish = c1.Templates.Finally(c.Templates, w, r); finish {
 		return finish
 	}
 	return
