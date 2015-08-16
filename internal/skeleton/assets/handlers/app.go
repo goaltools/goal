@@ -7,7 +7,6 @@ import (
 
 	contr "github.com/anonx/sunplate/internal/skeleton/controllers"
 
-	a "github.com/anonx/sunplate/action"
 	"github.com/anonx/sunplate/strconv"
 )
 
@@ -33,7 +32,7 @@ func (t tApp) New() *contr.App {
 // Before executes magic actions of embedded controllers, and
 // calls (github.com/anonx/sunplate/internal/skeleton/controllers).App.Before with arguments
 // that are extracted from r.Form and converted to appropriate types.
-func (t tApp) Before(c *contr.App, w http.ResponseWriter, r *http.Request) a.Result {
+func (t tApp) Before(c *contr.App, w http.ResponseWriter, r *http.Request) http.Handler {
 	// Execute magic Before actions of embedded controllers.
 	if res := Controller.Before(c.Controller, w, r); res != nil {
 		return res
@@ -50,7 +49,7 @@ func (t tApp) Before(c *contr.App, w http.ResponseWriter, r *http.Request) a.Res
 
 // After executes magic actions of embedded controllers, and
 // calls (github.com/anonx/sunplate/internal/skeleton/controllers).App.After.
-func (t tApp) After(c *contr.App, w http.ResponseWriter, r *http.Request) a.Result {
+func (t tApp) After(c *contr.App, w http.ResponseWriter, r *http.Request) http.Handler {
 	// Execute magic After actions of embedded controllers.
 	if res := Controller.After(c.Controller, w, r); res != nil {
 		return res
@@ -96,16 +95,16 @@ func (t tApp) Index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if res := App.Before(c, w, r); res != nil {
-		res.Apply(w, r)
+		res.ServeHTTP(w, r)
 		return
 	}
 	if res := c.Index( // "Binding" parameters.
 	); res != nil {
-		res.Apply(w, r)
+		res.ServeHTTP(w, r)
 		return
 	}
 	if res := App.After(c, w, r); res != nil {
-		res.Apply(w, r)
+		res.ServeHTTP(w, r)
 	}
 }
 
@@ -123,17 +122,17 @@ func (t tApp) PostGreet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if res := App.Before(c, w, r); res != nil {
-		res.Apply(w, r)
+		res.ServeHTTP(w, r)
 		return
 	}
 	if res := c.PostGreet( // "Binding" parameters.
 		strconv.String(r.Form, "name"),
 	); res != nil {
-		res.Apply(w, r)
+		res.ServeHTTP(w, r)
 		return
 	}
 	if res := App.After(c, w, r); res != nil {
-		res.Apply(w, r)
+		res.ServeHTTP(w, r)
 	}
 }
 

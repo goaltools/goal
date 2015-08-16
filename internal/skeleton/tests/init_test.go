@@ -8,7 +8,7 @@ import (
 	"github.com/anonx/sunplate/internal/skeleton/assets/views"
 	"github.com/anonx/sunplate/internal/skeleton/routes"
 
-	"github.com/anonx/sunplate/controllers/results"
+	"github.com/anonx/sunplate/controllers/templates"
 	"github.com/anonx/sunplate/log"
 )
 
@@ -23,7 +23,7 @@ func init() {
 	os.Chdir("../")
 
 	// Initialize a list of templates to use.
-	results.SetTemplatePaths(views.Root, views.List)
+	templates.SetTemplatePaths(views.Root, views.List)
 
 	// Build a handler and prepare a test server.
 	h, err := routes.List.Build()
