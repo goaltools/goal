@@ -12,7 +12,6 @@ import (
 :	<@end>\
 	contr "<@.ctx.import>"
 
-	a "<@.ctx.actionImport>"
 	"github.com/anonx/sunplate/strconv"
 )
 
@@ -41,14 +40,14 @@ func (t t<@.ctx.name>) New() *contr.<@.ctx.name> {
 }
 
 <@template "magicActionComments" dict (set "dot" .) (set "name" .ctx.before) (set "self" .ctx.controller.Before)>\
-func (t t<@.ctx.name>) <@.ctx.before>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request) a.<@.ctx.actionInterface> {
+func (t t<@.ctx.name>) <@.ctx.before>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request) http.<@.ctx.actionInterface> {
 :	<@template "callParents" dict (set "dot" .) (set "name" .ctx.before)>\
 :	<@template "callSelf" dict (set "dot" .) (set "name" .ctx.before) (set "self" .ctx.controller.Before)>\
 	return nil
 }
 
 <@template "magicActionComments" dict (set "dot" .) (set "name" .ctx.after) (set "self" .ctx.controller.After)>\
-func (t t<@.ctx.name>) <@.ctx.after>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request) a.<@.ctx.actionInterface> {
+func (t t<@.ctx.name>) <@.ctx.after>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request) http.<@.ctx.actionInterface> {
 :	<@template "callParents" dict (set "dot" .) (set "name" .ctx.after)>\
 :	<@template "callSelf" dict (set "dot" .) (set "name" .ctx.after) (set "self" .ctx.controller.After)>\
 	return nil
@@ -108,7 +107,7 @@ func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWri
 :			return
 :		}
 :		if res := <@$.ctx.name>.Before(c, w, r); res != nil {
-:			res.Apply(w, r)
+:			res.ServeHTTP(w, r)
 :			return
 :		}
 :		if res<@$.ctx.controller.IgnoredArgs $f> := c.<@$f.Name>( // "Binding" parameters.
@@ -116,11 +115,11 @@ func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWri
 :	:			<@$.ctx.strconv.Render "strconv" "r.Form" $v>,
 :	:	:	<@end>\
 :		); res != nil {
-:			res.Apply(w, r)
+:			res.ServeHTTP(w, r)
 :			return
 :		}
 :		if res := <@$.ctx.name>.After(c, w, r); res != nil {
-:			res.Apply(w, r)
+:			res.ServeHTTP(w, r)
 :		}
 :	}
 
