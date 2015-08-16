@@ -18,8 +18,8 @@ var (
 )
 
 func init() {
-	// Server is expected to be started from the root directory
-	// of the project.
+	// Server MUST be started from the root directory
+	// of the project for correct loading of assets.
 	os.Chdir("../")
 
 	// Initialize a list of templates to use.

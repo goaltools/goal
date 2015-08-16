@@ -17,7 +17,7 @@ import (
 // and contains methods to be used as handler functions.
 //
 // Controller is a struct that should be embedded into every controller
-// of your app to make methods provided by middlewares available.
+// of your app to make methods and fields provided by standard controllers available.
 var Controller tController
 
 // tController is a type with handler methods of Controller controller.

@@ -6,10 +6,8 @@ import (
 	"net/http"
 	"runtime"
 
-	"github.com/anonx/sunplate/internal/skeleton/assets/views"
 	"github.com/anonx/sunplate/internal/skeleton/routes"
 
-	"github.com/anonx/sunplate/controllers/templates"
 	"github.com/anonx/sunplate/log"
 )
 
@@ -37,15 +35,4 @@ func main() {
 	// Starting the server.
 	log.Info.Printf(`Listening on "%s".`, s.Addr)
 	log.Error.Fatal(serve(s))
-}
-
-// The line below tells golang's generate command you want
-// it to generate a list of views (views.Context) for you.
-// Please, do not delete it unless you know what you are doing.
-//
-//go:generate sunplate generate views
-
-func init() {
-	// Define the templates that should be loaded.
-	templates.SetTemplatePaths(views.Root, views.List)
 }
