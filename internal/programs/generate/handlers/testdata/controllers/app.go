@@ -3,8 +3,6 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/anonx/sunplate/action"
-
 	"github.com/revel/revel/testing"
 )
 
@@ -28,7 +26,7 @@ func (c NotController1) test() {
 }
 
 // HelloWorld is a sample action.
-func (c App) HelloWorld(page int) (action.Result, bool, error) {
+func (c App) HelloWorld(page int) (http.Handler, bool, error) {
 	return nil, false, nil
 }
 
@@ -44,7 +42,7 @@ func (c *Controller) Finally(w http.ResponseWriter, r *http.Request) bool {
 
 // UnsupportedAction is not an action as it requires argument that is not
 // of builtin type.
-func (c Controller) UnsupportedAction(t testing.TestSuite) action.Result {
+func (c Controller) UnsupportedAction(t testing.TestSuite) http.Handler {
 	return nil
 }
 
@@ -55,7 +53,7 @@ func (c App) Smth() {
 // Finally should be ignored as it is using a reserved word for its name.
 // The method signature is expected to be
 // (c App) Finally(http.ResponseWriter, *http.Request) bool.
-func (c App) Finally(smth string) action.Result {
+func (c App) Finally(smth string) http.Handler {
 	return nil
 }
 
