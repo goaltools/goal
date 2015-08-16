@@ -1,6 +1,6 @@
-// Package results provides abstractions for work
+// Package templates provides abstractions for work
 // with standard Go template engine.
-package results
+package templates
 
 import (
 	"html/template"
