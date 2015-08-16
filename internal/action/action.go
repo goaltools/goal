@@ -8,7 +8,6 @@ import (
 	"go/ast"
 
 	"github.com/anonx/sunplate/internal/method"
-	"github.com/anonx/sunplate/internal/path"
 	"github.com/anonx/sunplate/internal/reflect"
 	"github.com/anonx/sunplate/internal/strconv"
 	"github.com/anonx/sunplate/log"
@@ -17,7 +16,11 @@ import (
 const (
 	// Interface is an interface that should be implemented
 	// by types that are being returned from actions.
-	Interface = "Result"
+	Interface = "Handler"
+
+	// InterfaceImport is a GOPATH to the Handler interface that should be
+	// implemented by types being returned from actions.
+	InterfaceImport = "net/http"
 
 	// MethodBefore is a name of the magic method that will be executed
 	// before every action.
@@ -27,10 +30,6 @@ const (
 	// after every action.
 	MethodAfter = "After"
 )
-
-// InterfaceImport is a GOPATH to the Result interface that should be
-// implemented by types being returned from actions.
-var InterfaceImport = path.SunplateImport("action")
 
 // StrconvContext is a mapping of supported by strconv types and reflect functions.
 var StrconvContext = strconv.Context()
