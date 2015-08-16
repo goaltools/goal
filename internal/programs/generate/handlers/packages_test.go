@@ -127,8 +127,8 @@ var ps = packages{
 				Results: []reflect.Arg{
 					{
 						Type: &reflect.Type{
-							Name:    "Result",
-							Package: "a",
+							Name:    "Handler",
+							Package: "h",
 						},
 					},
 				},
@@ -155,8 +155,8 @@ var ps = packages{
 				Results: []reflect.Arg{
 					{
 						Type: &reflect.Type{
-							Name:    "Result",
-							Package: "a",
+							Name:    "Handler",
+							Package: "h",
 						},
 					},
 				},
@@ -270,8 +270,8 @@ var ps = packages{
 					Results: []reflect.Arg{
 						{
 							Type: &reflect.Type{
-								Name:    "Result",
-								Package: "a",
+								Name:    "Handler",
+								Package: "h",
 							},
 						},
 					},
@@ -297,8 +297,8 @@ var ps = packages{
 					Results: []reflect.Arg{
 						{
 							Type: &reflect.Type{
-								Name:    "Result",
-								Package: "action",
+								Name:    "Handler",
+								Package: "http",
 							},
 						},
 						{
@@ -355,8 +355,8 @@ var ps = packages{
 					Results: []reflect.Arg{
 						{
 							Type: &reflect.Type{
-								Name:    "Result",
-								Package: "action",
+								Name:    "Handler",
+								Package: "http",
 							},
 						},
 					},
@@ -379,8 +379,8 @@ var ps = packages{
 				Results: []reflect.Arg{
 					{
 						Type: &reflect.Type{
-							Name:    "Result",
-							Package: "action",
+							Name:    "Handler",
+							Package: "http",
 						},
 					},
 				},
@@ -402,8 +402,8 @@ var ps = packages{
 				Results: []reflect.Arg{
 					{
 						Type: &reflect.Type{
-							Name:    "Result",
-							Package: "action",
+							Name:    "Handler",
+							Package: "http",
 						},
 					},
 				},

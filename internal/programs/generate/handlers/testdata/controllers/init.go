@@ -1,7 +1,8 @@
 package controllers
 
 import (
-	a "github.com/anonx/sunplate/action"
+	h "net/http"
+
 	"github.com/anonx/sunplate/internal/programs/generate/handlers/testdata/controllers/subpackage"
 
 	"github.com/naoina/denco"
@@ -19,27 +20,27 @@ type Controller struct {
 }
 
 // Before is a magic method that is executed before every request.
-func (c *Controller) Before(uid string) a.Result {
+func (c *Controller) Before(uid string) h.Handler {
 	return nil
 }
 
 // index is not an action as this method is not public.
-func (c Controller) index(page int) a.Result {
+func (c Controller) index(page int) h.Handler {
 	return nil
 }
 
 // Index is a sample action.
-func (c *App) Index(page int) a.Result {
+func (c *App) Index(page int) h.Handler {
 	return nil
 }
 
 // NotAction is not an action as this method doesn't return
 // action.Result as its first argument.
-func (c Controller) NotAction(page int) (bool, a.Result) {
+func (c Controller) NotAction(page int) (bool, h.Handler) {
 	return false, nil
 }
 
 // After is a magic method that is executed after every request.
-func (c *Controller) After(name string) a.Result {
+func (c *Controller) After(name string) h.Handler {
 	return nil
 }
