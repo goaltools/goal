@@ -6,16 +6,17 @@ import (
 	"github.com/anonx/sunplate/log"
 )
 
-// Params is a controller that calls request.ParseForm for you
-// and provides the result request as Params.Request.
-type Params struct {
+// Requests is a controller that does two things:
+// 1. Calls Request.ParseForm to parse GET / POST requests;
+// 2. Makes Request available in your controller (use c.Request).
+type Requests struct {
 	Request *http.Request
 }
 
 // Initially calls ParseForm on the request and saves it to c.Request.
 // At the same time, if used with a standard sunplate routing package,
 // parameters extracted from URN are saved to the Form field of the Request.
-func (c *Params) Initially(w http.ResponseWriter, r *http.Request) bool {
+func (c *Requests) Initially(w http.ResponseWriter, r *http.Request) bool {
 	// Save the old value of Form, "github.com/anonx/sunplate/routing"
 	// stores parameters extracted from URN there.
 	t := r.Form
