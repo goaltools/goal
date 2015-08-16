@@ -6,15 +6,14 @@ import (
 	"github.com/anonx/sunplate/log"
 )
 
-// HTML is a result that is returned from actions by default.
-// This struct implements action.Result interface.
-type HTML struct {
+// Handler is a template handler that implements http.Handler interface.
+type Handler struct {
 	context  map[string]interface{} // Variables to be passed to the template.
 	template string                 // Path to the template to be rendered.
 }
 
 // Apply writes to response the result received from action.
-func (t *HTML) Apply(w http.ResponseWriter, r *http.Request) {
+func (t *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// If required template exists, execute it.
 	if tpl, ok := templates[t.template]; ok {
 		err := tpl.ExecuteTemplate(w, TemplateName, t.context)

@@ -4,8 +4,7 @@ package results
 
 import (
 	"html/template"
-
-	"github.com/anonx/sunplate/action"
+	"net/http"
 )
 
 var (
@@ -39,21 +38,24 @@ var (
 	Funcs template.FuncMap
 )
 
-// Template is a main type that should be embeded into controller structs.
-type Template struct {
+// Templates is a controller that provides support of HTML result
+// rendering to your application.
+// Use SetTemplatePaths to register templates and
+// call c.RenderTemplate from your action to render some.
+type Templates struct {
 	// Context is used for passing variables to templates.
 	Context map[string]interface{}
 }
 
 // Before initializes Context that will be passed to template.
-func (t *Template) Before() action.Result {
+func (t *Templates) Before() http.Handler {
 	t.Context = map[string]interface{}{}
 	return nil
 }
 
 // RenderTemplate initializes and returns HTML type that implements Result interface.
-func (t *Template) RenderTemplate(templatePath string) action.Result {
-	return &HTML{
+func (t *Templates) RenderTemplate(templatePath string) http.Handler {
+	return &Handler{
 		context:  t.Context,
 		template: templatePath,
 	}
