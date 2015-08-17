@@ -5,4 +5,4 @@ install:
 
   - go get -t github.com/anonx/sunplate/skeleton/... # Getting the dependencies for the repo.
 script:
-  - go test -v github.com/anonx/sunplate/skeleton/tests
+  - go test -v github.com/anonx/sunplate/skeleton/...
