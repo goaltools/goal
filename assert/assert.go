@@ -60,21 +60,21 @@ func (a Assertion) String() string {
 // It panics if they are not equal.
 func (a *Assertion) Equal(expected interface{}) {
 	if !reflect.DeepEqual(expected, a.actual) {
-		a.t.Errorf("(expected) %v != %v (actual)", expected, a.actual)
+		a.t.Errorf("(expected) %v != %v (actual).", expected, a.actual)
 	}
 }
 
 // NotEqual is an opposite of Equal.
 func (a *Assertion) NotEqual(expected interface{}) {
 	if reflect.DeepEqual(expected, a.actual) {
-		a.t.Errorf("(expected) %v == %v (actual)", expected, a.actual)
+		a.t.Errorf("(expected) %v == %v (actual).", expected, a.actual)
 	}
 }
 
 // True panics if expression is not true.
 func (t *Type) True(exp bool) {
 	if !exp {
-		t.t.Errorf("(expected) true != false (actual)")
+		t.t.Errorf("(expected) true != false (actual).")
 	}
 }
 
@@ -101,11 +101,18 @@ func (a *Assertion) MatchesRegex(regex string) {
 	}
 }
 
+// Nil panics if actual object is not nil.
+func (a *Assertion) Nil() {
+	if a.actual != nil {
+		a.t.Errorf(`(expected) nil != %v (actual).`, a.actual)
+	}
+}
+
 // Status panics panics if ResponseWriter's code is not equal
 // to the given status code.
 func (t *Type) Status(expected int) {
 	if t.ResponseWriter.Code != expected {
-		t.t.Errorf("(expected) %v != %v (actual) status code", expected, t.ResponseWriter.Code)
+		t.t.Errorf("(expected) %v != %v (actual) status code.", expected, t.ResponseWriter.Code)
 	}
 }
 
@@ -129,6 +136,6 @@ func (t *Type) Header(name string) *Assertion {
 // ContentType is a shortcut for Header("Content-Type").Equal("value").
 func (t *Type) ContentType(expected string) {
 	if ct := t.Header("Content-Type"); ct.actual != expected {
-		t.t.Errorf("(expected) %v != %v (actual) content type", expected, ct.actual)
+		t.t.Errorf("(expected) %v != %v (actual) content type.", expected, ct.actual)
 	}
 }
