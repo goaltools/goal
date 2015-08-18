@@ -47,16 +47,10 @@ func (t tApp) Before(c *contr.App, w http.ResponseWriter, r *http.Request) http.
 	return nil
 }
 
-// After executes magic actions of embedded controllers, and
-// calls (github.com/anonx/sunplate/internal/skeleton/controllers).App.After.
+// After executes magic actions of embedded controllers.
 func (t tApp) After(c *contr.App, w http.ResponseWriter, r *http.Request) http.Handler {
 	// Execute magic After actions of embedded controllers.
 	if res := Controllers.After(c.Controllers, w, r); res != nil {
-		return res
-	}
-	// Call magic After action of (github.com/anonx/sunplate/internal/skeleton/controllers).App.
-	if res := c.After( // "Binding" parameters.
-	); res != nil {
 		return res
 	}
 	return nil

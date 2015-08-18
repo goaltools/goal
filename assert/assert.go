@@ -17,10 +17,13 @@ import (
 type Type struct {
 	Body           *Assertion
 	Request        *http.Request
+	Response       *http.Response
 	ResponseWriter *httptest.ResponseRecorder
 	url            string
 
-	t *testing.T
+	client *http.Client
+	server *httptest.Server
+	t      *testing.T
 }
 
 // Assertion is a type that represents an actual result.
@@ -33,7 +36,8 @@ type Assertion struct {
 // New allocates and returns a new Type.
 func New(t *testing.T) *Type {
 	return &Type{
-		t: t,
+		t:      t,
+		client: &http.Client{},
 	}
 }
 
@@ -72,23 +76,24 @@ func (a *Assertion) NotEqual(expected interface{}) {
 }
 
 // True panics if expression is not true.
-func (t *Type) True(exp bool) {
+func (t *Type) True(exp bool) *Type {
 	if !exp {
 		t.t.Errorf("(expected) true != false (actual).")
 	}
+	return t
 }
 
 // Contains panics if fragment is not a part of actual string.
 func (a *Assertion) Contains(fragment string) {
 	if !strings.Contains(a.String(), fragment) {
-		a.t.Errorf(`(actual) does not contain "%s".`, fragment)
+		a.t.Errorf(`(actual) does not contain "%s": %s.`, fragment, a.String())
 	}
 }
 
 // NotContains is an opposite of Contains.
 func (a *Assertion) NotContains(source, fragment string) {
 	if strings.Contains(a.String(), fragment) {
-		a.t.Errorf(`(actual) contains "%s".`, fragment)
+		a.t.Errorf(`(actual) contains "%s": %s.`, fragment, a.String())
 	}
 }
 
@@ -97,7 +102,7 @@ func (a *Assertion) NotContains(source, fragment string) {
 func (a *Assertion) MatchesRegex(regex string) {
 	r := regexp.MustCompile(regex)
 	if !r.MatchString(a.String()) {
-		a.t.Errorf(`(actual) does not match regexp "%s".`, regex)
+		a.t.Errorf(`(actual) does not match regexp "%s": %s.`, regex, a.String())
 	}
 }
 
@@ -110,20 +115,21 @@ func (a *Assertion) Nil() {
 
 // Status panics panics if ResponseWriter's code is not equal
 // to the given status code.
-func (t *Type) Status(expected int) {
+func (t *Type) Status(expected int) *Type {
 	if t.ResponseWriter.Code != expected {
 		t.t.Errorf("(expected) %v != %v (actual) status code.", expected, t.ResponseWriter.Code)
 	}
+	return t
 }
 
 // StatusOK makes sure status code is equal to 200.
-func (t *Type) StatusOK() {
-	t.Status(200)
+func (t *Type) StatusOK() *Type {
+	return t.Status(200)
 }
 
 // StatusNotFound makes sure status code is equal to 404.
-func (t *Type) StatusNotFound() {
-	t.Status(404)
+func (t *Type) StatusNotFound() *Type {
+	return t.Status(404)
 }
 
 // Header returns a header with the given name in a form
@@ -134,8 +140,9 @@ func (t *Type) Header(name string) *Assertion {
 }
 
 // ContentType is a shortcut for Header("Content-Type").Equal("value").
-func (t *Type) ContentType(expected string) {
+func (t *Type) ContentType(expected string) *Type {
 	if ct := t.Header("Content-Type"); ct.actual != expected {
 		t.t.Errorf("(expected) %v != %v (actual) content type.", expected, ct.actual)
 	}
+	return t
 }

@@ -24,6 +24,26 @@ func (t *Type) URL(s string) *Type {
 	return t
 }
 
+// StartServer starts a test server to use with integration tests.
+func (t *Type) StartServer(h http.Handler) *Type {
+	t.server = httptest.NewServer(h)
+	t.URL(t.server.URL)
+	return t
+}
+
+// TryStartServer is shortcut of StartServer for standard routing package
+// that has a Build() (http.Handler, error).
+// It makes sure error is nil and only then starts a server.
+func (t *Type) TryStartServer(h http.Handler, err error) *Type {
+	t.NewAssertion(err).Nil()
+	return t.StartServer(h)
+}
+
+// StopServer stops a started test server.
+func (t *Type) StopServer() {
+	t.server.Close()
+}
+
 // Get creates a GET request to the given URN and saves it to
 // the Request field of Type along with allocation
 // of initialization of ResponseWriter.
@@ -92,6 +112,21 @@ func (t *Type) NewRequest(req *http.Request) *Type {
 	// Create a new Assertion for Body so it can
 	// be easily be tested by user.
 	t.Body = t.NewAssertion(t.ResponseWriter.Body)
+	return t
+}
+
+// Do sends a t.request request to the t.server.
+func (t *Type) Do() *Type {
+	res, err := t.client.Do(t.Request)
+	t.NewAssertion(err).Nil()
+	t.ResponseWriter = &httptest.ResponseRecorder{
+		Body:      new(bytes.Buffer),
+		Code:      res.StatusCode,
+		HeaderMap: res.Header,
+	}
+	t.ResponseWriter.Body.ReadFrom(res.Body)
+	t.Body = t.NewAssertion(t.ResponseWriter.Body)
+	t.Response = res
 	return t
 }
 
