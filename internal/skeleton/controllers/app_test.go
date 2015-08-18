@@ -18,14 +18,14 @@ func TestAppIndex(t *testing.T) {
 	a.Body.Contains("Hello, world!")
 }
 
-func TestAppPostGreet_Integration(t *testing.T) {
+func TestAppPostGreet(t *testing.T) {
 	a := assert.New().TryStartServer(routes.List.Build())
 	defer a.StopServer()
 
 	a.PostForm("/greet/James", url.Values{
 		"message": {"Good day"},
-	}).Do()
-	a.StatusOK()
-	a.Body.Contains("Good day")
+	}).Do().StatusOK()
+
 	a.Body.Contains("James")
+	a.Body.Contains("Good day")
 }
