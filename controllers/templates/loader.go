@@ -11,24 +11,15 @@ import (
 
 var templates = map[string]*template.Template{}
 
-// SetTemplatePaths gets a path to templates directory
-// and a list of files, and then loads them.
-// You may use it in your main.go as follows:
-//	package main
-//
-//	import (
-//		"github.com/user/project/assets/views"
-//
-//		"github.com/anonx/sunplate/controllers/results"
-//	)
-//
-//	// ...
-//
-//	func init() {
-//		results.SetTemplatePaths("./path/to/views", views.List)
-//	}
-func SetTemplatePaths(root string, templatePaths []string) {
+// Load gets three input arguments:
+// 1. Path to the root of the user application (e.g. "./").
+// 2. Path to the views directory relative to the project root (e.g. "views").
+// 3. A list of template paths relative to the views directory (in a form of []string).
+// It checks whether all the templates exist, parses and registers them.
+// It panics if some of the requested templates do not exist or cannot be parsed.
+func Load(root string, views string, templatePaths []string) {
 	log.Trace.Println("Loading templates...")
+	root = filepath.Join(root, views)
 
 	// Iterating over all available template paths.
 	for _, path := range templatePaths {

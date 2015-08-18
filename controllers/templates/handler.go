@@ -16,6 +16,7 @@ type Handler struct {
 func (t *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// If required template exists, execute it.
 	if tpl, ok := templates[t.template]; ok {
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		err := tpl.ExecuteTemplate(w, TemplateName, t.context)
 		if err != nil {
 			go log.Warn.Println(err)
