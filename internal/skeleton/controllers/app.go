@@ -8,7 +8,7 @@ import (
 
 // App is a sample controller that is used for demonstration purposes.
 type App struct {
-	*Controller
+	*Controllers
 }
 
 // Before is a magic method that is executed before every request.
