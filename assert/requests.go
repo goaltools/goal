@@ -29,9 +29,7 @@ func (t *Type) URL(s string) *Type {
 // of initialization of ResponseWriter.
 func (t *Type) Get(urn string) *Type {
 	req, err := http.NewRequest("GET", t.url+urn, nil)
-	if err != nil {
-		log.Error.Panic(err)
-	}
+	t.NewAssertion(err).Nil()
 	return t.NewRequest(req)
 }
 
@@ -40,9 +38,7 @@ func (t *Type) Get(urn string) *Type {
 // of initialization of ResponseWriter.
 func (t *Type) Post(urn string, contentType string, reader io.Reader) *Type {
 	req, err := http.NewRequest("POST", t.url+urn, reader)
-	if err != nil {
-		log.Error.Panic(err)
-	}
+	t.NewAssertion(err).Nil()
 	req.Header.Set("Content-Type", contentType)
 	return t.NewRequest(req)
 }
@@ -66,7 +62,7 @@ func (t *Type) PostFile(urn string, params url.Values, filePaths url.Values) *Ty
 	// Prepare files to be added to request.
 	for k, v := range filePaths {
 		for i := range v {
-			addFile(writer, k, v[i])
+			t.addFile(writer, k, v[i])
 		}
 	}
 
@@ -74,17 +70,13 @@ func (t *Type) PostFile(urn string, params url.Values, filePaths url.Values) *Ty
 	for k, v := range params {
 		for i := range v {
 			err := writer.WriteField(k, v[i])
-			if err != nil {
-				log.Error.Panicf(`Cannot add value "%s" to field "%s", error: %v.`, v[i], k, err)
-			}
+			t.NewAssertion(err).Nil()
 		}
 	}
 
 	// Close the multipart writer.
 	err := writer.Close()
-	if err != nil {
-		log.Error.Panicf("Failed to close a writer, error: %v.", err)
-	}
+	t.NewAssertion(err).Nil()
 
 	return t.Post(urn, writer.FormDataContentType(), body)
 }
@@ -108,16 +100,14 @@ func (t *Type) NewRequest(req *http.Request) *Type {
 // Read RFC-1867 [7] (https://www.ietf.org/rfc/rfc1867.txt) for more info
 // about uploading files.
 // addFile panics in case of some error.
-func addFile(writer *multipart.Writer, fieldname, filename string) {
+func (t *Type) addFile(writer *multipart.Writer, fieldname, filename string) {
 	// Symbols that are expected to be escaped in file and field names.
 	escaper := strings.NewReplacer("\\", "\\\\", "\"", "\\\"")
 
 	// Try to open requested file.
 	// Make sure it exists.
 	file, err := os.Open(filename)
-	if err != nil {
-		log.Error.Panicf(`Cannot open "%s", error: %v.`, filename, err)
-	}
+	t.NewAssertion(err).Nil()
 	defer file.Close()
 
 	// Create a new form-data header with the provided field name and file name.
@@ -133,14 +123,10 @@ func addFile(writer *multipart.Writer, fieldname, filename string) {
 		h.Set("Content-Type", ct)
 	}
 	part, err := writer.CreatePart(h)
-	if err != nil {
-		log.Error.Panicf("Cannot create a part, error: %v.", err)
-	}
+	t.NewAssertion(err).Nil()
 
 	// Copy content of the file we have just opened without reading
 	// the whole file into memory.
 	_, err = io.Copy(part, file)
-	if err != nil {
-		log.Error.Panicf("Cannot copy file, error: %v.", err)
-	}
+	t.NewAssertion(err).Nil()
 }
