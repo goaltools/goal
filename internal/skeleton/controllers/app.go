@@ -28,8 +28,3 @@ func (c *App) PostGreet(name string) http.Handler {
 	c.Context["message"] = c.Request.FormValue("message")
 	return c.RenderTemplate(v.Paths.App.GreetHTML)
 }
-
-// After is a magic method that is executed after every request.
-func (c *App) After() http.Handler {
-	return nil
-}
