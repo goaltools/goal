@@ -4,12 +4,15 @@ package assert
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
 	"regexp"
 	"strings"
 	"testing"
+
+	l "github.com/anonx/sunplate/log"
 )
 
 // Type provides methods for getting GET, POST, etc. requests
@@ -20,6 +23,7 @@ type Type struct {
 	Response       *http.Response
 	ResponseWriter *httptest.ResponseRecorder
 	url            string
+	log            *log.Logger
 
 	client *http.Client
 	server *httptest.Server
@@ -30,14 +34,14 @@ type Type struct {
 // It has a number of methods to compare it with expected value.
 type Assertion struct {
 	actual interface{}
-	t      *testing.T
+	t      *Type
 }
 
 // New allocates and returns a new Type.
-func New(t *testing.T) *Type {
+func New() *Type {
 	return &Type{
-		t:      t,
 		client: &http.Client{},
+		log:    l.Error,
 	}
 }
 
@@ -45,7 +49,7 @@ func New(t *testing.T) *Type {
 func (t *Type) NewAssertion(actual interface{}) *Assertion {
 	return &Assertion{
 		actual: actual,
-		t:      t.t,
+		t:      t,
 	}
 }
 
@@ -62,55 +66,61 @@ func (a Assertion) String() string {
 
 // Equal makes sure two values are equal to each other using reflect.DeepEqual.
 // It panics if they are not equal.
-func (a *Assertion) Equal(expected interface{}) {
+func (a *Assertion) Equal(expected interface{}) *Type {
 	if !reflect.DeepEqual(expected, a.actual) {
-		a.t.Errorf("(expected) %v != %v (actual).", expected, a.actual)
+		a.t.log.Panicf("(expected) %v != %v (actual).", expected, a.actual)
 	}
+	return a.t
 }
 
 // NotEqual is an opposite of Equal.
-func (a *Assertion) NotEqual(expected interface{}) {
+func (a *Assertion) NotEqual(expected interface{}) *Type {
 	if reflect.DeepEqual(expected, a.actual) {
-		a.t.Errorf("(expected) %v == %v (actual).", expected, a.actual)
+		a.t.log.Panicf("(expected) %v == %v (actual).", expected, a.actual)
 	}
+	return a.t
 }
 
 // True panics if expression is not true.
 func (t *Type) True(exp bool) *Type {
 	if !exp {
-		t.t.Errorf("(expected) true != false (actual).")
+		t.log.Panicf("(expected) true != false (actual).")
 	}
 	return t
 }
 
 // Contains panics if fragment is not a part of actual string.
-func (a *Assertion) Contains(fragment string) {
+func (a *Assertion) Contains(fragment string) *Type {
 	if !strings.Contains(a.String(), fragment) {
-		a.t.Errorf(`(actual) does not contain "%s": %s.`, fragment, a.String())
+		a.t.log.Panicf(`(actual) does not contain "%s": %s.`, fragment, a.String())
 	}
+	return a.t
 }
 
 // NotContains is an opposite of Contains.
-func (a *Assertion) NotContains(source, fragment string) {
+func (a *Assertion) NotContains(source, fragment string) *Type {
 	if strings.Contains(a.String(), fragment) {
-		a.t.Errorf(`(actual) contains "%s": %s.`, fragment, a.String())
+		a.t.log.Panicf(`(actual) contains "%s": %s.`, fragment, a.String())
 	}
+	return a.t
 }
 
 // MatchesRegex makes sure the actual string matches the given regular expression.
 // It panics otherwise.
-func (a *Assertion) MatchesRegex(regex string) {
+func (a *Assertion) MatchesRegex(regex string) *Type {
 	r := regexp.MustCompile(regex)
 	if !r.MatchString(a.String()) {
-		a.t.Errorf(`(actual) does not match regexp "%s": %s.`, regex, a.String())
+		a.t.log.Panicf(`(actual) does not match regexp "%s": %s.`, regex, a.String())
 	}
+	return a.t
 }
 
 // Nil panics if actual object is not nil.
-func (a *Assertion) Nil() {
+func (a *Assertion) Nil() *Type {
 	if a.actual != nil {
-		a.t.Errorf(`(expected) nil != %v (actual).`, a.actual)
+		a.t.log.Panicf(`(expected) nil != %v (actual).`, a.actual)
 	}
+	return a.t
 }
 
 // Status panics panics if ResponseWriter's code is not equal

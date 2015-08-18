@@ -11,17 +11,15 @@ import (
 )
 
 func TestAppIndex(t *testing.T) {
-	a := assert.New(t)
+	a := assert.New()
 
 	handlers.App.Index(a.Get("/").Args())
-	a.Status(200)
-	a.ContentType("text/html; charset=utf-8")
+	a.StatusOK().ContentType("text/html; charset=utf-8")
 	a.Body.Contains("Hello, world!")
 }
 
 func TestAppPostGreet_Integration(t *testing.T) {
-	a := assert.New(t)
-	a.TryStartServer(routes.List.Build())
+	a := assert.New().TryStartServer(routes.List.Build())
 	defer a.StopServer()
 
 	a.PostForm("/greet/James", url.Values{
