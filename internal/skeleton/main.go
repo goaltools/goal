@@ -6,9 +6,15 @@ import (
 	"net/http"
 	"runtime"
 
+	"github.com/anonx/sunplate/internal/skeleton/controllers"
 	"github.com/anonx/sunplate/internal/skeleton/routes"
 
 	"github.com/anonx/sunplate/log"
+)
+
+var (
+	addr = flag.String("addr", ":8080", "HTTP address that should be used by the app")
+	root = flag.String("root", "./", "Path to the root directory of the project")
 )
 
 func main() {
@@ -23,16 +29,16 @@ func main() {
 
 	// Prepare a new server.
 	s := &http.Server{
-		Addr:    ":8080", // This is the default value of HTTP address.
+		Addr:    *addr,
 		Handler: handler,
 	}
-
-	// Try to get some parameters from the received list of arguments,
-	// e.g. "--addr=localhost:80".
-	flag.StringVar(&s.Addr, "addr", s.Addr, "HTTP address that should be used by the app")
-	flag.Parse()
 
 	// Starting the server.
 	log.Info.Printf(`Listening on "%s".`, s.Addr)
 	log.Error.Fatal(serve(s))
+}
+
+func init() {
+	// Initializing controllers.
+	controllers.Init(*root)
 }
