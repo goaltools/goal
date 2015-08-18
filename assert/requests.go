@@ -40,8 +40,9 @@ func (t *Type) TryStartServer(h http.Handler, err error) *Type {
 }
 
 // StopServer stops a started test server.
-func (t *Type) StopServer() {
+func (t *Type) StopServer() *Type {
 	t.server.Close()
+	return t
 }
 
 // Get creates a GET request to the given URN and saves it to
@@ -110,7 +111,7 @@ func (t *Type) NewRequest(req *http.Request) *Type {
 	t.ResponseWriter = httptest.NewRecorder()
 
 	// Create a new Assertion for Body so it can
-	// be easily be tested by user.
+	// be easily tested by user.
 	t.Body = t.NewAssertion(t.ResponseWriter.Body)
 	return t
 }
@@ -125,6 +126,7 @@ func (t *Type) Do() *Type {
 		HeaderMap: res.Header,
 	}
 	t.ResponseWriter.Body.ReadFrom(res.Body)
+
 	t.Body = t.NewAssertion(t.ResponseWriter.Body)
 	t.Response = res
 	return t
