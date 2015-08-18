@@ -25,7 +25,7 @@ type tApp struct {
 // initializes its parents; then returns the controller.
 func (t tApp) New() *contr.App {
 	c := &contr.App{}
-	c.Controller = Controller.New()
+	c.Controllers = Controllers.New()
 	return c
 }
 
@@ -34,7 +34,7 @@ func (t tApp) New() *contr.App {
 // that are extracted from r.Form and converted to appropriate types.
 func (t tApp) Before(c *contr.App, w http.ResponseWriter, r *http.Request) http.Handler {
 	// Execute magic Before actions of embedded controllers.
-	if res := Controller.Before(c.Controller, w, r); res != nil {
+	if res := Controllers.Before(c.Controllers, w, r); res != nil {
 		return res
 	}
 	// Call magic Before action of (github.com/anonx/sunplate/internal/skeleton/controllers).App.
@@ -51,7 +51,7 @@ func (t tApp) Before(c *contr.App, w http.ResponseWriter, r *http.Request) http.
 // calls (github.com/anonx/sunplate/internal/skeleton/controllers).App.After.
 func (t tApp) After(c *contr.App, w http.ResponseWriter, r *http.Request) http.Handler {
 	// Execute magic After actions of embedded controllers.
-	if res := Controller.After(c.Controller, w, r); res != nil {
+	if res := Controllers.After(c.Controllers, w, r); res != nil {
 		return res
 	}
 	// Call magic After action of (github.com/anonx/sunplate/internal/skeleton/controllers).App.
@@ -66,7 +66,7 @@ func (t tApp) After(c *contr.App, w http.ResponseWriter, r *http.Request) http.H
 // of their execution phase.
 func (t tApp) Initially(c *contr.App, w http.ResponseWriter, r *http.Request) (finish bool) {
 	// Execute magic Initially methods of embedded controllers.
-	if finish = Controller.Initially(c.Controller, w, r); finish {
+	if finish = Controllers.Initially(c.Controllers, w, r); finish {
 		return finish
 	}
 	return
@@ -76,7 +76,7 @@ func (t tApp) Initially(c *contr.App, w http.ResponseWriter, r *http.Request) (f
 // of their execution phase no matter what.
 func (t tApp) Finally(c *contr.App, w http.ResponseWriter, r *http.Request) (finish bool) {
 	// Execute magic Finally methods of embedded controllers.
-	if finish = Controller.Finally(c.Controller, w, r); finish {
+	if finish = Controllers.Finally(c.Controllers, w, r); finish {
 		return finish
 	}
 	return

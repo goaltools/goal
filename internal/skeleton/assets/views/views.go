@@ -3,14 +3,14 @@
 package views
 
 // Root is a directory where templates are located.
-var Root = "./views"
+var Root = "../views"
 
-// List is a list of files that were found at "./views"
+// List is a list of files that were found at "../views"
 // in a form of slice of strings.
 var List []string
 
 // Paths stores information about all files that
-// were found at "./views".
+// were found at "../views".
 var Paths tPaths
 
 // tPaths represents a root directory with files.
