@@ -3,13 +3,12 @@ package main
 
 import (
 	"flag"
+	"log"
 	"net/http"
 	"runtime"
 
 	"github.com/anonx/sunplate/internal/skeleton/controllers"
 	"github.com/anonx/sunplate/internal/skeleton/routes"
-
-	"github.com/anonx/sunplate/log"
 )
 
 var (
@@ -24,7 +23,7 @@ func main() {
 	// Build the routes and handler.
 	handler, err := routes.List.Build()
 	if err != nil {
-		log.Error.Fatal(err)
+		log.Fatal(err)
 	}
 
 	// Prepare a new server.
@@ -34,8 +33,8 @@ func main() {
 	}
 
 	// Starting the server.
-	log.Info.Printf(`Listening on "%s".`, s.Addr)
-	log.Error.Fatal(serve(s))
+	log.Printf(`Listening on "%s".`, s.Addr)
+	log.Fatal(serve(s))
 }
 
 func init() {
