@@ -63,7 +63,8 @@ func (t tTemplates) Finally(c *contr.Templates, w http.ResponseWriter, r *http.R
 // github.com/anonx/sunplate/controllers/templates/templates.go
 // in appropriate order.
 //
-// RenderTemplate initializes and returns HTML type that implements Result interface.
+// RenderTemplate is an action that gets a path to template
+// and renders it using data from Context.
 func (t tTemplates) RenderTemplate(w http.ResponseWriter, r *http.Request) {
 	c := Templates.New()
 	defer Templates.Finally(c, w, r)
