@@ -23,6 +23,8 @@ type tPaths struct {
 	App tPathApp
 	// BaseHTML is a "Base.html" file.
 	BaseHTML string
+	// Errors is a "Errors" directory.
+	Errors tPathErrors
 }
 
 // tApp is a type that represents a directory.
@@ -37,13 +39,25 @@ type tPathApp struct {
 	IndexHTML string
 }
 
+// tErrors is a type that represents a directory.
+type tPathErrors struct {
+	//
+	// Below are the assets of this directory.
+	//
+
+	// NotFoundHTML is a "Errors/NotFound.html" file.
+	NotFoundHTML string
+}
+
 func init() {
 	Paths.App.GreetHTML = "App/Greet.html"
 	Paths.App.IndexHTML = "App/Index.html"
 	Paths.BaseHTML = "Base.html"
+	Paths.Errors.NotFoundHTML = "Errors/NotFound.html"
 	List = []string{ // Make file paths available in a form of slice of strings.
 		Paths.App.GreetHTML,
 		Paths.App.IndexHTML,
 		Paths.BaseHTML,
+		Paths.Errors.NotFoundHTML,
 	}
 }

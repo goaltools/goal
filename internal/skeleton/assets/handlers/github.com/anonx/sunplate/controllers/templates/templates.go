@@ -85,6 +85,32 @@ func (t tTemplates) RenderTemplate(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// RenderNotFound is a handler that was generated automatically.
+// It calls Before, After, Finally methods, and RenderNotFound action found at
+// github.com/anonx/sunplate/controllers/templates/templates.go
+// in appropriate order.
+//
+// RenderNotFound is an action that renders Error 404 page.
+func (t tTemplates) RenderNotFound(w http.ResponseWriter, r *http.Request) {
+	c := Templates.New()
+	defer Templates.Finally(c, w, r)
+	if finish := Templates.Initially(c, w, r); finish {
+		return
+	}
+	if res := Templates.Before(c, w, r); res != nil {
+		res.ServeHTTP(w, r)
+		return
+	}
+	if res := c.RenderNotFound( // "Binding" parameters.
+	); res != nil {
+		res.ServeHTTP(w, r)
+		return
+	}
+	if res := Templates.After(c, w, r); res != nil {
+		res.ServeHTTP(w, r)
+	}
+}
+
 func init() {
 	_ = strconv.MeaningOfLife
 }
