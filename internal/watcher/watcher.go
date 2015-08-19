@@ -125,7 +125,7 @@ func (t *Type) NotifyOnUpdate(pattern string, watcher *fsnotify.Watcher, fn func
 // restartRequired checks whether event indicates a file
 // has been modified. If so, it returns true.
 func restartRequired(event fsnotify.Event) bool {
-	if event.Op&fsnotify.Write == fsnotify.Write {
+	if event.Op&fsnotify.Chmod == fsnotify.Chmod {
 		return true
 	}
 	return false
