@@ -45,20 +45,30 @@ var (
 type Templates struct {
 	// Context is used for passing variables to templates.
 	Context map[string]interface{}
+
+	// Status is a status code that will be returned when rendering.
+	Status int
 }
 
 // Before initializes Context that will be passed to template.
-func (t *Templates) Before() http.Handler {
-	t.Context = map[string]interface{}{}
+func (c *Templates) Before() http.Handler {
+	c.Context = map[string]interface{}{}
 	return nil
 }
 
-// RenderTemplate initializes and returns HTML type that implements Result interface.
-func (t *Templates) RenderTemplate(templatePath string) http.Handler {
+// RenderTemplate is an action that gets a path to template
+// and renders it using data from Context.
+func (c *Templates) RenderTemplate(templatePath string) http.Handler {
 	return &Handler{
-		context:  t.Context,
+		context:  c.Context,
 		template: templatePath,
 	}
+}
+
+// RenderNotFound is an action that renders Error 404 page.
+func (c *Templates) RenderNotFound() http.Handler {
+	c.Status = http.StatusNotFound
+	return c.RenderTemplate("Errors/NotFound.html")
 }
 
 func init() {
