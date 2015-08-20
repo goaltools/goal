@@ -11,7 +11,7 @@ import (
 func TestStart(t *testing.T) {
 	Start(command.Data{
 		"--input":   "./testdata/controllers",
-		"--output":  "./testdata/assets/handlers",
+		"--output":  "./myoutputdir/assets/handlers",
 		"--package": "handlers",
 	})
 
@@ -22,5 +22,5 @@ func TestStart(t *testing.T) {
 	}
 
 	// Remove the directory we have created.
-	os.RemoveAll("./testdata/assets")
+	os.RemoveAll("./myoutputdir")
 }

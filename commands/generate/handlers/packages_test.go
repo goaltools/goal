@@ -10,7 +10,7 @@ import (
 
 func TestProcessPackage(t *testing.T) {
 	ps := packages{}
-	ps.processPackage("github.com/anonx/sunplate/internal/programs/generate/handlers/testdata/controllers")
+	ps.processPackage("github.com/anonx/sunplate/commands/generate/handlers/testdata/controllers")
 }
 
 func TestParentPackage(t *testing.T) {
