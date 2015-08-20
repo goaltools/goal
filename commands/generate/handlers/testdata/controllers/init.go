@@ -3,7 +3,7 @@ package controllers
 import (
 	h "net/http"
 
-	"github.com/anonx/sunplate/internal/programs/generate/handlers/testdata/controllers/subpackage"
+	"github.com/anonx/sunplate/commands/generate/handlers/testdata/controllers/subpackage"
 
 	"github.com/naoina/denco"
 	"github.com/revel/revel/testing"

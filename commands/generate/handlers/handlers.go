@@ -31,7 +31,7 @@ func Start(params command.Data) {
 
 	// Start generation of handler packages.
 	t := generation.NewType(
-		"", filepath.Join(path.SunplateDir("internal", "programs", "generate", "handlers"), "./handlers.go.template"),
+		"", filepath.Join(path.SunplateDir("commands", "generate", "handlers"), "./handlers.go.template"),
 	)
 	t.Extension = ".go" // Save generated files as a .go source.
 

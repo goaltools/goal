@@ -3,9 +3,9 @@
 package generate
 
 import (
+	"github.com/anonx/sunplate/commands/generate/handlers"
+	"github.com/anonx/sunplate/commands/generate/views"
 	"github.com/anonx/sunplate/internal/command"
-	"github.com/anonx/sunplate/internal/programs/generate/handlers"
-	"github.com/anonx/sunplate/internal/programs/generate/views"
 	"github.com/anonx/sunplate/log"
 )
 

@@ -6,10 +6,10 @@ package main
 import (
 	"os"
 
+	"github.com/anonx/sunplate/commands/create"
+	"github.com/anonx/sunplate/commands/generate"
+	"github.com/anonx/sunplate/commands/run"
 	"github.com/anonx/sunplate/internal/command"
-	"github.com/anonx/sunplate/internal/programs/create"
-	"github.com/anonx/sunplate/internal/programs/generate"
-	"github.com/anonx/sunplate/internal/programs/run"
 	"github.com/anonx/sunplate/log"
 )
 
