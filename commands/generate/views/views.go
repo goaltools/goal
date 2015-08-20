@@ -44,7 +44,7 @@ func Start(params command.Data) {
 	// Generate and save a new package.
 	t := generation.NewType(
 		outPkg, filepath.Join(
-			p.SunplateDir("internal", "programs", "generate", "views"), "./views.go.template",
+			p.SunplateDir("commands", "generate", "views"), "./views.go.template",
 		),
 	)
 	t.CreateDir(outputDir)
