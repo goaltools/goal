@@ -101,13 +101,19 @@ func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWri
 :	// in appropriate order.
 :	<@template "printComments" dict (set "comments" $f.Comments)>\
 :	func (t t<@$.ctx.name>) <@$f.Name>(w http.ResponseWriter, r *http.Request) {
+:		var h http.Handler
 :		c := <@$.ctx.name>.New()
+:		defer func() {
+:			if h != nil {
+:				h.ServeHTTP(w, r)
+:			}
+:		}()
 :		defer <@$.ctx.name>.Finally(c, w, r)
 :		if finish := <@$.ctx.name>.Initially(c, w, r); finish {
 :			return
 :		}
 :		if res := <@$.ctx.name>.Before(c, w, r); res != nil {
-:			res.ServeHTTP(w, r)
+:			h = res
 :			return
 :		}
 :		if res<@$.ctx.controller.IgnoredArgs $f> := c.<@$f.Name>( // "Binding" parameters.
@@ -115,11 +121,11 @@ func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWri
 :	:			<@$.ctx.strconv.Render "strconv" "r.Form" $v>,
 :	:	:	<@end>\
 :		); res != nil {
-:			res.ServeHTTP(w, r)
+:			h = res
 :			return
 :		}
 :		if res := <@$.ctx.name>.After(c, w, r); res != nil {
-:			res.ServeHTTP(w, r)
+:			h = res
 :		}
 :	}
 
