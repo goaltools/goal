@@ -5,6 +5,7 @@ package method
 import (
 	"fmt"
 	"go/ast"
+	"strings"
 
 	"github.com/anonx/sunplate/internal/reflect"
 )
@@ -55,6 +56,11 @@ func Func(pkg *reflect.Package) func(f *reflect.Func) bool {
 		// Check whether the file where this method located
 		// is ignored due to the lack of http package import.
 		if ignoreFiles[f.File] {
+			return false
+		}
+
+		// Make sure this is not a test file.
+		if strings.HasSuffix(f.File, "_test.go") {
 			return false
 		}
 

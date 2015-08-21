@@ -65,6 +65,13 @@ func TestFunc(t *testing.T) {
 		t.Errorf("Not a bool is returned as a result: %#v. False expected, got true.", f1)
 	}
 	f1.Results[0].Type.Name = "bool"
+
+	f1.File = "app_test.go"
+	res = fn(f1)
+	if res {
+		t.Error("Test files must be ignored. False expected, got true.")
+	}
+	f1.File = "app.go"
 }
 
 func TestInitially(t *testing.T) {
