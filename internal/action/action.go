@@ -6,6 +6,7 @@ package action
 
 import (
 	"go/ast"
+	"strings"
 
 	"github.com/anonx/sunplate/internal/method"
 	"github.com/anonx/sunplate/internal/reflect"
@@ -60,6 +61,11 @@ func Func(pkg *reflect.Package) func(f *reflect.Func) bool {
 		// Check whether the file where this method located
 		// is ignored due to the lack of action subpackage import.
 		if ignoreFiles[f.File] {
+			return false
+		}
+
+		// Make sure this is not a test file.
+		if strings.HasSuffix(f.File, "_test.go") {
 			return false
 		}
 

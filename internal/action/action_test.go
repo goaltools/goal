@@ -61,6 +61,13 @@ func TestFunc(t *testing.T) {
 	if res {
 		t.Errorf("Not an action interface is returned as a first result: %#v. False expected, got true.", f1)
 	}
+
+	f1.Results[0].Type.Name = "Handler"
+	f1.File = "app_test.go"
+	res = fn(f1)
+	if res {
+		t.Errorf("Test files must be ignored. False expected, got true.")
+	}
 }
 
 func TestBuiltin(t *testing.T) {
