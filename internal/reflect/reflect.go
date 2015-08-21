@@ -75,7 +75,11 @@ func (i Imports) Name(file, value string) (string, bool) {
 
 // ParseDir expects a path to directory with a go package
 // that is parsed and returned in a form of *Package.
-func ParseDir(path string) *Package {
+// There may be 2 packages inside a directory:
+// somename and somename_test.
+// If testPkg argument is false the first one will be returned.
+// Otherwise, the latter is returned.
+func ParseDir(path string, testPkg bool) *Package {
 	fset := token.NewFileSet() // Positions are relative to fset.
 	pkgs, err := parser.ParseDir(fset, path, nil, parser.ParseComments)
 	if err != nil {
@@ -86,8 +90,15 @@ func ParseDir(path string) *Package {
 	// So, receiving it.
 	var pkg *ast.Package
 	for _, v := range pkgs {
-		pkg = v
-		break
+		// Decide which package to process:
+		// if current one is a test and test is requested or
+		// current one is not a test and test is not requested,
+		// use them.
+		currIsTest := strings.HasSuffix(v.Name, "_test")
+		if currIsTest && testPkg || !currIsTest && !testPkg {
+			pkg = v
+			break
+		}
 	}
 
 	// Iterating through files of the package and combining all declarations
