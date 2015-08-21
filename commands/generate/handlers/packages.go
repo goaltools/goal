@@ -8,6 +8,7 @@ import (
 	m "github.com/anonx/sunplate/internal/method"
 	"github.com/anonx/sunplate/internal/path"
 	"github.com/anonx/sunplate/internal/reflect"
+	"github.com/anonx/sunplate/log"
 )
 
 // packages represents packages of controllers. The format is the following:
@@ -81,7 +82,8 @@ func (c controller) IgnoredArgs(f *reflect.Func) (s string) {
 // processPackage gets an import path of a package, processes it, and
 // extracts controllers + actions.
 func (ps packages) processPackage(importPath string) {
-	p := reflect.ParseDir(path.PackageDir(importPath))
+	log.Trace.Printf(`Parsing "%s"...`, importPath)
+	p := reflect.ParseDir(path.PackageDir(importPath), false)
 	cs := ps.extractControllers(p)
 	if len(cs) > 0 {
 		ps[importPath] = cs

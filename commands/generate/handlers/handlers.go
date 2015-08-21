@@ -12,6 +12,7 @@ import (
 	"github.com/anonx/sunplate/internal/generation"
 	"github.com/anonx/sunplate/internal/method"
 	"github.com/anonx/sunplate/internal/path"
+	"github.com/anonx/sunplate/log"
 )
 
 // Start is an entry point of the generate handlers command.
@@ -21,12 +22,15 @@ func Start(params command.Data) {
 	outPkg := params.Default("--package", "handlers")
 
 	// Clean the out directory.
-	os.RemoveAll(outputDir)
+	log.Trace.Printf(`Removing "%s" directory if already exists...`, outputDir)
+	err := os.RemoveAll(outputDir)
+	log.AssertNil(err)
 
 	// Start processing of controllers.
 	ps := packages{}
 	absImport := path.AbsoluteImport(inputDir)
 	absImportOut := path.AbsoluteImport(outputDir)
+	log.Trace.Printf(`Processing "%s" package...`, absImport)
 	ps.processPackage(absImport)
 
 	// Start generation of handler packages.
@@ -36,6 +40,7 @@ func Start(params command.Data) {
 	t.Extension = ".go" // Save generated files as a .go source.
 
 	// Iterate through all available packages and generate handlers for them.
+	log.Trace.Printf(`Starting generation of "%s" package...`, outPkg)
 	for imp := range ps {
 		// Check whether current package is the main one
 		// and should be stored at the root directory or it is a subpackage.
