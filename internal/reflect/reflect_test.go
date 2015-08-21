@@ -64,11 +64,11 @@ func TestParseDir_IncorrectPath(t *testing.T) {
 			t.Error("Incorrect path is expected to cause panic, but nothing happened.")
 		}
 	}()
-	ParseDir("testdata/dir_that_does_not_exist")
+	ParseDir("testdata/dir_that_does_not_exist", false)
 }
 
 func TestParseDir(t *testing.T) {
-	p := ParseDir("./testdata")
+	p := ParseDir("./testdata", false)
 	expRes := &Package{
 		Funcs: Funcs{
 			{
