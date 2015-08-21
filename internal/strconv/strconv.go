@@ -43,7 +43,7 @@ func (m FnMap) Render(pkgName, vsName string, a reflect.Arg) (string, error) {
 // This is useful for code generation.
 func Context() FnMap {
 	fs := FnMap{}
-	p := reflect.ParseDir(path.SunplateDir("strconv"))
+	p := reflect.ParseDir(path.SunplateDir("strconv"), false)
 	for i := range p.Funcs {
 		if !strconvFunc(p.Funcs[i]) {
 			continue
