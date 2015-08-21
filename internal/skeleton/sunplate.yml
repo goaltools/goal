@@ -28,7 +28,7 @@ watch:
   # Empty tasks are not allowed.
   ./controllers/*:
     - go generate ./controllers/init.go
-    - /run get
+    - /start get
     - /run build
     - /single start
   ./views/*:
