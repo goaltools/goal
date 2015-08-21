@@ -66,23 +66,29 @@ func (t tTemplates) Finally(c *contr.Templates, w http.ResponseWriter, r *http.R
 // RenderTemplate is an action that gets a path to template
 // and renders it using data from Context.
 func (t tTemplates) RenderTemplate(w http.ResponseWriter, r *http.Request) {
+	var h http.Handler
 	c := Templates.New()
+	defer func() {
+		if h != nil {
+			h.ServeHTTP(w, r)
+		}
+	}()
 	defer Templates.Finally(c, w, r)
 	if finish := Templates.Initially(c, w, r); finish {
 		return
 	}
 	if res := Templates.Before(c, w, r); res != nil {
-		res.ServeHTTP(w, r)
+		h = res
 		return
 	}
 	if res := c.RenderTemplate( // "Binding" parameters.
 		strconv.String(r.Form, "templatePath"),
 	); res != nil {
-		res.ServeHTTP(w, r)
+		h = res
 		return
 	}
 	if res := Templates.After(c, w, r); res != nil {
-		res.ServeHTTP(w, r)
+		h = res
 	}
 }
 
@@ -93,22 +99,28 @@ func (t tTemplates) RenderTemplate(w http.ResponseWriter, r *http.Request) {
 //
 // RenderNotFound is an action that renders Error 404 page.
 func (t tTemplates) RenderNotFound(w http.ResponseWriter, r *http.Request) {
+	var h http.Handler
 	c := Templates.New()
+	defer func() {
+		if h != nil {
+			h.ServeHTTP(w, r)
+		}
+	}()
 	defer Templates.Finally(c, w, r)
 	if finish := Templates.Initially(c, w, r); finish {
 		return
 	}
 	if res := Templates.Before(c, w, r); res != nil {
-		res.ServeHTTP(w, r)
+		h = res
 		return
 	}
 	if res := c.RenderNotFound( // "Binding" parameters.
 	); res != nil {
-		res.ServeHTTP(w, r)
+		h = res
 		return
 	}
 	if res := Templates.After(c, w, r); res != nil {
-		res.ServeHTTP(w, r)
+		h = res
 	}
 }
 

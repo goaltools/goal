@@ -6,6 +6,7 @@ import (
 	"github.com/anonx/sunplate/internal/skeleton/assets/views"
 
 	"github.com/anonx/sunplate/controllers/requests"
+	"github.com/anonx/sunplate/controllers/sessions"
 	"github.com/anonx/sunplate/controllers/templates"
 )
 
@@ -14,6 +15,7 @@ import (
 type Controllers struct {
 	*requests.Requests
 	*templates.Templates
+	*sessions.Sessions
 }
 
 // Before is a magic action that is executed on every request

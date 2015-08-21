@@ -83,22 +83,28 @@ func (t tApp) Finally(c *contr.App, w http.ResponseWriter, r *http.Request) (fin
 //
 // Index is an action that is used for generation of a greeting form.
 func (t tApp) Index(w http.ResponseWriter, r *http.Request) {
+	var h http.Handler
 	c := App.New()
+	defer func() {
+		if h != nil {
+			h.ServeHTTP(w, r)
+		}
+	}()
 	defer App.Finally(c, w, r)
 	if finish := App.Initially(c, w, r); finish {
 		return
 	}
 	if res := App.Before(c, w, r); res != nil {
-		res.ServeHTTP(w, r)
+		h = res
 		return
 	}
 	if res := c.Index( // "Binding" parameters.
 	); res != nil {
-		res.ServeHTTP(w, r)
+		h = res
 		return
 	}
 	if res := App.After(c, w, r); res != nil {
-		res.ServeHTTP(w, r)
+		h = res
 	}
 }
 
@@ -110,23 +116,29 @@ func (t tApp) Index(w http.ResponseWriter, r *http.Request) {
 // PostGreet prints received user fullname. If it is not valid,
 // user is redirected back to index page.
 func (t tApp) PostGreet(w http.ResponseWriter, r *http.Request) {
+	var h http.Handler
 	c := App.New()
+	defer func() {
+		if h != nil {
+			h.ServeHTTP(w, r)
+		}
+	}()
 	defer App.Finally(c, w, r)
 	if finish := App.Initially(c, w, r); finish {
 		return
 	}
 	if res := App.Before(c, w, r); res != nil {
-		res.ServeHTTP(w, r)
+		h = res
 		return
 	}
 	if res := c.PostGreet( // "Binding" parameters.
 		strconv.String(r.Form, "name"),
 	); res != nil {
-		res.ServeHTTP(w, r)
+		h = res
 		return
 	}
 	if res := App.After(c, w, r); res != nil {
-		res.ServeHTTP(w, r)
+		h = res
 	}
 }
 

@@ -7,6 +7,7 @@ import (
 
 	c0 "github.com/anonx/sunplate/internal/skeleton/assets/handlers/github.com/anonx/sunplate/controllers/requests"
 	c1 "github.com/anonx/sunplate/internal/skeleton/assets/handlers/github.com/anonx/sunplate/controllers/templates"
+	c2 "github.com/anonx/sunplate/internal/skeleton/assets/handlers/github.com/anonx/sunplate/controllers/sessions"
 	contr "github.com/anonx/sunplate/internal/skeleton/controllers"
 
 	"github.com/anonx/sunplate/strconv"
@@ -30,6 +31,7 @@ func (t tControllers) New() *contr.Controllers {
 	c := &contr.Controllers{}
 	c.Requests = c0.Requests.New()
 	c.Templates = c1.Templates.New()
+	c.Sessions = c2.Sessions.New()
 	return c
 }
 
@@ -41,6 +43,9 @@ func (t tControllers) Before(c *contr.Controllers, w http.ResponseWriter, r *htt
 		return res
 	}
 	if res := c1.Templates.Before(c.Templates, w, r); res != nil {
+		return res
+	}
+	if res := c2.Sessions.Before(c.Sessions, w, r); res != nil {
 		return res
 	}
 	// Call magic Before action of (github.com/anonx/sunplate/internal/skeleton/controllers).Controllers.
@@ -60,6 +65,9 @@ func (t tControllers) After(c *contr.Controllers, w http.ResponseWriter, r *http
 	if res := c1.Templates.After(c.Templates, w, r); res != nil {
 		return res
 	}
+	if res := c2.Sessions.After(c.Sessions, w, r); res != nil {
+		return res
+	}
 	return nil
 }
 
@@ -73,6 +81,9 @@ func (t tControllers) Initially(c *contr.Controllers, w http.ResponseWriter, r *
 	if finish = c1.Templates.Initially(c.Templates, w, r); finish {
 		return finish
 	}
+	if finish = c2.Sessions.Initially(c.Sessions, w, r); finish {
+		return finish
+	}
 	return
 }
 
@@ -84,6 +95,9 @@ func (t tControllers) Finally(c *contr.Controllers, w http.ResponseWriter, r *ht
 		return finish
 	}
 	if finish = c1.Templates.Finally(c.Templates, w, r); finish {
+		return finish
+	}
+	if finish = c2.Sessions.Finally(c.Sessions, w, r); finish {
 		return finish
 	}
 	return
