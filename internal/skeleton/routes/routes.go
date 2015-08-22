@@ -20,5 +20,5 @@ var List = r.Routes{
 	r.Post("/greet/:name", h.App.PostGreet),
 
 	// Serve static files of ./static directory.
-	r.Get("/static", http.FileServer(http.Dir("./static")).ServeHTTP),
+	r.Get("/static/*filepath", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))).ServeHTTP),
 }
