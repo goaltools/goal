@@ -5,15 +5,18 @@ package config
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/Thomasdezeeuw/ini"
 )
 
 const (
-	// SystemSection passed to ParseFile as a second argument means
+	systemSection = "config"
+
+	// ReadFromFile passed to ParseFile as a second argument means
 	// active section name may be found inside ini config's
 	// system section.
-	SystemSection = "config"
+	ReadFromFile = systemSection
 
 	// Below are reserved key names.
 	keyActiveSection = "active.section"
@@ -78,11 +81,14 @@ func (c *Config) ParseFile(path, activeSection string) error {
 		return fmt.Errorf(`cannot parse "%s", cicle inheritance of config files is not allowed`, path)
 	}
 	c.paths[path] = true
-	if p, ok := c.String(SystemSection, keyExtend); ok {
+	if p, ok := c.getString(systemSection, keyExtend); ok {
 		// Parse the parent file.
 		nc := New()
 		nc.paths = c.paths
-		nc.ParseFile(p, "")
+		err := nc.ParseFile(relFilepath(path, p), "")
+		if err != nil {
+			return err
+		}
 
 		// Joining current config with the parent.
 		for s := range nc.data {
@@ -100,12 +106,25 @@ func (c *Config) ParseFile(path, activeSection string) error {
 
 	// Selecting an active section.
 	switch activeSection {
-	case SystemSection:
+	case ReadFromFile:
 		c.activeSection, _ = c.String(activeSection, keyActiveSection)
 	default:
 		c.activeSection = activeSection
 	}
 	return nil
+}
+
+// relFilepath gets a path of base ini config and its parent's
+// path and returns the latter as a relative one, e.g.:
+//	baseConf = ./config/app.ini
+//	parent = test.ini
+// The function will return:
+//	config/test.ini
+func relFilepath(baseConf, parent string) string {
+	if filepath.IsAbs(parent) {
+		return parent
+	}
+	return filepath.Join(filepath.Dir(baseConf), parent)
 }
 
 // String returns a value associated with the key from the section.
