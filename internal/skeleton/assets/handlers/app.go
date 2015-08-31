@@ -7,7 +7,6 @@ import (
 
 	contr "github.com/anonx/sunplate/internal/skeleton/controllers"
 
-	"github.com/anonx/sunplate/config"
 	"github.com/anonx/sunplate/strconv"
 )
 
@@ -143,11 +142,6 @@ func (t tApp) PostGreet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Init is used to initialize controllers of "github.com/anonx/sunplate/internal/skeleton/controllers"
-// and its parents.
-func Init(g config.Getter) {
-	Init(g)
-}
 
 func init() {
 	_ = strconv.MeaningOfLife

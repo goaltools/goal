@@ -1,0 +1,6 @@
+; This configuration file is generated automatically.
+; Please, DO NOT EDIT IT MANUALLY.
+[templates]
+<@range $file, $path := .ctx.listing.FilePaths>\
+:	<@$file> = <@$path>
+<@end>\
