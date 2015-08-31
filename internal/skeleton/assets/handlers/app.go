@@ -146,6 +146,11 @@ func (t tApp) PostGreet(w http.ResponseWriter, r *http.Request) {
 // Init is used to initialize controllers of "github.com/anonx/sunplate/internal/skeleton/controllers"
 // and its parents.
 func Init(g config.Getter) {
+	initApp(g)
+	initControllers(g)
+}
+
+func initApp(g config.Getter) {
 }
 
 func init() {

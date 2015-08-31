@@ -128,6 +128,11 @@ func (t tTemplates) RenderNotFound(w http.ResponseWriter, r *http.Request) {
 // Init is used to initialize controllers of "github.com/anonx/sunplate/controllers/templates"
 // and its parents.
 func Init(g config.Getter) {
+	initTemplates(g)
+	contr.Init(g)
+}
+
+func initTemplates(g config.Getter) {
 }
 
 func init() {
