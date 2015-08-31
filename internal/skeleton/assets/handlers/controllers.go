@@ -10,6 +10,7 @@ import (
 	c2 "github.com/anonx/sunplate/internal/skeleton/assets/handlers/github.com/anonx/sunplate/controllers/sessions"
 	contr "github.com/anonx/sunplate/internal/skeleton/controllers"
 
+	"github.com/anonx/sunplate/config"
 	"github.com/anonx/sunplate/strconv"
 )
 
@@ -101,6 +102,12 @@ func (t tControllers) Finally(c *contr.Controllers, w http.ResponseWriter, r *ht
 		return finish
 	}
 	return
+}
+
+func initControllers(g config.Getter) {
+	c0.Init(g)
+	c1.Init(g)
+	c2.Init(g)
 }
 
 func init() {

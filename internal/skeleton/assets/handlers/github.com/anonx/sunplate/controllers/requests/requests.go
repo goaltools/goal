@@ -57,6 +57,10 @@ func (t tRequests) Finally(c *contr.Requests, w http.ResponseWriter, r *http.Req
 // Init is used to initialize controllers of "github.com/anonx/sunplate/controllers/requests"
 // and its parents.
 func Init(g config.Getter) {
+	initRequests(g)
+}
+
+func initRequests(g config.Getter) {
 }
 
 func init() {
