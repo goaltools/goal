@@ -138,15 +138,16 @@ func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWri
 :	// Init is used to initialize controllers of "<@.ctx.import>"
 :	// and its parents.
 :	func Init(g config.Getter) {
-:	:	<@range $i, $v := .ctx.parents>\
+:	:	<@range $i, $v := .ctx.parents><@if $v.Import>\
 :	:		<@$v.Package ".">Init(g)
-:	:	<@end>\
+:	:	<@end><@end>\
 :	:	<@if .init>\
 :	:		contr.Init(g)
 :	:	<@end>\
 :	}
-<@end>\
 
+<@end>\
+\
 func init() {
 	_ = strconv.MeaningOfLife
 }
