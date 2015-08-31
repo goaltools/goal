@@ -143,12 +143,13 @@ func (ps packages) extractInitFunc(pkg *reflect.Package) *reflect.Func {
 			return false
 		}
 		impName, ok := pkg.Imports.Name(f.File, f.Params[0].Type.Package)
-		if !ok || impName != "github.com/anonx/sunplate/config" {
+		if !ok || f.Params[0].Type.Package != impName || f.Params[0].Type.Star {
 			return false
 		}
 		if f.Params[0].Type.Name != "Getter" {
 			return false
 		}
+		log.Trace.Printf(`Magic "%s" function will be added to generated "%s" file.`, f.Name, f.File)
 		return true
 	}, func(f *reflect.Func) bool {
 		return true

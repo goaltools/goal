@@ -90,6 +90,7 @@ func Start(params command.Data) {
 				"finally":   method.FinallyName,
 
 				"controller":   ps[imp].data[name],
+				"controllers":  ps[imp].data,
 				"import":       imp,
 				"input":        inputDir,
 				"name":         name,
