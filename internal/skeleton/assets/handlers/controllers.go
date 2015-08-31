@@ -10,12 +10,11 @@ import (
 	c2 "github.com/anonx/sunplate/internal/skeleton/assets/handlers/github.com/anonx/sunplate/controllers/sessions"
 	contr "github.com/anonx/sunplate/internal/skeleton/controllers"
 
-	"github.com/anonx/sunplate/config"
 	"github.com/anonx/sunplate/strconv"
 )
 
 // Controllers is an insance of tControllers that is automatically generated from Controllers controller
-// being found at "github.com/anonx/sunplate/internal/skeleton/controllers/controllers.go",
+// being found at "github.com/anonx/sunplate/internal/skeleton/controllers/init.go",
 // and contains methods to be used as handler functions.
 //
 // Controllers is a struct that should be embedded into every controller
@@ -102,14 +101,6 @@ func (t tControllers) Finally(c *contr.Controllers, w http.ResponseWriter, r *ht
 		return finish
 	}
 	return
-}
-
-// Init is used to initialize controllers of "github.com/anonx/sunplate/internal/skeleton/controllers"
-// and its parents.
-func Init(g config.Getter) {
-	c0.Init(g)
-	c1.Init(g)
-	c2.Init(g)
 }
 
 func init() {
