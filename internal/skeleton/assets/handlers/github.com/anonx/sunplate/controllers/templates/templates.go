@@ -7,6 +7,7 @@ import (
 
 	contr "github.com/anonx/sunplate/controllers/templates"
 
+	"github.com/anonx/sunplate/config"
 	"github.com/anonx/sunplate/strconv"
 )
 
@@ -122,6 +123,11 @@ func (t tTemplates) RenderNotFound(w http.ResponseWriter, r *http.Request) {
 	if res := Templates.After(c, w, r); res != nil {
 		h = res
 	}
+}
+
+// Init is used to initialize controllers of "github.com/anonx/sunplate/controllers/templates"
+// and its parents.
+func Init(g config.Getter) {
 }
 
 func init() {

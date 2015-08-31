@@ -56,10 +56,11 @@ func Start(params command.Data) {
 
 		// Iterate over all available controllers, generate handlers package on
 		// every of them.
-		for name := range ps[imp] {
+		n := 0
+		for name := range ps[imp].data {
 			// Find parent controllers of this controller.
 			cs := []parent{}
-			for i, p := range ps[imp][name].Parents {
+			for i, p := range ps[imp].data[name].Parents {
 				// Make sure it is a controller rather than just some embedded struct.
 				check := p.Import
 				if check == "" { // Embedded parent is a local structure.
@@ -68,7 +69,7 @@ func Start(params command.Data) {
 				if _, ok := ps[check]; !ok { // Such package is not in the list of scanned ones.
 					continue
 				}
-				if _, ok := ps[check][p.Name]; !ok { // There is no such controller.
+				if _, ok := ps[check].data[p.Name]; !ok { // There is no such controller.
 					continue
 				}
 
@@ -88,7 +89,7 @@ func Start(params command.Data) {
 				"initially": method.InitiallyName,
 				"finally":   method.FinallyName,
 
-				"controller":   ps[imp][name],
+				"controller":   ps[imp].data[name],
 				"import":       imp,
 				"input":        inputDir,
 				"name":         name,
@@ -96,12 +97,15 @@ func Start(params command.Data) {
 				"output":       outputDir,
 				"package":      outPkg,
 				"parents":      cs,
+				"initFunc":     ps[imp].init,
+				"num":          n,
 
 				"actionImport":    action.InterfaceImport,
 				"actionInterface": action.Interface,
 				"strconv":         action.StrconvContext,
 			}
 			t.Generate()
+			n++
 		}
 	}
 }

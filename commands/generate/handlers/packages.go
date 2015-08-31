@@ -20,7 +20,11 @@ type packages map[string]controllers
 // in the following form:
 //	- Name of the controller:
 //		- Controller representation itself
-type controllers map[string]controller
+// and their Init functions.
+type controllers struct {
+	data map[string]controller
+	init *reflect.Func
+}
 
 // parents represents a set of parent controllers.
 type parents []parent
@@ -85,8 +89,11 @@ func (ps packages) processPackage(importPath string) {
 	log.Trace.Printf(`Parsing "%s"...`, importPath)
 	p := reflect.ParseDir(path.PackageDir(importPath), false)
 	cs := ps.extractControllers(p)
-	if len(cs) > 0 {
-		ps[importPath] = cs
+	if len(cs.data) > 0 {
+		ps[importPath] = controllers{
+			data: cs.data,
+			init: ps.extractInitFunc(p),
+		}
 	}
 }
 
@@ -124,6 +131,34 @@ func (ps packages) scanAnonEmbStructs(pkg *reflect.Package, i int) (prs []parent
 	return
 }
 
+func (ps packages) extractInitFunc(pkg *reflect.Package) *reflect.Func {
+	res, _ := pkg.Funcs.FilterGroups(func(f *reflect.Func) bool {
+		if f.Name != "Init" {
+			return false
+		}
+		if f.Recv != nil {
+			return false
+		}
+		if len(f.Params) != 1 {
+			return false
+		}
+		impName, ok := pkg.Imports.Name(f.File, f.Params[0].Type.Package)
+		if !ok || impName != "github.com/anonx/sunplate/config" {
+			return false
+		}
+		if f.Params[0].Type.Name != "Getter" {
+			return false
+		}
+		return true
+	}, func(f *reflect.Func) bool {
+		return true
+	})
+	if len(res[0]) > 0 {
+		return &res[0][0]
+	}
+	return nil
+}
+
 // extractControllers gets a reflect.Package type and returns
 // a slice of controllers that are found there.
 func (ps packages) extractControllers(pkg *reflect.Package) controllers {
@@ -134,7 +169,9 @@ func (ps packages) extractControllers(pkg *reflect.Package) controllers {
 
 	// Iterating through all available structures and checking
 	// whether those structures are controllers (i.e. whether they have actions).
-	cs := controllers{}
+	cs := controllers{
+		data: map[string]controller{},
+	}
 	for i := 0; i < len(pkg.Structs); i++ {
 		// Make sure the structure has methods.
 		ms, ok := pkg.Methods[pkg.Structs[i].Name]
@@ -152,7 +189,7 @@ func (ps packages) extractControllers(pkg *reflect.Package) controllers {
 		}
 
 		// Add a new controller to the list of results.
-		cs[pkg.Structs[i].Name] = controller{
+		cs.data[pkg.Structs[i].Name] = controller{
 			Actions:   as[0],
 			After:     firstFunc(as[1]),
 			Before:    firstFunc(as[2]),
