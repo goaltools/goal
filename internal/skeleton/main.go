@@ -2,19 +2,17 @@
 package main
 
 import (
-	"flag"
 	"log"
 	"net/http"
 	"runtime"
 
-	"github.com/anonx/sunplate/internal/skeleton/controllers"
+	"github.com/anonx/sunplate/internal/skeleton/assets/handlers"
 	"github.com/anonx/sunplate/internal/skeleton/routes"
+
+	c "github.com/anonx/sunplate/config"
 )
 
-var (
-	addr = flag.String("addr", ":8080", "HTTP address that should be used by the app")
-	root = flag.String("root", "./", "Path to the root directory of the project")
-)
+var config = c.New()
 
 func main() {
 	// Set max procs for multi-thread executing.
@@ -28,7 +26,7 @@ func main() {
 
 	// Prepare a new server.
 	s := &http.Server{
-		Addr:    *addr,
+		Addr:    config.StringDefault("http.addr", ":8080"),
 		Handler: handler,
 	}
 
@@ -38,6 +36,12 @@ func main() {
 }
 
 func init() {
-	// Initializing controllers.
-	controllers.Init(*root)
+	// Openning configuration file.
+	err := config.ParseFile("config/config.ini", c.ReadFromFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Initialization of handlers.
+	handlers.Init(config)
 }
