@@ -103,7 +103,7 @@ func Func(pkg *reflect.Package) func(f *reflect.Func) bool {
 		}
 
 		// Make sure function name does not use reserved words.
-		if f.Name == method.FinallyName || f.Name == method.InitiallyName {
+		if f.Name == method.FinallyName || f.Name == method.InitiallyName || f.Name == "Init" {
 			log.Warn.Printf(
 				`Method "%s" in file "%s" cannot be treated as action because "%s" is a reserved word for magic methods.`,
 				f.Name, f.File, f.Name,

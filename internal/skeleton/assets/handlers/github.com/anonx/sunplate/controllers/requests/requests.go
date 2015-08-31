@@ -7,6 +7,7 @@ import (
 
 	contr "github.com/anonx/sunplate/controllers/requests"
 
+	"github.com/anonx/sunplate/config"
 	"github.com/anonx/sunplate/strconv"
 )
 
@@ -51,6 +52,11 @@ func (t tRequests) Initially(c *contr.Requests, w http.ResponseWriter, r *http.R
 // of their execution phase no matter what.
 func (t tRequests) Finally(c *contr.Requests, w http.ResponseWriter, r *http.Request) (finish bool) {
 	return
+}
+
+// Init is used to initialize controllers of "github.com/anonx/sunplate/controllers/requests"
+// and its parents.
+func Init(g config.Getter) {
 }
 
 func init() {

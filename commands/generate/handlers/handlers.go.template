@@ -12,6 +12,9 @@ import (
 :	<@end>\
 	contr "<@.ctx.import>"
 
+:	<@if not .ctx.num>\
+:		"github.com/anonx/sunplate/config"
+:	<@end>\
 	"github.com/anonx/sunplate/strconv"
 )
 
@@ -131,6 +134,19 @@ func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWri
 
 <@end>\
 \
+<@if not .ctx.num>\
+:	// Init is used to initialize controllers of "<@.ctx.import>"
+:	// and its parents.
+:	func Init(g config.Getter) {
+:	:	<@range $i, $v := .ctx.parents>\
+:	:		<@$v.Package ".">Init(g)
+:	:	<@end>\
+:	:	<@if .init>\
+:	:		contr.Init(g)
+:	:	<@end>\
+:	}
+<@end>\
+
 func init() {
 	_ = strconv.MeaningOfLife
 }

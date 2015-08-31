@@ -17,6 +17,7 @@ import (
 // as the first argument and an error (or nil) as the second one.
 var List = r.Routes{
 	r.Get("/", h.App.Index),
+	r.Get("/greet/:name", h.App.PostGreet),
 	r.Post("/greet/:name", h.App.PostGreet),
 
 	// Serve static files of ./static directory.
