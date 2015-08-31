@@ -37,7 +37,7 @@ func TestParentPackage(t *testing.T) {
 
 func TestControllerIgnoredArgs(t *testing.T) {
 	c := controller{}
-	a := ps["github.com/anonx/sunplate/internal/programs/generate/handlers/testdata/controllers"]["App"].Actions[1]
+	a := ps["github.com/anonx/sunplate/internal/programs/generate/handlers/testdata/controllers"].data["App"].Actions[1]
 	exp := ", _, _"
 	if r := c.IgnoredArgs(&a); r != exp {
 		t.Errorf(`Incorrect IgnoreArgs result. Expected "%s", got "%s".`, exp, r)
@@ -77,15 +77,15 @@ func assertDeepEqualController(c1, c2 *controller) {
 }
 
 func assertDeepEqualControllers(cs1, cs2 controllers) {
-	if len(cs1) != len(cs2) {
+	if len(cs1.data) != len(cs2.data) {
 		log.Error.Panicf(
 			"controllers maps %#v and %#v have different length: %d != %d",
-			cs1, cs2, len(cs1), len(cs2),
+			cs1.data, cs2.data, len(cs1.data), len(cs2.data),
 		)
 	}
-	for i := range cs1 {
-		c1 := cs1[i]
-		c2 := cs2[i]
+	for i := range cs1.data {
+		c1 := cs1.data[i]
+		c2 := cs2.data[i]
 		assertDeepEqualController(&c1, &c2)
 	}
 }
@@ -104,166 +104,24 @@ func assertDeepEqualPkgs(ps1, ps2 packages) {
 
 var ps = packages{
 	"github.com/anonx/sunplate/internal/programs/generate/handlers/testdata/controllers": controllers{
-		"Controller": controller{
-			After: &reflect.Func{
-				Comments: []string{"// After is a magic method that is executed after every request."},
-				File:     "init.go",
-				Name:     "After",
-				Params: []reflect.Arg{
-					{
-						Name: "name",
-						Type: &reflect.Type{
-							Name: "string",
-						},
-					},
-				},
-				Recv: &reflect.Arg{
-					Name: "c",
-					Type: &reflect.Type{
-						Name: "Controller",
-						Star: true,
-					},
-				},
-				Results: []reflect.Arg{
-					{
-						Type: &reflect.Type{
-							Name:    "Handler",
-							Package: "h",
-						},
-					},
-				},
-			},
-			Before: &reflect.Func{
-				Comments: []string{"// Before is a magic method that is executed before every request."},
-				File:     "init.go",
-				Name:     "Before",
-				Params: []reflect.Arg{
-					{
-						Name: "uid",
-						Type: &reflect.Type{
-							Name: "string",
-						},
-					},
-				},
-				Recv: &reflect.Arg{
-					Name: "c",
-					Type: &reflect.Type{
-						Name: "Controller",
-						Star: true,
-					},
-				},
-				Results: []reflect.Arg{
-					{
-						Type: &reflect.Type{
-							Name:    "Handler",
-							Package: "h",
-						},
-					},
-				},
-			},
-			Finally: &reflect.Func{
-				Comments: []string{"// Finally is a magic method that is executed after every request."},
-				File:     "app.go",
-				Name:     "Finally",
-				Params: []reflect.Arg{
-					{
-						Name: "w",
-						Type: &reflect.Type{
-							Package: "http",
-							Name:    "ResponseWriter",
-						},
-					},
-					{
-						Name: "r",
-						Type: &reflect.Type{
-							Package: "http",
-							Name:    "Request",
-							Star:    true,
-						},
-					},
-				},
-				Recv: &reflect.Arg{
-					Name: "c",
-					Type: &reflect.Type{
-						Name: "Controller",
-						Star: true,
-					},
-				},
-				Results: []reflect.Arg{
-					{
-						Type: &reflect.Type{
-							Name: "bool",
-						},
-					},
-				},
-			},
-			Initially: &reflect.Func{
-				Comments: []string{"// Initially is a magic method that is executed before every request."},
-				File:     "app.go",
-				Name:     "Initially",
-				Params: []reflect.Arg{
-					{
-						Name: "w",
-						Type: &reflect.Type{
-							Package: "http",
-							Name:    "ResponseWriter",
-						},
-					},
-					{
-						Name: "r",
-						Type: &reflect.Type{
-							Package: "http",
-							Name:    "Request",
-							Star:    true,
-						},
-					},
-				},
-				Recv: &reflect.Arg{
-					Name: "c",
-					Type: &reflect.Type{
-						Name: "Controller",
-						Star: true,
-					},
-				},
-				Results: []reflect.Arg{
-					{
-						Type: &reflect.Type{
-							Name: "bool",
-						},
-					},
-				},
-			},
-
-			Comments: []string{
-				"// Controller is a struct that should be embedded into every controller",
-				"// of your app to make methods provided by middleware controllers available.",
-			},
-			File: "init.go",
-			Parents: []parent{
-				{
-					Import: "github.com/anonx/sunplate/internal/programs/generate/handlers/testdata/controllers/subpackage",
-					Name:   "Controller",
-				},
-			},
-		},
-		"App": controller{
-			Actions: []reflect.Func{
-				{
-					Comments: []string{"// Index is a sample action."},
+		data: map[string]controller{
+			"Controller": controller{
+				After: &reflect.Func{
+					Comments: []string{"// After is a magic method that is executed after every request."},
 					File:     "init.go",
-					Name:     "Index",
+					Name:     "After",
 					Params: []reflect.Arg{
 						{
-							Name: "page",
+							Name: "name",
 							Type: &reflect.Type{
-								Name: "int",
+								Name: "string",
 							},
 						},
 					},
 					Recv: &reflect.Arg{
 						Name: "c",
 						Type: &reflect.Type{
-							Name: "App",
+							Name: "Controller",
 							Star: true,
 						},
 					},
@@ -276,79 +134,248 @@ var ps = packages{
 						},
 					},
 				},
-				{
-					Comments: []string{"// HelloWorld is a sample action."},
-					File:     "app.go",
-					Name:     "HelloWorld",
+				Before: &reflect.Func{
+					Comments: []string{"// Before is a magic method that is executed before every request."},
+					File:     "init.go",
+					Name:     "Before",
 					Params: []reflect.Arg{
 						{
-							Name: "page",
+							Name: "uid",
 							Type: &reflect.Type{
-								Name: "int",
+								Name: "string",
 							},
 						},
 					},
 					Recv: &reflect.Arg{
 						Name: "c",
 						Type: &reflect.Type{
-							Name: "App",
+							Name: "Controller",
+							Star: true,
 						},
 					},
 					Results: []reflect.Arg{
 						{
 							Type: &reflect.Type{
 								Name:    "Handler",
-								Package: "http",
-							},
-						},
-						{
-							Type: &reflect.Type{
-								Name: "bool",
-							},
-						},
-						{
-							Type: &reflect.Type{
-								Name: "error",
+								Package: "h",
 							},
 						},
 					},
 				},
-			},
-			After:   &reflect.Func{},
-			Before:  &reflect.Func{},
-			Finally: &reflect.Func{},
-
-			Comments: []string{
-				"// App is a sample controller.",
-			},
-			File: "app.go",
-			Parents: []parent{
-				{
-					Import: "github.com/anonx/sunplate/internal/programs/generate/handlers/testdata/controllers",
-					Name:   "Controller",
-				},
-			},
-		},
-	},
-	"github.com/anonx/sunplate/internal/programs/generate/handlers/testdata/controllers/subpackage": controllers{
-		"Controller": controller{
-			Actions: []reflect.Func{
-				{
-					Comments: []string{"// Index is a sample action."},
+				Finally: &reflect.Func{
+					Comments: []string{"// Finally is a magic method that is executed after every request."},
 					File:     "app.go",
-					Name:     "Index",
+					Name:     "Finally",
 					Params: []reflect.Arg{
 						{
-							Name: "page",
+							Name: "w",
 							Type: &reflect.Type{
-								Name: "int",
+								Package: "http",
+								Name:    "ResponseWriter",
+							},
+						},
+						{
+							Name: "r",
+							Type: &reflect.Type{
+								Package: "http",
+								Name:    "Request",
+								Star:    true,
 							},
 						},
 					},
 					Recv: &reflect.Arg{
 						Name: "c",
 						Type: &reflect.Type{
-							Name: "App",
+							Name: "Controller",
+							Star: true,
+						},
+					},
+					Results: []reflect.Arg{
+						{
+							Type: &reflect.Type{
+								Name: "bool",
+							},
+						},
+					},
+				},
+				Initially: &reflect.Func{
+					Comments: []string{"// Initially is a magic method that is executed before every request."},
+					File:     "app.go",
+					Name:     "Initially",
+					Params: []reflect.Arg{
+						{
+							Name: "w",
+							Type: &reflect.Type{
+								Package: "http",
+								Name:    "ResponseWriter",
+							},
+						},
+						{
+							Name: "r",
+							Type: &reflect.Type{
+								Package: "http",
+								Name:    "Request",
+								Star:    true,
+							},
+						},
+					},
+					Recv: &reflect.Arg{
+						Name: "c",
+						Type: &reflect.Type{
+							Name: "Controller",
+							Star: true,
+						},
+					},
+					Results: []reflect.Arg{
+						{
+							Type: &reflect.Type{
+								Name: "bool",
+							},
+						},
+					},
+				},
+
+				Comments: []string{
+					"// Controller is a struct that should be embedded into every controller",
+					"// of your app to make methods provided by middleware controllers available.",
+				},
+				File: "init.go",
+				Parents: []parent{
+					{
+						Import: "github.com/anonx/sunplate/internal/programs/generate/handlers/testdata/controllers/subpackage",
+						Name:   "Controller",
+					},
+				},
+			},
+			"App": controller{
+				Actions: []reflect.Func{
+					{
+						Comments: []string{"// Index is a sample action."},
+						File:     "init.go",
+						Name:     "Index",
+						Params: []reflect.Arg{
+							{
+								Name: "page",
+								Type: &reflect.Type{
+									Name: "int",
+								},
+							},
+						},
+						Recv: &reflect.Arg{
+							Name: "c",
+							Type: &reflect.Type{
+								Name: "App",
+								Star: true,
+							},
+						},
+						Results: []reflect.Arg{
+							{
+								Type: &reflect.Type{
+									Name:    "Handler",
+									Package: "h",
+								},
+							},
+						},
+					},
+					{
+						Comments: []string{"// HelloWorld is a sample action."},
+						File:     "app.go",
+						Name:     "HelloWorld",
+						Params: []reflect.Arg{
+							{
+								Name: "page",
+								Type: &reflect.Type{
+									Name: "int",
+								},
+							},
+						},
+						Recv: &reflect.Arg{
+							Name: "c",
+							Type: &reflect.Type{
+								Name: "App",
+							},
+						},
+						Results: []reflect.Arg{
+							{
+								Type: &reflect.Type{
+									Name:    "Handler",
+									Package: "http",
+								},
+							},
+							{
+								Type: &reflect.Type{
+									Name: "bool",
+								},
+							},
+							{
+								Type: &reflect.Type{
+									Name: "error",
+								},
+							},
+						},
+					},
+				},
+				After:   &reflect.Func{},
+				Before:  &reflect.Func{},
+				Finally: &reflect.Func{},
+
+				Comments: []string{
+					"// App is a sample controller.",
+				},
+				File: "app.go",
+				Parents: []parent{
+					{
+						Import: "github.com/anonx/sunplate/internal/programs/generate/handlers/testdata/controllers",
+						Name:   "Controller",
+					},
+				},
+			},
+		},
+	},
+	"github.com/anonx/sunplate/internal/programs/generate/handlers/testdata/controllers/subpackage": controllers{
+		data: map[string]controller{
+			"Controller": controller{
+				Actions: []reflect.Func{
+					{
+						Comments: []string{"// Index is a sample action."},
+						File:     "app.go",
+						Name:     "Index",
+						Params: []reflect.Arg{
+							{
+								Name: "page",
+								Type: &reflect.Type{
+									Name: "int",
+								},
+							},
+						},
+						Recv: &reflect.Arg{
+							Name: "c",
+							Type: &reflect.Type{
+								Name: "App",
+								Star: true,
+							},
+						},
+						Results: []reflect.Arg{
+							{
+								Type: &reflect.Type{
+									Name:    "Handler",
+									Package: "http",
+								},
+							},
+						},
+					},
+				},
+				After: &reflect.Func{
+					Comments: []string{
+						"// After is a magic function that is executed after any request.",
+					},
+					File:   "app.go",
+					Name:   "After",
+					Params: []reflect.Arg{},
+					Recv: &reflect.Arg{
+						Name: "c",
+						Type: &reflect.Type{
+							Name: "Controller",
 							Star: true,
 						},
 					},
@@ -361,98 +388,75 @@ var ps = packages{
 						},
 					},
 				},
-			},
-			After: &reflect.Func{
-				Comments: []string{
-					"// After is a magic function that is executed after any request.",
-				},
-				File:   "app.go",
-				Name:   "After",
-				Params: []reflect.Arg{},
-				Recv: &reflect.Arg{
-					Name: "c",
-					Type: &reflect.Type{
-						Name: "Controller",
-						Star: true,
+				Before: &reflect.Func{
+					Comments: []string{
+						"// Before is a magic function that is executed before any request.",
 					},
-				},
-				Results: []reflect.Arg{
-					{
+					File:   "app.go",
+					Name:   "Before",
+					Params: []reflect.Arg{},
+					Recv: &reflect.Arg{
+						Name: "c",
 						Type: &reflect.Type{
-							Name:    "Handler",
-							Package: "http",
+							Name: "Controller",
+							Star: true,
+						},
+					},
+					Results: []reflect.Arg{
+						{
+							Type: &reflect.Type{
+								Name:    "Handler",
+								Package: "http",
+							},
 						},
 					},
 				},
-			},
-			Before: &reflect.Func{
-				Comments: []string{
-					"// Before is a magic function that is executed before any request.",
-				},
-				File:   "app.go",
-				Name:   "Before",
-				Params: []reflect.Arg{},
-				Recv: &reflect.Arg{
-					Name: "c",
-					Type: &reflect.Type{
-						Name: "Controller",
-						Star: true,
+				Finally: &reflect.Func{
+					Comments: []string{
+						"// Finally is a magic function that is executed after any request",
+						"// no matter what.",
 					},
-				},
-				Results: []reflect.Arg{
-					{
+					File: "app.go",
+					Name: "Finally",
+					Params: []reflect.Arg{
+						{
+							Name: "w",
+							Type: &reflect.Type{
+								Package: "http",
+								Name:    "ResponseWriter",
+							},
+						},
+						{
+							Name: "r",
+							Type: &reflect.Type{
+								Package: "http",
+								Name:    "Request",
+								Star:    true,
+							},
+						},
+					},
+					Recv: &reflect.Arg{
+						Name: "c",
 						Type: &reflect.Type{
-							Name:    "Handler",
-							Package: "http",
+							Name: "Controller",
+							Star: true,
+						},
+					},
+					Results: []reflect.Arg{
+						{
+							Type: &reflect.Type{
+								Name: "bool",
+							},
 						},
 					},
 				},
-			},
-			Finally: &reflect.Func{
-				Comments: []string{
-					"// Finally is a magic function that is executed after any request",
-					"// no matter what.",
-				},
-				File: "app.go",
-				Name: "Finally",
-				Params: []reflect.Arg{
-					{
-						Name: "w",
-						Type: &reflect.Type{
-							Package: "http",
-							Name:    "ResponseWriter",
-						},
-					},
-					{
-						Name: "r",
-						Type: &reflect.Type{
-							Package: "http",
-							Name:    "Request",
-							Star:    true,
-						},
-					},
-				},
-				Recv: &reflect.Arg{
-					Name: "c",
-					Type: &reflect.Type{
-						Name: "Controller",
-						Star: true,
-					},
-				},
-				Results: []reflect.Arg{
-					{
-						Type: &reflect.Type{
-							Name: "bool",
-						},
-					},
-				},
-			},
 
-			Comments: []string{
-				"// Controller is some controller.",
+				Comments: []string{
+					"// Controller is some controller.",
+				},
+				File:    "app.go",
+				Parents: []parent{},
 			},
-			File:    "app.go",
-			Parents: []parent{},
 		},
 	},
 }
