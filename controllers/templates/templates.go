@@ -5,32 +5,12 @@ package templates
 import (
 	"html/template"
 	"net/http"
+
+	"github.com/anonx/sunplate/config"
 )
 
 var (
-	// BaseTemplate is a name of the file that will be loaded
-	// with every template to make extends pattern possible.
-	// So, if you have the following structure:
-	//	./base.html
-	//	./home.html
-	//	./profile/base.html
-	//	./profile/index.html
-	// You will get pairs of (base.html, home.html) and
-	// (profile/base.html, profile/index.html).
-	// If no base template is found in ./profile/ directory,
-	// one in a previous level (./) will be used.
-	BaseTemplate = "Base.html"
-
-	// TemplateName is name of the template that will be executed.
-	// By-default, your base.html should have {%define "base"%}
-	// that will be the entry point of every of your templates.
-	TemplateName = "base"
-
-	// Delims are action delimiters that are used for call to Parse.
-	// Empty delimiters activate default: {% and %}.
-	Delims struct {
-		Left, Right string
-	}
+	baseTemplate, templateName, delimLeft, delimRight string
 
 	// Funcs are added to the template's function map.
 	// Functions are expected to return just 1 argument or
@@ -71,10 +51,16 @@ func (c *Templates) RenderNotFound() http.Handler {
 	return c.RenderTemplate("Errors/NotFound.html")
 }
 
-func init() {
-	// Use {% and %} instead of {{ and }} as default delimiters.
-	if Delims.Left == "" || Delims.Right == "" {
-		Delims.Left = "{%"
-		Delims.Right = "%}"
-	}
+// Init initializes parameters of Templates controller.
+// And is responsible for triggering loading of templates.
+func Init(g config.Getter) {
+	baseTemplate = g.StringDefault("template.base.name", "Base.html")
+	templateName = g.StringDefault("template.main.section", "base")
+	delimLeft = g.StringDefault("template.delim.left", "{%")
+	delimRight = g.StringDefault("template.delim.right", "%}")
+
+	root := g.StringDefault("root.directory", "./")
+	views := g.StringDefault("views.directory", "views/")
+	templates := g.Section("templates")
+	load(root, views, templates)
 }

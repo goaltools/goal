@@ -24,7 +24,7 @@ func (t *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// If required template exists, execute it.
 	if tpl, ok := templates[t.template]; ok {
 		w.WriteHeader(t.status)
-		err := tpl.ExecuteTemplate(w, TemplateName, t.context)
+		err := tpl.ExecuteTemplate(w, templateName, t.context)
 		if err != nil {
 			go log.Warn.Println(err)
 		}

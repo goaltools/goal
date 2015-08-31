@@ -11,13 +11,13 @@ import (
 
 var templates = map[string]*template.Template{}
 
-// Load gets three input arguments:
+// load gets three input arguments:
 // 1. Path to the root of the user application (e.g. "./").
 // 2. Path to the views directory relative to the project root (e.g. "views").
-// 3. A list of template paths relative to the views directory (in a form of []string).
+// 3. A list of template paths relative to the views directory (in a form of map[string]string).
 // It checks whether all the templates exist, parses and registers them.
 // It panics if some of the requested templates do not exist or cannot be parsed.
-func Load(root string, views string, templatePaths []string) {
+func load(root string, views string, templatePaths map[string]string) {
 	log.Trace.Println("Loading templates...")
 	root = filepath.Join(root, views)
 
@@ -33,12 +33,12 @@ func Load(root string, views string, templatePaths []string) {
 
 			// Check whether this template is a base. If so, do not load
 			// any other bases.
-			if b == BaseTemplate {
+			if b == baseTemplate {
 				break
 			}
 
 			// Check whether base template exists in the directory.
-			base = filepath.Join(dir, BaseTemplate)
+			base = filepath.Join(dir, baseTemplate)
 			if _, ok := templates[base]; ok || contains(templatePaths, base) {
 				break
 			}
@@ -55,7 +55,7 @@ func Load(root string, views string, templatePaths []string) {
 
 		// If the base was found, use it. Otherwise, go without it.
 		var err error
-		t := template.New(path).Funcs(Funcs).Delims(Delims.Left, Delims.Right)
+		t := template.New(path).Funcs(Funcs).Delims(delimLeft, delimRight)
 		if base != "" {
 			templates[path], err = t.ParseFiles(
 				filepath.Join(root, base),
@@ -71,9 +71,9 @@ func Load(root string, views string, templatePaths []string) {
 
 // contains returns true if a requested value found
 // in the requested slice of strings.
-func contains(arr []string, value string) bool {
-	for i := range arr {
-		if arr[i] == value {
+func contains(lst map[string]string, value string) bool {
+	for k := range lst {
+		if lst[k] == value {
 			return true
 		}
 	}
