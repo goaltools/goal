@@ -54,6 +54,20 @@ func Start(params command.Data) {
 		"input":   inputDir,
 	}
 	t.Generate()
+
+	// Generate and save ini config with file names.
+	t = generation.NewType(
+		outPkg, filepath.Join(
+			p.SunplateDir("commands", "generate", "views"), "./views.ini.template",
+		),
+	)
+	t.Path = outputDir
+	t.Extension = ".ini"
+	t.Context = map[string]interface{}{
+		"listing": fs,
+		"input":   inputDir,
+	}
+	t.Generate()
 }
 
 // walkFunc returns a files listing and a function that may be used for validation
