@@ -11,7 +11,7 @@ import (
 func init() {
 	// Openning configuration file.
 	config := c.New()
-	err := config.ParseFile("config/config.ini", c.ReadFromFile)
+	err := config.ParseFile("../config/testing.ini", c.ReadFromFile)
 	if err != nil {
 		log.Fatal(err)
 	}
