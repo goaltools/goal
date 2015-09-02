@@ -18,7 +18,7 @@ init:
   # You may use it for something like "npm install".
   - /echo "Starting work on 'github.com/anonx/sunplate/internal/skeleton'"
   - go generate ./...
-  - /start get
+  - go get github.com/anonx/sunplate/internal/skeleton/...
   - /run build
   - /single start
 watch:
