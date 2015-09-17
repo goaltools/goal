@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"github.com/Thomasdezeeuw/ini"
 )
@@ -22,6 +23,10 @@ const (
 	keyActiveSection = "active.section"
 	keyExtend        = "extend"
 )
+
+// Variables in a ${NAME} form inside configuration file are
+// expected to be treated as ENV vars.
+var envVar = regexp.MustCompile(`\${([A-Za-z0-9._\-]+)}`)
 
 // Getter is used to get values from configuration file.
 type Getter interface {
@@ -156,12 +161,18 @@ func (c *Config) getString(section, key string) (string, bool) {
 	}
 
 	// Check whether such key exists withing the section.
-	if val, ok := c.data[section][key]; ok {
-		return val, true
+	val, ok := c.data[section][key]
+	if !ok {
+		return "", false
 	}
 
-	// Otherwise, return empty string and false.
-	return "", false
+	// Try to replace environment variables.
+	val = envVar.ReplaceAllStringFunc(val, func(k string) string {
+		return os.Getenv(envVar.ReplaceAllString(k, "$1"))
+	})
+
+	// Return the value.
+	return val, true
 }
 
 // setString sets a value of the specified key from a section.

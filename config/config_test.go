@@ -1,6 +1,7 @@
 package config
 
 import (
+	"os"
 	"reflect"
 	"testing"
 
@@ -76,6 +77,19 @@ func TestConfigStringDefault(t *testing.T) {
 	c.ParseFile("./testdata/test.ini", "test")
 	if r := c.StringDefault("x", "some default"); r != "z" {
 		t.Errorf(msg, "z", r)
+	}
+}
+
+func TestConfigGetString_EnvVar(t *testing.T) {
+	c := New()
+	c.data = map[string]map[string]string{
+		"": {
+			"test": "${GOPATH}",
+		},
+	}
+	exp := os.Getenv("GOPATH")
+	if r, _ := c.getString("", "test"); r != exp || r == "" {
+		t.Errorf(msg, exp, r)
 	}
 }
 
