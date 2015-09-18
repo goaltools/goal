@@ -26,7 +26,12 @@ func load(root string, views string, templatePaths map[string]string) {
 		// Find base for the current template
 		// (either in the current dir or in one of the previous levels).
 		var base, cd string
+		limit, i := 100, 0
 		for {
+			if i++; i == limit {
+				break
+			}
+
 			b := filepath.Base(path)
 			dir := filepath.Join(path[:len(path)-len(b)], cd)
 			cd += "../"
