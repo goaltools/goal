@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	systemSection = "config"
+	systemSection = ini.Global
 
 	// ReadFromFile passed to ParseFile as a second argument means
 	// active section name may be found inside ini config's

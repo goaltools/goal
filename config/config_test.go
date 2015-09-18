@@ -36,11 +36,12 @@ func TestConfigParseFile_ExtendConfig(t *testing.T) {
 		"smth": {
 			"hello": "world",
 		},
-		systemSection: {
-			keyActiveSection: "test",
-			keyExtend:        "base.ini",
-		},
 	}
+	if _, ok := exp[systemSection]; !ok {
+		exp[systemSection] = map[string]string{}
+	}
+	exp[systemSection][keyActiveSection] = "test"
+	exp[systemSection][keyExtend] = "base.ini"
 	c := New()
 	err := c.ParseFile("./testdata/test.ini", ReadFromFile)
 	if err != nil {
