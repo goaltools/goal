@@ -45,6 +45,12 @@ func (c *Templates) RenderTemplate(templatePath string) http.Handler {
 	}
 }
 
+// RenderError is an action that renders Error 500 page.
+func (c *Templates) RenderError() http.Handler {
+	c.Status = http.StatusInternalServerError
+	return c.RenderTemplate("Errors/InternalError.html")
+}
+
 // RenderNotFound is an action that renders Error 404 page.
 func (c *Templates) RenderNotFound() http.Handler {
 	c.Status = http.StatusNotFound
