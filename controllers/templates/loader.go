@@ -29,6 +29,7 @@ func load(root string, views string, templatePaths map[string]string) {
 		limit, i := 100, 0
 		for {
 			if i++; i == limit {
+				log.Warn.Println("Limit reached when loading templates.")
 				break
 			}
 
