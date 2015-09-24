@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/anonx/sunplate/log"
+	"github.com/colegion/goal/log"
 )
 
 func TestImportsValue(t *testing.T) {
@@ -19,12 +19,12 @@ func TestImportsValue(t *testing.T) {
 
 	t2 := Imports{
 		"sample.go": {
-			"l": "github.com/anonx/sunplate/log",
+			"l": "github.com/colegion/goal/log",
 		},
 	}
 	v, ok = t2.Value("sample.go", "l")
-	if v != "github.com/anonx/sunplate/log" || ok != true {
-		t.Errorf("Incorrect imports value. Expected 'github.com/anonx/sunplate/log', true. Got '%s', %v.", v, ok)
+	if v != "github.com/colegion/goal/log" || ok != true {
+		t.Errorf("Incorrect imports value. Expected 'github.com/colegion/goal/log', true. Got '%s', %v.", v, ok)
 	}
 
 	v, ok = t2.Value("sample.go", "key_that_does_not_exist")
@@ -35,19 +35,19 @@ func TestImportsValue(t *testing.T) {
 
 func TestImportsName(t *testing.T) {
 	var t1 Imports
-	v, ok := t1.Name("somefile.go", "github.com/anonx/sunplate")
+	v, ok := t1.Name("somefile.go", "github.com/colegion/goal")
 	if v != "" || ok != false {
 		t.Errorf("Incorrect import name value. Expected '', false. Got '%s', %v.", v, ok)
 	}
 
 	t2 := Imports{
 		"sample.go": {
-			"action":  "github.com/anonx/sunplate/action",
-			"example": "github.com/anonx/sunplate/example",
-			"l":       "github.com/anonx/sunplate/log",
+			"action":  "github.com/colegion/goal/action",
+			"example": "github.com/colegion/goal/example",
+			"l":       "github.com/colegion/goal/log",
 		},
 	}
-	v, ok = t2.Name("sample.go", "sunplate/example")
+	v, ok = t2.Name("sample.go", "goal/example")
 	if v != "example" || ok != true {
 		t.Errorf("Incorrect import name value. Expected 'example', true. Got '%s', %v.", v, ok)
 	}
@@ -133,11 +133,11 @@ func TestParseDir(t *testing.T) {
 		Imports: map[string]map[string]string{
 			"testdata/sample1.go": {
 				"fmt":     "fmt",
-				"l":       "github.com/anonx/sunplate/log",
-				"reflect": "github.com/anonx/sunplate/internal/reflect",
+				"l":       "github.com/colegion/goal/log",
+				"reflect": "github.com/colegion/goal/internal/reflect",
 			},
 			"testdata/sample2.go": {
-				"log": "github.com/anonx/sunplate/log",
+				"log": "github.com/colegion/goal/log",
 			},
 		},
 	}
@@ -152,8 +152,8 @@ func TestProcessDecls(t *testing.T) {
 
 				"./example"
 
-				"github.com/anonx/sunplate"
-				l "github.com/anonx/sunplate/log"
+				"github.com/colegion/goal"
+				l "github.com/colegion/goal/log"
 			)
 
 			import "fmt"
@@ -217,11 +217,11 @@ func TestProcessDecls(t *testing.T) {
 		},
 		Imports: map[string]map[string]string{
 			"sample.go": {
-				"strings":  "strings",
-				"example":  "./example",
-				"sunplate": "github.com/anonx/sunplate",
-				"l":        "github.com/anonx/sunplate/log",
-				"fmt":      "fmt",
+				"strings": "strings",
+				"example": "./example",
+				"goal":    "github.com/colegion/goal",
+				"l":       "github.com/colegion/goal/log",
+				"fmt":     "fmt",
 			},
 		},
 	}

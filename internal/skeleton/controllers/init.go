@@ -3,23 +3,23 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/anonx/sunplate/controllers/requests"
-	"github.com/anonx/sunplate/controllers/sessions"
-	"github.com/anonx/sunplate/controllers/templates"
+	"github.com/colegion/goal/controllers/requests"
+	"github.com/colegion/goal/controllers/sessions"
+	"github.com/colegion/goal/controllers/templates"
 )
 
 // The line below tells golang's generate command you want
 // it to scan your controllers and generate handler functions
-// from them using rules of sunplate toolkit.
+// from them using rules of goal toolkit.
 // Please, do not delete it unless you know what you are doing.
 //
-//go:generate sunplate generate handlers --input ./ --output ../assets/handlers
+//go:generate goal generate handlers --input ./ --output ../assets/handlers
 
 // The line below tells golang's generate command you want
 // it to generate a list of templates found in your ../views directory.
 // Please, do not delete it unless you know what you are doing.
 //
-//go:generate sunplate generate views --input ../views --output ../assets/views
+//go:generate goal generate views --input ../views --output ../assets/views
 
 // Controllers is a struct that should be embedded into every controller
 // of your app to make methods and fields provided by standard controllers available.

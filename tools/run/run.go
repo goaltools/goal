@@ -12,10 +12,10 @@ import (
 	"path/filepath"
 	"syscall"
 
-	"github.com/anonx/sunplate/internal/command"
-	p "github.com/anonx/sunplate/internal/path"
-	"github.com/anonx/sunplate/internal/watcher"
-	"github.com/anonx/sunplate/log"
+	"github.com/colegion/goal/internal/command"
+	p "github.com/colegion/goal/internal/path"
+	"github.com/colegion/goal/internal/watcher"
+	"github.com/colegion/goal/log"
 
 	"github.com/tsuru/config"
 	"gopkg.in/fsnotify.v1"
@@ -23,18 +23,18 @@ import (
 
 // ConfigFile is a name of the file that is located at the
 // root of user project and describes what the test runner should do.
-var ConfigFile = "sunplate.yml"
+var ConfigFile = "goal.yml"
 
 // Handler is an instance of run subcommand.
 var Handler = command.Handler{
 	Name:  "run",
 	Info:  "start a task runner",
 	Usage: "run [path]",
-	Desc: `Run is a watcher and task runner. It uses sunplate.yml
+	Desc: `Run is a watcher and task runner. It uses goal.yml
 file at the root of your project to find out what it should watch
 and how to build / start your application.
 
-Tasks of "init" section are run first, but only once per starting "sunplate run"
+Tasks of "init" section are run first, but only once per starting "goal run"
 command. "watch" section is to inform that when some files in the specified
 directories are modified, some tasks are expected to be executed.
 `,
@@ -104,7 +104,7 @@ func configDaemon(imp, file string) {
 		err := config.ReadConfigFile(file)
 		if err != nil {
 			log.Error.Printf(
-				`Are you sure "%s" is a path of sunplate project?
+				`Are you sure "%s" is a path of goal project?
 "%s" file is missing.`, imp, file,
 			)
 			notify <- syscall.SIGTERM

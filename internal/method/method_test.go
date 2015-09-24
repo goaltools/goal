@@ -3,7 +3,7 @@ package method
 import (
 	"testing"
 
-	"github.com/anonx/sunplate/internal/reflect"
+	"github.com/colegion/goal/internal/reflect"
 )
 
 func TestFunc(t *testing.T) {

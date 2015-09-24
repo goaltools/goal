@@ -1,18 +1,18 @@
-// Package handlers is generated automatically by Sunplate toolkit.
+// Package handlers is generated automatically by goal toolkit.
 // Please, do not edit it manually.
 package handlers
 
 import (
 	"net/http"
 
-	contr "github.com/anonx/sunplate/internal/skeleton/controllers"
+	contr "github.com/colegion/goal/internal/skeleton/controllers"
 
-	"github.com/anonx/sunplate/config"
-	"github.com/anonx/sunplate/strconv"
+	"github.com/colegion/goal/config"
+	"github.com/colegion/goal/strconv"
 )
 
 // App is an insance of tApp that is automatically generated from App controller
-// being found at "github.com/anonx/sunplate/internal/skeleton/controllers/app.go",
+// being found at "github.com/colegion/goal/internal/skeleton/controllers/app.go",
 // and contains methods to be used as handler functions.
 //
 // App is a sample controller that is used for demonstration purposes.
@@ -22,7 +22,7 @@ var App tApp
 type tApp struct {
 }
 
-// New allocates (github.com/anonx/sunplate/internal/skeleton/controllers).App controller,
+// New allocates (github.com/colegion/goal/internal/skeleton/controllers).App controller,
 // initializes its parents; then returns the controller.
 func (t tApp) New() *contr.App {
 	c := &contr.App{}
@@ -31,14 +31,14 @@ func (t tApp) New() *contr.App {
 }
 
 // Before executes magic actions of embedded controllers, and
-// calls (github.com/anonx/sunplate/internal/skeleton/controllers).App.Before with arguments
+// calls (github.com/colegion/goal/internal/skeleton/controllers).App.Before with arguments
 // that are extracted from r.Form and converted to appropriate types.
 func (t tApp) Before(c *contr.App, w http.ResponseWriter, r *http.Request) http.Handler {
 	// Execute magic Before actions of embedded controllers.
 	if res := Controllers.Before(c.Controllers, w, r); res != nil {
 		return res
 	}
-	// Call magic Before action of (github.com/anonx/sunplate/internal/skeleton/controllers).App.
+	// Call magic Before action of (github.com/colegion/goal/internal/skeleton/controllers).App.
 	if res := c.Before( // "Binding" parameters.
 		strconv.String(r.Form, "name"),
 		strconv.Ints(r.Form, "pages"),
@@ -79,7 +79,7 @@ func (t tApp) Finally(c *contr.App, w http.ResponseWriter, r *http.Request) (fin
 
 // Index is a handler that was generated automatically.
 // It calls Before, After, Finally methods, and Index action found at
-// github.com/anonx/sunplate/internal/skeleton/controllers/app.go
+// github.com/colegion/goal/internal/skeleton/controllers/app.go
 // in appropriate order.
 //
 // Index is an action that is used for generation of a greeting form.
@@ -111,7 +111,7 @@ func (t tApp) Index(w http.ResponseWriter, r *http.Request) {
 
 // PostGreet is a handler that was generated automatically.
 // It calls Before, After, Finally methods, and PostGreet action found at
-// github.com/anonx/sunplate/internal/skeleton/controllers/app.go
+// github.com/colegion/goal/internal/skeleton/controllers/app.go
 // in appropriate order.
 //
 // PostGreet prints received user fullname. If it is not valid,
@@ -143,7 +143,7 @@ func (t tApp) PostGreet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Init is used to initialize controllers of "github.com/anonx/sunplate/internal/skeleton/controllers"
+// Init is used to initialize controllers of "github.com/colegion/goal/internal/skeleton/controllers"
 // and its parents.
 func Init(g config.Getter) {
 	initApp(g)

@@ -59,8 +59,8 @@ func TestParseConf(t *testing.T) {
 }
 
 func TestParseTask(t *testing.T) {
-	s := "sunplate run path/to/app"
-	expN := "sunplate"
+	s := "goal run path/to/app"
+	expN := "goal"
 	expAs := []string{"run", "path/to/app"}
 	if rn, ras := parseTask(s); rn != expN || !reflect.DeepEqual(ras, expAs) {
 		t.Errorf(

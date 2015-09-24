@@ -3,7 +3,7 @@ package controllers
 import (
 	"net/http"
 
-	v "github.com/anonx/sunplate/internal/skeleton/assets/views"
+	v "github.com/colegion/goal/internal/skeleton/assets/views"
 )
 
 // App is a sample controller that is used for demonstration purposes.

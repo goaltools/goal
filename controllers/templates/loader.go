@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/anonx/sunplate/log"
+	"github.com/colegion/goal/log"
 )
 
 var templates = map[string]*template.Template{}

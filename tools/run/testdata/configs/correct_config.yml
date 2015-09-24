@@ -1,5 +1,5 @@
 init:
-  - sunplate help
+  - goal help
   - /pass
   - /echo "Init section"
   - /pass
@@ -8,7 +8,7 @@ watch:
   smth:
     - /pass
     - /start smth
-    - sunplate help test
+    - goal help test
   smth_else:
     - /pass
     - /single smth_else

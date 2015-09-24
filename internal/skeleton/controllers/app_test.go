@@ -4,10 +4,10 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/anonx/sunplate/internal/skeleton/assets/handlers"
-	"github.com/anonx/sunplate/internal/skeleton/routes"
+	"github.com/colegion/goal/internal/skeleton/assets/handlers"
+	"github.com/colegion/goal/internal/skeleton/routes"
 
-	"github.com/anonx/sunplate/assert"
+	"github.com/colegion/goal/assert"
 )
 
 func TestAppIndex(t *testing.T) {

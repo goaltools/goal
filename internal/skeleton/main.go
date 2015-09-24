@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"runtime"
 
-	"github.com/anonx/sunplate/internal/skeleton/assets/handlers"
-	"github.com/anonx/sunplate/internal/skeleton/routes"
+	"github.com/colegion/goal/internal/skeleton/assets/handlers"
+	"github.com/colegion/goal/internal/skeleton/routes"
 
-	c "github.com/anonx/sunplate/config"
+	c "github.com/colegion/goal/config"
 )
 
 var config = c.New()

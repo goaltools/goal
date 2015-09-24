@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/anonx/sunplate/log"
+	"github.com/colegion/goal/log"
 )
 
 func TestArgsFilter(t *testing.T) {

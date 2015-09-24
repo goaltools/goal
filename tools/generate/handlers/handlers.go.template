@@ -1,4 +1,4 @@
-// Package <@.ctx.package> is generated automatically by Sunplate toolkit.
+// Package <@.ctx.package> is generated automatically by goal toolkit.
 // Please, do not edit it manually.
 package <@.ctx.package>
 
@@ -12,8 +12,8 @@ import (
 :	<@end>\
 	contr "<@.ctx.import>"
 
-	"github.com/anonx/sunplate/config"
-	"github.com/anonx/sunplate/strconv"
+	"github.com/colegion/goal/config"
+	"github.com/colegion/goal/strconv"
 )
 
 // <@.ctx.name> is an insance of t<@.ctx.name> that is automatically generated from <@.ctx.name> controller

@@ -12,7 +12,7 @@
 //		"log"
 //		"net/http"
 //
-//		r "github.com/anonx/sunplate/routing"
+//		r "github.com/colegion/goal/routing"
 //	)
 //
 //	func main() {

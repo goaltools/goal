@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/anonx/sunplate/log"
+	"github.com/colegion/goal/log"
 )
 
 func TestStructsFilter(t *testing.T) {
@@ -120,16 +120,16 @@ func TestProcessImportDecl(t *testing.T) {
 
 				"./example"
 
-				"github.com/anonx/sunplate"
-				l "github.com/anonx/sunplate/log"
+				"github.com/colegion/goal"
+				l "github.com/colegion/goal/log"
 			)
 		`,
 	)
 	expRes := map[string]string{
-		"strings":  "strings",
-		"example":  "./example",
-		"sunplate": "github.com/anonx/sunplate",
-		"l":        "github.com/anonx/sunplate/log",
+		"strings": "strings",
+		"example": "./example",
+		"goal":    "github.com/colegion/goal",
+		"l":       "github.com/colegion/goal/log",
 	}
 	genDecl, _ := pkg.Decls[0].(*ast.GenDecl)
 	imps := processImportDecl(genDecl)
@@ -181,18 +181,18 @@ func TestProcessTypeSpec(t *testing.T) {
 func TestProcessImportSpec(t *testing.T) {
 	pkg := getPackage(t, `package test
 			import(
-				"github.com/anonx/sunplate"
-				l "github.com/anonx/sunplate/log"
+				"github.com/colegion/goal"
+				l "github.com/colegion/goal/log"
 				"./example"
 				"strings"
 			)
 		`,
 	)
 	expRes := map[string]string{
-		"sunplate": "github.com/anonx/sunplate",
-		"l":        "github.com/anonx/sunplate/log",
-		"example":  "./example",
-		"strings":  "strings",
+		"goal":    "github.com/colegion/goal",
+		"l":       "github.com/colegion/goal/log",
+		"example": "./example",
+		"strings": "strings",
 	}
 	genDecl, _ := pkg.Decls[0].(*ast.GenDecl)
 	for _, st := range genDecl.Specs { // Iterating over specs.

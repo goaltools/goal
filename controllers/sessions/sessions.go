@@ -4,7 +4,7 @@ package sessions
 import (
 	"net/http"
 
-	"github.com/anonx/sunplate/config"
+	"github.com/colegion/goal/config"
 	"github.com/gorilla/securecookie"
 )
 

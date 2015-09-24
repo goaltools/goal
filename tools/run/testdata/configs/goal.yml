@@ -1,5 +1,5 @@
 init:
-  - sunplate generate xxx
+  - goal generate xxx
   - /pass
   - /echo "Hello, world!"
   - /start test
@@ -11,5 +11,5 @@ watch:
   ./*:
     - /pass
 test:
-  - sunplate generate xxx
-help: sunplate generate xxx
+  - goal generate xxx
+help: goal generate xxx

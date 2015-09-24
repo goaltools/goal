@@ -1,21 +1,21 @@
-// Package handlers is generated automatically by Sunplate toolkit.
+// Package handlers is generated automatically by goal toolkit.
 // Please, do not edit it manually.
 package handlers
 
 import (
 	"net/http"
 
-	c0 "github.com/anonx/sunplate/internal/skeleton/assets/handlers/github.com/anonx/sunplate/controllers/requests"
-	c1 "github.com/anonx/sunplate/internal/skeleton/assets/handlers/github.com/anonx/sunplate/controllers/templates"
-	c2 "github.com/anonx/sunplate/internal/skeleton/assets/handlers/github.com/anonx/sunplate/controllers/sessions"
-	contr "github.com/anonx/sunplate/internal/skeleton/controllers"
+	c0 "github.com/colegion/goal/internal/skeleton/assets/handlers/github.com/colegion/goal/controllers/requests"
+	c2 "github.com/colegion/goal/internal/skeleton/assets/handlers/github.com/colegion/goal/controllers/sessions"
+	c1 "github.com/colegion/goal/internal/skeleton/assets/handlers/github.com/colegion/goal/controllers/templates"
+	contr "github.com/colegion/goal/internal/skeleton/controllers"
 
-	"github.com/anonx/sunplate/config"
-	"github.com/anonx/sunplate/strconv"
+	"github.com/colegion/goal/config"
+	"github.com/colegion/goal/strconv"
 )
 
 // Controllers is an insance of tControllers that is automatically generated from Controllers controller
-// being found at "github.com/anonx/sunplate/internal/skeleton/controllers/init.go",
+// being found at "github.com/colegion/goal/internal/skeleton/controllers/init.go",
 // and contains methods to be used as handler functions.
 //
 // Controllers is a struct that should be embedded into every controller
@@ -26,7 +26,7 @@ var Controllers tControllers
 type tControllers struct {
 }
 
-// New allocates (github.com/anonx/sunplate/internal/skeleton/controllers).Controllers controller,
+// New allocates (github.com/colegion/goal/internal/skeleton/controllers).Controllers controller,
 // initializes its parents; then returns the controller.
 func (t tControllers) New() *contr.Controllers {
 	c := &contr.Controllers{}
@@ -37,7 +37,7 @@ func (t tControllers) New() *contr.Controllers {
 }
 
 // Before executes magic actions of embedded controllers, and
-// calls (github.com/anonx/sunplate/internal/skeleton/controllers).Controllers.Before.
+// calls (github.com/colegion/goal/internal/skeleton/controllers).Controllers.Before.
 func (t tControllers) Before(c *contr.Controllers, w http.ResponseWriter, r *http.Request) http.Handler {
 	// Execute magic Before actions of embedded controllers.
 	if res := c0.Requests.Before(c.Requests, w, r); res != nil {
@@ -49,7 +49,7 @@ func (t tControllers) Before(c *contr.Controllers, w http.ResponseWriter, r *htt
 	if res := c2.Sessions.Before(c.Sessions, w, r); res != nil {
 		return res
 	}
-	// Call magic Before action of (github.com/anonx/sunplate/internal/skeleton/controllers).Controllers.
+	// Call magic Before action of (github.com/colegion/goal/internal/skeleton/controllers).Controllers.
 	if res := c.Before( // "Binding" parameters.
 	); res != nil {
 		return res

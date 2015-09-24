@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/anonx/sunplate/internal/command"
-	"github.com/anonx/sunplate/internal/path"
+	"github.com/colegion/goal/internal/command"
+	"github.com/colegion/goal/internal/path"
 )
 
 func TestStart_ExistingDir(t *testing.T) {
@@ -26,7 +26,7 @@ func TestStart(t *testing.T) {
 	rs1, fn1 := walkFunc(dst)
 	filepath.Walk(dst, fn1)
 
-	p := path.SunplateDir("internal", "skeleton")
+	p := path.goalDir("internal", "skeleton")
 	rs2, fn2 := walkFunc(p)
 	filepath.Walk(p, fn2)
 

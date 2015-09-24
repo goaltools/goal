@@ -8,10 +8,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/anonx/sunplate/internal/command"
-	"github.com/anonx/sunplate/internal/generation"
-	p "github.com/anonx/sunplate/internal/path"
-	"github.com/anonx/sunplate/log"
+	"github.com/colegion/goal/internal/command"
+	"github.com/colegion/goal/internal/generation"
+	p "github.com/colegion/goal/internal/path"
+	"github.com/colegion/goal/log"
 )
 
 // Handler is an instance of new subcommand.
@@ -19,7 +19,7 @@ var Handler = command.Handler{
 	Name:  "new",
 	Info:  "create a skeleton application",
 	Usage: "new {path}",
-	Desc: `New creates files and directories to get a new Sunplate toolkit
+	Desc: `New creates files and directories to get a new goal toolkit
 based application running quickly.
 All files and directories will be put into the given import path.
 
@@ -27,14 +27,14 @@ The path must be a directory that does not exist yet, e.g.:
 	./sample
 
 or alternatively:
-	github.com/anonx/sample
+	github.com/colegion/sample
 
 Moreover, it is required to be located inside $GOPATH.
 
 Examples:
-	sunplate new github.com/anonx/sample
-	sunplate new ./sample
-	sunplate new ../anonx/sample
+	goal new github.com/colegion/sample
+	goal new ./sample
+	goal new ../colegion/sample
 `,
 
 	Main: start,
@@ -43,7 +43,7 @@ Examples:
 // sourceFiles contains extensions of files that should be process
 // rather than just copied, a replacement of import path is expected
 // in them. As an example there should be github.com/user/project
-// instead of github.com/anonx/sunplate/internal/skeleton.
+// instead of github.com/colegion/goal/internal/skeleton.
 var sourceFiles = map[string]bool{
 	".go":  true,
 	".yml": true,
@@ -51,10 +51,10 @@ var sourceFiles = map[string]bool{
 
 // start is an entry point of the command.
 var start = func(action string, params command.Data) {
-	oldImport := p.SunplateImport("internal", "skeleton")
+	oldImport := p.goalImport("internal", "skeleton")
 	newImport := p.AbsoluteImport(params.Default(action, "./"))
 
-	inputDir := p.SunplateDir("internal", "skeleton")
+	inputDir := p.goalDir("internal", "skeleton")
 	outputDir := p.PackageDir(newImport)
 
 	// Make sure the output directory does not exist yet.
@@ -133,5 +133,5 @@ func walkFunc(dir string) (result, func(string, os.FileInfo, error) error) {
 
 var info = `Your application "%s" is ready:
 You can run it with:
-	sunplate run %s
+	goal run %s
 `

@@ -13,8 +13,8 @@ func TestStart_IncorrectTask(t *testing.T) {
 
 func TestStart(t *testing.T) {
 	ts := []string{
-		`sunplate start_smth`,
-		`sunplate start_smth_else`,
+		`goal start_smth`,
+		`goal start_smth_else`,
 	}
 	start(ts)
 }
@@ -28,8 +28,8 @@ func TestRun_IncorrectTask(t *testing.T) {
 
 func TestRun(t *testing.T) {
 	ts := []string{
-		`sunplate run_smth`,
-		`sunplate run_smth_else`,
+		`goal run_smth`,
+		`goal run_smth_else`,
 	}
 	run(ts)
 }
@@ -47,9 +47,9 @@ func TestStartSingleInstance_IncorrectCommand(t *testing.T) {
 func TestStartSingleInstance(t *testing.T) {
 	go instanceController()
 
-	startSingleInstance("app", "sunplate run github.com/anonx/sunplate/internal/skeleton")
-	startSingleInstance("smth", "sunplate help")
-	startSingleInstance("app", "sunplate run github.com/anonx/sunplate/internal/skeleton")
+	startSingleInstance("app", "goal run github.com/colegion/goal/internal/skeleton")
+	startSingleInstance("smth", "goal help")
+	startSingleInstance("app", "goal run github.com/colegion/goal/internal/skeleton")
 
 	channel <- message{action: "exit"}
 	<-stopped

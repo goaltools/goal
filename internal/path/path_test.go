@@ -7,28 +7,28 @@ import (
 	"testing"
 )
 
-func TestSunplateDir(t *testing.T) {
+func TestgoalDir(t *testing.T) {
 	p := filepath.ToSlash(filepath.Join(build.Default.GOPATH, "src", spImp))
 
-	if v := SunplateDir(); v != p {
+	if v := goalDir(); v != p {
 		t.Errorf(`Incorrect result. Expected "%s", got "%s".`, p, v)
 	}
 
 	hp := filepath.ToSlash(filepath.Join(p, "generation", "handlers"))
-	if v := SunplateDir("generation", "handlers"); v != hp {
+	if v := goalDir("generation", "handlers"); v != hp {
 		t.Errorf(`Incorrect result. Expected "%s", got "%s".`, hp, v)
 	}
 }
 
-func TestSunplateImport(t *testing.T) {
+func TestgoalImport(t *testing.T) {
 	p := spImp
 
-	if v := SunplateImport(); v != p {
+	if v := goalImport(); v != p {
 		t.Errorf(`Incorrect result. Expected "%s", got "%s".`, p, v)
 	}
 
 	hp := filepath.ToSlash(filepath.Join(p, "generation", "handlers"))
-	if v := SunplateImport("generation", "handlers"); v != hp {
+	if v := goalImport("generation", "handlers"); v != hp {
 		t.Errorf(`Incorrect result. Expected "%s", got "%s".`, hp, v)
 	}
 }
@@ -43,7 +43,7 @@ func TestWorkingDir(t *testing.T) {
 }
 
 func TestAbsoluteImport_AbsImportArgument(t *testing.T) {
-	if v := AbsoluteImport(spImp); v != "github.com/anonx/sunplate" {
+	if v := AbsoluteImport(spImp); v != "github.com/colegion/goal" {
 		t.Errorf(`Incorrect result. Expected "%s", got "%s".`, spImp, v)
 	}
 
@@ -81,10 +81,10 @@ func TestAbsoluteImport(t *testing.T) {
 }
 
 func TestPrefixless(t *testing.T) {
-	p := "/anonx/sunplate"
+	p := "/colegion/goal"
 	if v := Prefixless(filepath.ToSlash(filepath.Join("github.com", p)), "github.com"); v != p {
 		t.Errorf(`Inncorrect result. Expected "%s", got %s.`, p, v)
 	}
 }
 
-var spImp = "github.com/anonx/sunplate"
+var spImp = "github.com/colegion/goal"

@@ -1,6 +1,6 @@
 package sample
 
-import "github.com/anonx/sunplate/log"
+import "github.com/colegion/goal/log"
 
 func init() {
 	log.Trace.Println("It has been initialized.")

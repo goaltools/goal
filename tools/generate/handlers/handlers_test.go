@@ -5,7 +5,7 @@ import (
 	"os/exec"
 	"testing"
 
-	"github.com/anonx/sunplate/internal/command"
+	"github.com/colegion/goal/internal/command"
 )
 
 func TestStart(t *testing.T) {

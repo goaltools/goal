@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	a "github.com/anonx/sunplate/internal/action"
-	m "github.com/anonx/sunplate/internal/method"
-	"github.com/anonx/sunplate/internal/path"
-	"github.com/anonx/sunplate/internal/reflect"
-	"github.com/anonx/sunplate/log"
+	a "github.com/colegion/goal/internal/action"
+	m "github.com/colegion/goal/internal/method"
+	"github.com/colegion/goal/internal/path"
+	"github.com/colegion/goal/internal/reflect"
+	"github.com/colegion/goal/log"
 )
 
 // packages represents packages of controllers. The format is the following:
@@ -33,7 +33,7 @@ type parents []parent
 // actions and magic methods.
 type parent struct {
 	ID     int    // Unique number that is used for generation of import names.
-	Import string // Import path of the structure, e.g. "github.com/anonx/sunplate/template" or "".
+	Import string // Import path of the structure, e.g. "github.com/colegion/goal/template" or "".
 	Name   string // Name of the structure, e.g. "Template".
 }
 

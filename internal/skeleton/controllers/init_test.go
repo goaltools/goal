@@ -3,9 +3,9 @@ package controllers_test
 import (
 	"log"
 
-	"github.com/anonx/sunplate/internal/skeleton/assets/handlers"
+	"github.com/colegion/goal/internal/skeleton/assets/handlers"
 
-	c "github.com/anonx/sunplate/config"
+	c "github.com/colegion/goal/config"
 )
 
 func init() {

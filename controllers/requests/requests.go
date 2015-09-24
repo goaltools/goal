@@ -3,7 +3,7 @@ package requests
 import (
 	"net/http"
 
-	"github.com/anonx/sunplate/log"
+	"github.com/colegion/goal/log"
 )
 
 // Requests is a controller that does two things:
@@ -14,10 +14,10 @@ type Requests struct {
 }
 
 // Initially calls ParseForm on the request and saves it to c.Request.
-// At the same time, if used with a standard sunplate routing package,
+// At the same time, if used with a standard goal routing package,
 // parameters extracted from URN are saved to the Form field of the Request.
 func (c *Requests) Initially(w http.ResponseWriter, r *http.Request) bool {
-	// Save the old value of Form, "github.com/anonx/sunplate/routing"
+	// Save the old value of Form, "github.com/colegion/goal/routing"
 	// stores parameters extracted from URN there.
 	t := r.Form
 

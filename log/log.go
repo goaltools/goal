@@ -11,7 +11,7 @@ import (
 	"github.com/fatih/color"
 )
 
-// A list of loggers that are used by "sunplate" packages.
+// A list of loggers that are used by "goal" packages.
 var (
 	Error *log.Logger
 	Warn  *log.Logger

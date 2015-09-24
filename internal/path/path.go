@@ -1,4 +1,4 @@
-// Package path is a set of helper functions for work with paths in sunplate package.
+// Package path is a set of helper functions for work with paths in goal package.
 package path
 
 import (
@@ -7,39 +7,39 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/anonx/sunplate/log"
+	"github.com/colegion/goal/log"
 )
 
-// SunplateDir returns an absolute path of the directory where a package of sunplate
-// toolkit is installed (it should be located at "$GOPATH/github.com/anonx/sunplate/$pkg").
+// goalDir returns an absolute path of the directory where a package of goal
+// toolkit is installed (it should be located at "$GOPATH/github.com/colegion/goal/$pkg").
 //
-// For example, to find out the path of sunplate's root directory use:
-//	path.SunplateDir()
-// To identify the path of sunplate/generation/handlers subpackage do the following:
-//	path.SunplateDir("generation", "handlers")
-func SunplateDir(pkgs ...string) string {
+// For example, to find out the path of goal's root directory use:
+//	path.goalDir()
+// To identify the path of goal/generation/handlers subpackage do the following:
+//	path.goalDir("generation", "handlers")
+func goalDir(pkgs ...string) string {
 	p := filepath.Join(
-		PackageDir(""), SunplateImport(pkgs...),
+		PackageDir(""), goalImport(pkgs...),
 	)
 	return filepath.ToSlash(p)
 }
 
-// SunplateImport is equivalent of the SunplateDir except it returns
+// goalImport is equivalent of the goalDir except it returns
 // a go import path rather than a path to a directory.
-func SunplateImport(pkgs ...string) string {
-	p := "github.com/anonx/sunplate"
+func goalImport(pkgs ...string) string {
+	p := "github.com/colegion/goal"
 	for i := range pkgs {
 		p = filepath.Join(p, pkgs[i])
 	}
 	return filepath.ToSlash(p)
 }
 
-// WorkingDir returns a path to the directory where sunplate program was run.
+// WorkingDir returns a path to the directory where goal program was run.
 // It panics in case of error.
 //
-// So, if we are moving to some directory and starting sunplate program there:
+// So, if we are moving to some directory and starting goal program there:
 //	cd /home/user/somedir
-//	sunplate ...
+//	goal ...
 // the WorkingDir() should return "/home/user/somedir"
 //	path := WorkingDir() // Output: "/home/user/somedir"
 func WorkingDir() string {
