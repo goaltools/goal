@@ -13,6 +13,17 @@ import (
 	"github.com/anonx/sunplate/log"
 )
 
+<<<<<<< HEAD:internal/programs/generation/output/output.go
+=======
+// replaceStrings contains a list of strings that should
+// be replaced by some other values in templates.
+var replaceStrings = map[string]string{
+	"\\\r\n": "",
+	"\\\n":   "",
+	":\t":    "",
+}
+
+>>>>>>> 8909004... Fixing skeleton generation on windows:internal/generation/generation.go
 // Type is a context that stores information that is used for generation
 // and saving files (mostly go packages).
 type Type struct {
