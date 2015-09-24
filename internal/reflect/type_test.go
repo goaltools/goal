@@ -3,7 +3,7 @@ package reflect
 import (
 	"testing"
 
-	"github.com/anonx/sunplate/log"
+	"github.com/colegion/goal/log"
 )
 
 func TestTypeString(t *testing.T) {

@@ -1,5 +1,5 @@
 // Package strconv contains code generation staff related
-// to github.com/anonx/sunplate/strconv package.
+// to github.com/colegion/goal/strconv package.
 package strconv
 
 import (
@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"go/ast"
 
-	"github.com/anonx/sunplate/internal/path"
-	"github.com/anonx/sunplate/internal/reflect"
+	"github.com/colegion/goal/internal/path"
+	"github.com/colegion/goal/internal/reflect"
 )
 
 // UnsupportedTypeErr is an error that indicates that there is no conversion
@@ -43,7 +43,7 @@ func (m FnMap) Render(pkgName, vsName string, a reflect.Arg) (string, error) {
 // This is useful for code generation.
 func Context() FnMap {
 	fs := FnMap{}
-	p := reflect.ParseDir(path.SunplateDir("strconv"), false)
+	p := reflect.ParseDir(path.goalDir("strconv"), false)
 	for i := range p.Funcs {
 		if !strconvFunc(p.Funcs[i]) {
 			continue

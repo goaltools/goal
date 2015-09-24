@@ -1,18 +1,18 @@
-// Package handlers is generated automatically by Sunplate toolkit.
+// Package handlers is generated automatically by goal toolkit.
 // Please, do not edit it manually.
 package handlers
 
 import (
 	"net/http"
 
-	contr "github.com/anonx/sunplate/controllers/requests"
+	contr "github.com/colegion/goal/controllers/requests"
 
-	"github.com/anonx/sunplate/config"
-	"github.com/anonx/sunplate/strconv"
+	"github.com/colegion/goal/config"
+	"github.com/colegion/goal/strconv"
 )
 
 // Requests is an insance of tRequests that is automatically generated from Requests controller
-// being found at "github.com/anonx/sunplate/controllers/requests/requests.go",
+// being found at "github.com/colegion/goal/controllers/requests/requests.go",
 // and contains methods to be used as handler functions.
 //
 // Requests is a controller that does two things:
@@ -24,7 +24,7 @@ var Requests tRequests
 type tRequests struct {
 }
 
-// New allocates (github.com/anonx/sunplate/controllers/requests).Requests controller,
+// New allocates (github.com/colegion/goal/controllers/requests).Requests controller,
 // then returns it.
 func (t tRequests) New() *contr.Requests {
 	c := &contr.Requests{}
@@ -44,7 +44,7 @@ func (t tRequests) After(c *contr.Requests, w http.ResponseWriter, r *http.Reque
 // Initially is a method that is started by every handler function at the very beginning
 // of their execution phase.
 func (t tRequests) Initially(c *contr.Requests, w http.ResponseWriter, r *http.Request) (finish bool) {
-	// Call magic Initially method of (github.com/anonx/sunplate/controllers/requests).Requests.
+	// Call magic Initially method of (github.com/colegion/goal/controllers/requests).Requests.
 	return c.Initially(w, r)
 }
 
@@ -54,7 +54,7 @@ func (t tRequests) Finally(c *contr.Requests, w http.ResponseWriter, r *http.Req
 	return
 }
 
-// Init is used to initialize controllers of "github.com/anonx/sunplate/controllers/requests"
+// Init is used to initialize controllers of "github.com/colegion/goal/controllers/requests"
 // and its parents.
 func Init(g config.Getter) {
 	initRequests(g)

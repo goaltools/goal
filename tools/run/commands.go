@@ -4,7 +4,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/anonx/sunplate/log"
+	"github.com/colegion/goal/log"
 )
 
 var (

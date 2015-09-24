@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/anonx/sunplate/internal/command"
-	"github.com/anonx/sunplate/log"
+	"github.com/colegion/goal/internal/command"
+	"github.com/colegion/goal/log"
 )
 
 // helpHandler is an instance of a subcommand that is used
@@ -38,30 +38,22 @@ func showCommands() (s string) {
 }
 
 var header = `~
-~ https://github.com/anonx/sunplate
+~ https://github.com/colegion/goal
 ~
-                        _       _
-                       | |     | |
-  ___ _   _ _ __  _ __ | | __ _| |_ ___
- / __| | | | '_ \| '_ \| |/ _' | __/ _ \
- \__ \ |_| | | | | |_) | | (_| | ||  __/
- |___/\__,_|_| |_| .__/|_|\__,_|\__\___|
-                 | |
-                 |_|
 `
 
-var helpMsg = `Sunplate is a toolkit for rapid web development in Go language.
+var helpMsg = `goal is a toolkit for rapid web development in Go language.
 
 Usage:
-	sunplate {command} [arguments]
+	goal {command} [arguments]
 
 The commands are:
 %s
-Use "sunplate help {command}" for more information.
+Use "goal help {command}" for more information.
 `
 
 var infoMsg = `Usage:
-	sunplate %s
+	goal %s
 
 %s
 `

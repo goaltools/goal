@@ -6,7 +6,7 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/anonx/sunplate/config"
+	"github.com/colegion/goal/config"
 )
 
 var (

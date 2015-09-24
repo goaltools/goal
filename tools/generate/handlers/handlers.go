@@ -7,12 +7,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/anonx/sunplate/internal/action"
-	"github.com/anonx/sunplate/internal/command"
-	"github.com/anonx/sunplate/internal/generation"
-	"github.com/anonx/sunplate/internal/method"
-	"github.com/anonx/sunplate/internal/path"
-	"github.com/anonx/sunplate/log"
+	"github.com/colegion/goal/internal/action"
+	"github.com/colegion/goal/internal/command"
+	"github.com/colegion/goal/internal/generation"
+	"github.com/colegion/goal/internal/method"
+	"github.com/colegion/goal/internal/path"
+	"github.com/colegion/goal/log"
 )
 
 // Start is an entry point of the generate handlers command.
@@ -35,7 +35,7 @@ func Start(params command.Data) {
 
 	// Start generation of handler packages.
 	t := generation.NewType(
-		"", filepath.Join(path.SunplateDir("commands", "generate", "handlers"), "./handlers.go.template"),
+		"", filepath.Join(path.goalDir("commands", "generate", "handlers"), "./handlers.go.template"),
 	)
 	t.Extension = ".go" // Save generated files as a .go source.
 
@@ -47,7 +47,7 @@ func Start(params command.Data) {
 		//
 		// I.e. if --input is "./controllers" and --output is "./assets/handlers",
 		// we are saving processed "./controllers" package to "./assets/handlers"
-		// and some "github.com/anonx/smth" to "./assets/handlers/github.com/anonx/smth".
+		// and some "github.com/colegion/smth" to "./assets/handlers/github.com/colegion/smth".
 		out := outputDir
 		if imp != absImport {
 			out = filepath.Join(out, imp)

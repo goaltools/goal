@@ -7,7 +7,7 @@ import (
 	"go/ast"
 	"strings"
 
-	"github.com/anonx/sunplate/internal/reflect"
+	"github.com/colegion/goal/internal/reflect"
 )
 
 const (

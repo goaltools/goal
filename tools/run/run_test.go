@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/anonx/sunplate/internal/command"
+	"github.com/colegion/goal/internal/command"
 )
 
 var mu sync.Mutex
@@ -42,7 +42,7 @@ func TestMain_TestData2(t *testing.T) {
 	defer expectPanic(`Application was terminated, panic expected.`)
 	go func() {
 		// Paths relative to the root directory are used here.
-		err := ioutil.WriteFile("./sunplate.yml", bs, 0755)
+		err := ioutil.WriteFile("./goal.yml", bs, 0755)
 		if err != nil {
 			t.Error(err)
 		}
@@ -51,7 +51,7 @@ func TestMain_TestData2(t *testing.T) {
 		notify <- syscall.SIGTERM
 	}()
 	main("run", command.Data{
-		"run": "github.com/anonx/sunplate/internal/programs/run/testdata/configs",
+		"run": "github.com/colegion/goal/internal/programs/run/testdata/configs",
 	})
 }
 
@@ -68,16 +68,16 @@ func TestMain(t *testing.T) {
 	defer expectPanic(`Application was terminated, panic expected.`)
 	notify <- syscall.SIGTERM
 	main("run", command.Data{
-		"run": "github.com/anonx/sunplate/internal/skeleton",
+		"run": "github.com/colegion/goal/internal/skeleton",
 	})
 }
 
 func createConfig(t *testing.T) []byte {
-	bs, err := ioutil.ReadFile("./testdata/configs/sunplate.src.yml")
+	bs, err := ioutil.ReadFile("./testdata/configs/goal.src.yml")
 	if err != nil {
 		t.Error(err)
 	}
-	err = ioutil.WriteFile("./testdata/configs/sunplate.yml", bs, 0755)
+	err = ioutil.WriteFile("./testdata/configs/goal.yml", bs, 0755)
 	if err != nil {
 		t.Error(err)
 	}

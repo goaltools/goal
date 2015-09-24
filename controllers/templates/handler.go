@@ -3,7 +3,7 @@ package templates
 import (
 	"net/http"
 
-	"github.com/anonx/sunplate/log"
+	"github.com/colegion/goal/log"
 )
 
 // Handler is a template handler that implements http.Handler interface.

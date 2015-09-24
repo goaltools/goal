@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/anonx/sunplate/log"
+	"github.com/colegion/goal/log"
 )
 
 func TestCopyFile(t *testing.T) {

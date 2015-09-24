@@ -10,7 +10,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/anonx/sunplate/log"
+	"github.com/colegion/goal/log"
 )
 
 <<<<<<< HEAD:internal/programs/generation/output/output.go

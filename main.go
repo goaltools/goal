@@ -1,20 +1,20 @@
 // Package main is used as an entry point of
-// 'sunplate' toolkit. It validates user input parameters
+// 'goal' toolkit. It validates user input parameters
 // and runs subcommands.
 package main
 
 import (
 	"os"
 
-	"github.com/anonx/sunplate/commands/create"
-	"github.com/anonx/sunplate/commands/generate"
-	"github.com/anonx/sunplate/commands/run"
-	"github.com/anonx/sunplate/internal/command"
-	"github.com/anonx/sunplate/log"
+	"github.com/colegion/goal/commands/create"
+	"github.com/colegion/goal/commands/generate"
+	"github.com/colegion/goal/commands/run"
+	"github.com/colegion/goal/internal/command"
+	"github.com/colegion/goal/log"
 )
 
 // Handlers is a map of registered subcommands
-// 'sunplate' toolkit supports.
+// 'goal' toolkit supports.
 var Handlers = command.NewContext()
 
 func main() {
@@ -71,4 +71,4 @@ func showHeader(val string) {
 }
 
 var unknownCmd = `Unknown command "%s".
-Run "sunplate help" for usage.`
+Run "goal help" for usage.`

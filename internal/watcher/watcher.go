@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/anonx/sunplate/log"
+	"github.com/colegion/goal/log"
 
 	"gopkg.in/fsnotify.v1"
 )
@@ -58,10 +58,10 @@ func (t *Type) Listen(pattern string, fn func()) *fsnotify.Watcher {
 // will trigger restarts.
 // I.e. we have the following calls:
 //	w.Listen("./", fn1)
-//	w.ListenFile("./sunplate.yml", fn2)
-// If "sunplate.yml" file is modified fn2 will be triggered.
+//	w.ListenFile("./goal.yml", fn2)
+// If "goal.yml" file is modified fn2 will be triggered.
 // fn1 may be triggered by changes in any file inside
-// "./" directory except "sunplate.yml".
+// "./" directory except "goal.yml".
 func (t *Type) ListenFile(path string, fn func()) *fsnotify.Watcher {
 	// Create a new watcher.
 	w, err := fsnotify.NewWatcher()

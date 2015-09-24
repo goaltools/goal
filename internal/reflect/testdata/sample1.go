@@ -3,8 +3,8 @@ package sample
 import (
 	"fmt"
 
-	"github.com/anonx/sunplate/internal/reflect"
-	l "github.com/anonx/sunplate/log"
+	"github.com/colegion/goal/internal/reflect"
+	l "github.com/colegion/goal/log"
 )
 
 // Test is a type.

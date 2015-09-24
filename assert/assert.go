@@ -12,7 +12,7 @@ import (
 	"strings"
 	"testing"
 
-	l "github.com/anonx/sunplate/log"
+	l "github.com/colegion/goal/log"
 )
 
 // Type provides methods for getting GET, POST, etc. requests

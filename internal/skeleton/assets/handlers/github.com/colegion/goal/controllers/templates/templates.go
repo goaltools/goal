@@ -1,18 +1,18 @@
-// Package handlers is generated automatically by Sunplate toolkit.
+// Package handlers is generated automatically by goal toolkit.
 // Please, do not edit it manually.
 package handlers
 
 import (
 	"net/http"
 
-	contr "github.com/anonx/sunplate/controllers/templates"
+	contr "github.com/colegion/goal/controllers/templates"
 
-	"github.com/anonx/sunplate/config"
-	"github.com/anonx/sunplate/strconv"
+	"github.com/colegion/goal/config"
+	"github.com/colegion/goal/strconv"
 )
 
 // Templates is an insance of tTemplates that is automatically generated from Templates controller
-// being found at "github.com/anonx/sunplate/controllers/templates/templates.go",
+// being found at "github.com/colegion/goal/controllers/templates/templates.go",
 // and contains methods to be used as handler functions.
 //
 // Templates is a controller that provides support of HTML result
@@ -25,16 +25,16 @@ var Templates tTemplates
 type tTemplates struct {
 }
 
-// New allocates (github.com/anonx/sunplate/controllers/templates).Templates controller,
+// New allocates (github.com/colegion/goal/controllers/templates).Templates controller,
 // then returns it.
 func (t tTemplates) New() *contr.Templates {
 	c := &contr.Templates{}
 	return c
 }
 
-// Before calls (github.com/anonx/sunplate/controllers/templates).Templates.Before.
+// Before calls (github.com/colegion/goal/controllers/templates).Templates.Before.
 func (t tTemplates) Before(c *contr.Templates, w http.ResponseWriter, r *http.Request) http.Handler {
-	// Call magic Before action of (github.com/anonx/sunplate/controllers/templates).Templates.
+	// Call magic Before action of (github.com/colegion/goal/controllers/templates).Templates.
 	if res := c.Before( // "Binding" parameters.
 	); res != nil {
 		return res
@@ -61,7 +61,7 @@ func (t tTemplates) Finally(c *contr.Templates, w http.ResponseWriter, r *http.R
 
 // RenderTemplate is a handler that was generated automatically.
 // It calls Before, After, Finally methods, and RenderTemplate action found at
-// github.com/anonx/sunplate/controllers/templates/templates.go
+// github.com/colegion/goal/controllers/templates/templates.go
 // in appropriate order.
 //
 // RenderTemplate is an action that gets a path to template
@@ -95,7 +95,7 @@ func (t tTemplates) RenderTemplate(w http.ResponseWriter, r *http.Request) {
 
 // RenderNotFound is a handler that was generated automatically.
 // It calls Before, After, Finally methods, and RenderNotFound action found at
-// github.com/anonx/sunplate/controllers/templates/templates.go
+// github.com/colegion/goal/controllers/templates/templates.go
 // in appropriate order.
 //
 // RenderNotFound is an action that renders Error 404 page.
@@ -125,7 +125,7 @@ func (t tTemplates) RenderNotFound(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Init is used to initialize controllers of "github.com/anonx/sunplate/controllers/templates"
+// Init is used to initialize controllers of "github.com/colegion/goal/controllers/templates"
 // and its parents.
 func Init(g config.Getter) {
 	initTemplates(g)

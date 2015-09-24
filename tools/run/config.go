@@ -3,7 +3,7 @@ package run
 import (
 	"strings"
 
-	"github.com/anonx/sunplate/log"
+	"github.com/colegion/goal/log"
 
 	"github.com/tsuru/config"
 )
@@ -13,7 +13,7 @@ const (
 	watchSection = "watch"
 )
 
-// conf is a parsed version of sunplate configuration file.
+// conf is a parsed version of goal configuration file.
 type conf struct {
 	init  func()
 	watch map[string]func() // Keys are patterns.

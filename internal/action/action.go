@@ -8,10 +8,10 @@ import (
 	"go/ast"
 	"strings"
 
-	"github.com/anonx/sunplate/internal/method"
-	"github.com/anonx/sunplate/internal/reflect"
-	"github.com/anonx/sunplate/internal/strconv"
-	"github.com/anonx/sunplate/log"
+	"github.com/colegion/goal/internal/method"
+	"github.com/colegion/goal/internal/reflect"
+	"github.com/colegion/goal/internal/strconv"
+	"github.com/colegion/goal/log"
 )
 
 const (
@@ -44,7 +44,7 @@ func Func(pkg *reflect.Package) func(f *reflect.Func) bool {
 	// actionImportName is used to store information on how the action package is named.
 	// For illustration, here is an example:
 	//	import (
-	//		qwerty "github.com/anonx/sunplate/action"
+	//		qwerty "github.com/colegion/goal/action"
 	//	)
 	// In the example above action package will be imported as "qwerty".
 	// So, we are saving this name to actionImportName[FILE_NAME_WHERE_WE_IMPORT_THIS]

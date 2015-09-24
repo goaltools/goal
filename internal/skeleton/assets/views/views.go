@@ -1,4 +1,4 @@
-// Package views is generated automatically by Sunplate toolkit.
+// Package views is generated automatically by goal toolkit.
 // Please, do not edit it manually.
 package views
 
