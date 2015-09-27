@@ -1,6 +1,6 @@
 // Package main is used as an entry point of
-// 'goal' toolkit. It validates user input parameters
-// and runs subcommands.
+// the framework. It validates user input parameters
+// and runs subcommands (aka tools).
 package main
 
 import (
@@ -13,9 +13,9 @@ import (
 	"github.com/colegion/goal/log"
 )
 
-// Handlers is a map of registered subcommands
-// 'goal' toolkit supports.
-var Handlers = command.NewContext()
+// handlers is a map of registered subcommands (aka tools)
+// the framework supports.
+var handlers = command.NewContext()
 
 func main() {
 	var trace bool
