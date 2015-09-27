@@ -70,7 +70,7 @@ func (c *Context) Run(args []string) error {
 		if c.defaultH != nil {
 			return c.list[*c.defaultH].Run(c.list, *c.defaultH, args)
 		}
-		return nil
+		return ErrIncorrectArgs
 	}
 
 	// Otherwise, iterating over all available handlers of subcommands (aka tools).
