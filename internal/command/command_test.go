@@ -1,106 +1,128 @@
 package command
 
 import (
+	"errors"
+	"reflect"
+	"strings"
 	"testing"
 )
 
-func TestProcess_IncorrectArgs(t *testing.T) {
-	c := NewContext()
-	c.Register(Handler{
-		Name: "new",
-	})
-
-	err := c.Process()
-	if err == nil || err == ErrIncorrectArgs {
-		t.Errorf(
-			"If no arguments are received an error different from IncorrectArgs is expected. Got error: %v.",
-			err,
-		)
-	}
-
-	err = c.Process("new", "path/to/app", "smth")
-	if err != nil {
-		t.Errorf("Odd number of arguments is allowed, got error: %v", err)
-	}
-
-	err = c.Process("run", "path/to/app")
-	if err != ErrIncorrectArgs {
-		t.Errorf("Unregistered handler requested. Error expected, got %v.", err)
-	}
-}
-
-func TestRegister(t *testing.T) {
-	c := NewContext()
-	c.Register(Handler{
-		Name: "new",
-	})
-	if _, ok := c["new"]; !ok {
-		t.Errorf("The first handler was not registered. Context is %v.", c)
-	}
-	c.Register(Handler{
-		Name: "create",
-	})
-	if _, ok := c["create"]; !ok {
-		t.Errorf("The second handler was not registered. Context is %v.", c)
-	}
-}
-
-func TestProcess(t *testing.T) {
-	a := ""
-	v := ""
-	y := false
-
-	Helpers["-x"] = func(val string) {
-		if val == "y" {
-			y = true
-		}
-	}
-
-	c := NewContext()
-	c.Register(Handler{
-		Name: "update",
-		Main: func(action string, params Data) {
-			if action != "update" {
-				t.Errorf(`The first argument should be a subcommand name, "%s" is not.`, action)
-			}
-			a = action
-			v = params[action]
+func TestRun_Default(t *testing.T) {
+	count := 0
+	c := NewContext(
+		Handler{
+			Default: true,
+			Run: func(h *Handler, args []string) error {
+				count++
+				return nil
+			},
 		},
-	})
-
-	err := c.Process("update", "test", "-x", "y")
-	if err != nil {
-		t.Errorf("Correct input arguments are used, but got error: %v.", err)
-	}
-	if y != true {
-		t.Errorf("Helper function was not started. Y is still %v.", y)
-	}
-
-	if a != "update" || v != "test" {
-		t.Errorf(`Looks like entry function was not started. As a="%s", v="%s".`, a, v)
+		Handler{ // Second one must be ignored.
+			Default: true,
+			Run: func(h *Handler, args []string) error {
+				count++
+				return nil
+			},
+		},
+	)
+	if err := c.Run([]string{}); err != nil || count != 1 {
+		t.Errorf("No arguments received: default handlers expected to be started.")
 	}
 }
 
-func TestDefault(t *testing.T) {
-	d := Data{
-		"key1": "value1",
-	}
-	if d.Default("key1", "smth") != "value1" {
-		t.Errorf("Default is expected to return value if it exists.")
-	}
-
-	if d.Default("key2", "smth") != "smth" {
-		t.Errorf("Default is expected to return default value if key is not found.")
+func TestRun_NotFound(t *testing.T) {
+	count := 0
+	c := NewContext(
+		Handler{
+			Name: "run",
+			Run: func(h *Handler, args []string) error {
+				count++
+				return errors.New("test")
+			},
+		},
+		Handler{
+			Name: "go generate",
+			Run: func(h *Handler, args []string) error {
+				count++
+				return errors.New("test")
+			},
+		},
+	)
+	if err := c.Run([]string{"start --stuff xxx"}); count != 0 || err != ErrIncorrectArgs {
+		t.Errorf(`Non-existent command requested. Expected "%s", got "%s".`, ErrIncorrectArgs, err)
 	}
 }
 
-// expectPanic is used to make sure there was a panic in program.
-// If there wasn't, this function panics with the input message.
-// Use it as follows:
-//	defer expectPanic("We expected panic, but didn't get it")
-//	SomeFunctionThatShouldCausePanic()
-func expectPanic(msg string) {
-	if err := recover(); err == nil {
-		panic(msg)
+func TestRun(t *testing.T) {
+	testErr := errors.New("Test error")
+	c := NewContext(
+		Handler{
+			Name: "run",
+			Run: func(h *Handler, args []string) error {
+				return nil
+			},
+		},
+		Handler{
+			Name: "go generate",
+			Run: func(h *Handler, args []string) error {
+				return testErr
+			},
+		},
+		Handler{
+			Name: "new",
+			Run: func(h *Handler, args []string) error {
+				return nil
+			},
+		},
+	)
+	if err := c.Run([]string{"go", "generate"}); err != testErr {
+		t.Errorf(`Apparently, requested handler's entry function was not started.`)
+	}
+}
+
+func TestHandlerRequested(t *testing.T) {
+	ts := map[string]struct {
+		h    Handler
+		args []string
+		ok   bool
+	}{
+		"run": {
+			h: Handler{
+				Name: "run",
+			},
+			args: []string{},
+			ok:   true,
+		},
+		"new": {
+			h: Handler{
+				Name: "run",
+			},
+			args: nil,
+			ok:   false,
+		},
+		"generate stuff --something x --cool z": {
+			h: Handler{
+				Name: "generate stuff",
+			},
+			args: []string{"--something", "x", "--cool", "z"},
+			ok:   true,
+		},
+		"generate": {
+			h: Handler{
+				Name: "generate stuff",
+			},
+			args: nil,
+			ok:   false,
+		},
+	}
+	for cmd, res := range ts {
+		args := strings.Split(cmd, commandWordSep)
+		if as, ok := res.h.requested(args); !reflect.DeepEqual(as, res.args) || ok != res.ok {
+			t.Errorf(
+				`Incorrect result. Expected "%v", "%v" got "%v", "%v".`,
+				res.args, res.ok,
+				as, ok,
+			)
+		}
 	}
 }
