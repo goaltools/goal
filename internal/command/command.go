@@ -73,8 +73,15 @@ func (c *Context) Run(args []string) error {
 		// Check whether current handler belongs to the subcommand (tool)
 		// that is requested by user.
 		if lst, ok := c.list[i].requested(args); ok {
+			// Parse the flags if there are any.
+			err := c.list[i].Flags.Parse(lst)
+			if err != nil {
+				return err
+			}
+
 			// Start the entry function of the handler.
-			return c.list[i].Run(&c.list[i], lst)
+			// Use h.Flags' non-flag values as arguments.
+			return c.list[i].Run(&c.list[i], c.list[i].Flags.Args())
 		}
 	}
 	return ErrIncorrectArgs

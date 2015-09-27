@@ -75,8 +75,16 @@ func TestRun(t *testing.T) {
 			},
 		},
 	)
-	if err := c.Run([]string{"go", "generate"}); err != testErr {
-		t.Errorf(`Apparently, requested handler's entry function was not started.`)
+	exp := "z"
+	res := c.list[1].Flags.String("x", "default", "comment")
+	if err := c.Run([]string{"go", "generate", "-x", exp}); err != testErr {
+		t.Errorf(`Apparently, requested handler's entry function was not started. Got "%s".`, err)
+	}
+	if r := res; *r != exp {
+		t.Errorf(`Incorrect value of flag. Expected "%s", got "%s".`, exp, *res)
+	}
+	if err := c.Run([]string{"go", "generate", "--incorrect", "flag"}); err == nil || err == testErr {
+		t.Errorf(`Incorrect flag is used. Error expected, got "%s".`, err)
 	}
 }
 
