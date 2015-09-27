@@ -8,13 +8,15 @@ import (
 	"strings"
 )
 
+// commandWordSep is a separator of words in a command name.
+// For illustration, "generate stuff" is a valid name.
 const commandWordSep = " "
 
 // Context stores information about available subcommands (aka tools)
 // and other related things that are necessary for their start.
 type Context struct {
 	list []Handler // A list of registered subcommands (tools).
-	def  *Handler  // Command that will be started if no arguments received.
+	def  int       // Index of the command that will be started if no arguments received.
 }
 
 // NewContext gets a number of handlers as arguments, allocates
@@ -29,7 +31,7 @@ func NewContext(handlers ...Handler) *Context {
 	// Find default handler and add it to the context.
 	for i := 0; i < len(handlers); i++ {
 		if handlers[i].Default {
-			c.def = &handlers[i]
+			c.def = i
 			return c
 		}
 	}
@@ -41,7 +43,7 @@ func NewContext(handlers ...Handler) *Context {
 type Handler struct {
 	// Run is an entry function of the handler.
 	// The args are the arguments after the command name.
-	Run func(h *Handler, args []string) error
+	Run func(hs []Handler, i int, args []string) error
 
 	// Default means the handler must be executed if no arguments are
 	// received from user (in addition to when it is called explicitly).
@@ -65,7 +67,7 @@ var ErrIncorrectArgs = errors.New("incorrect command requested")
 func (c *Context) Run(args []string) error {
 	// Start default handlers if no arguments are received.
 	if len(args) == 0 {
-		return c.def.Run(c.def, args)
+		return c.list[c.def].Run(c.list, c.def, args)
 	}
 
 	// Otherwise, iterating over all available handlers of subcommands (aka tools).
@@ -73,7 +75,7 @@ func (c *Context) Run(args []string) error {
 		// Check whether current handler belongs to the subcommand (tool)
 		// that is requested by user.
 		if lst, ok := c.list[i].requested(args); ok {
-			// Parse the flags if there are any.
+			// Parse flags if there are any.
 			err := c.list[i].Flags.Parse(lst)
 			if err != nil {
 				return err
@@ -81,7 +83,7 @@ func (c *Context) Run(args []string) error {
 
 			// Start the entry function of the handler.
 			// Use h.Flags' non-flag values as arguments.
-			return c.list[i].Run(&c.list[i], c.list[i].Flags.Args())
+			return c.list[i].Run(c.list, i, c.list[i].Flags.Args())
 		}
 	}
 	return ErrIncorrectArgs

@@ -12,14 +12,14 @@ func TestRun_Default(t *testing.T) {
 	c := NewContext(
 		Handler{
 			Default: true,
-			Run: func(h *Handler, args []string) error {
+			Run: func(hs []Handler, i int, args []string) error {
 				count++
 				return nil
 			},
 		},
 		Handler{ // Second one must be ignored.
 			Default: true,
-			Run: func(h *Handler, args []string) error {
+			Run: func(h []Handler, i int, args []string) error {
 				count++
 				return nil
 			},
@@ -35,14 +35,14 @@ func TestRun_NotFound(t *testing.T) {
 	c := NewContext(
 		Handler{
 			Name: "run",
-			Run: func(h *Handler, args []string) error {
+			Run: func(hs []Handler, i int, args []string) error {
 				count++
 				return errors.New("test")
 			},
 		},
 		Handler{
 			Name: "go generate",
-			Run: func(h *Handler, args []string) error {
+			Run: func(hs []Handler, i int, args []string) error {
 				count++
 				return errors.New("test")
 			},
@@ -58,19 +58,19 @@ func TestRun(t *testing.T) {
 	c := NewContext(
 		Handler{
 			Name: "run",
-			Run: func(h *Handler, args []string) error {
+			Run: func(hs []Handler, i int, args []string) error {
 				return nil
 			},
 		},
 		Handler{
 			Name: "go generate",
-			Run: func(h *Handler, args []string) error {
+			Run: func(hs []Handler, i int, args []string) error {
 				return testErr
 			},
 		},
 		Handler{
 			Name: "new",
-			Run: func(h *Handler, args []string) error {
+			Run: func(hs []Handler, i int, args []string) error {
 				return nil
 			},
 		},
