@@ -40,7 +40,7 @@ func TestRun_NoDefault(t *testing.T) {
 			},
 		},
 	)
-	if err := c.Run([]string{}); err != nil || count != 0 {
+	if err := c.Run([]string{}); err != ErrIncorrectArgs || count != 0 {
 		t.Errorf("No defaults defined and no arguments received: nothing was expected to be started.")
 	}
 }
