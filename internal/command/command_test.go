@@ -30,6 +30,21 @@ func TestRun_Default(t *testing.T) {
 	}
 }
 
+func TestRun_NoDefault(t *testing.T) {
+	count := 0
+	c := NewContext(
+		Handler{
+			Run: func(hs []Handler, i int, args []string) error {
+				count++
+				return nil
+			},
+		},
+	)
+	if err := c.Run([]string{}); err != nil || count != 0 {
+		t.Errorf("No defaults defined and no arguments received: nothing was expected to be started.")
+	}
+}
+
 func TestRun_NotFound(t *testing.T) {
 	count := 0
 	c := NewContext(

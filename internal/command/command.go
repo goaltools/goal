@@ -15,8 +15,8 @@ const commandWordSep = " "
 // Context stores information about available subcommands (aka tools)
 // and other related things that are necessary for their start.
 type Context struct {
-	list []Handler // A list of registered subcommands (tools).
-	def  int       // Index of the command that will be started if no arguments received.
+	list     []Handler // A list of registered subcommands (tools).
+	defaultH *int      // Index of the command that will be started if no arguments received.
 }
 
 // NewContext gets a number of handlers as arguments, allocates
@@ -31,7 +31,7 @@ func NewContext(handlers ...Handler) *Context {
 	// Find default handler and add it to the context.
 	for i := 0; i < len(handlers); i++ {
 		if handlers[i].Default {
-			c.def = i
+			c.defaultH = &i
 			return c
 		}
 	}
@@ -67,7 +67,10 @@ var ErrIncorrectArgs = errors.New("incorrect command requested")
 func (c *Context) Run(args []string) error {
 	// Start default handlers if no arguments are received.
 	if len(args) == 0 {
-		return c.list[c.def].Run(c.list, c.def, args)
+		if c.defaultH != nil {
+			return c.list[*c.defaultH].Run(c.list, *c.defaultH, args)
+		}
+		return nil
 	}
 
 	// Otherwise, iterating over all available handlers of subcommands (aka tools).
