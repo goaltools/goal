@@ -4,7 +4,6 @@
 package path
 
 import (
-	"errors"
 	"fmt"
 	"go/build"
 	"os"
@@ -32,7 +31,9 @@ func New(p string) *Path {
 // as "path\\to\\smth" on Windows.
 func (p *Path) String() string {
 	if p.pkg {
-		return p.s
+		// Make sure path has no starting or ending slashes
+		// (they are not allowed in package import paths).
+		return strings.Trim(p.s, "/")
 	}
 	return filepath.FromSlash(p.s)
 }
@@ -58,9 +59,13 @@ func (p *Path) Absolute() (*Path, error) {
 
 // Import returns the path as a correct absolute package import path.
 func (p *Path) Import() (*Path, error) {
-	// If the path is empty, return an error.
-	if len(p.s) == 0 {
-		return nil, errors.New("undefined path")
+	// If the path doesn't have "./" at the beginning
+	// it is already a valid go package path.
+	if len(p.s) > 1 && p.s[0] != '.' && p.s[1] != '/' {
+		return &Path{
+			s:   p.s,
+			pkg: true,
+		}, nil
 	}
 
 	// Get an absolute form of the path.
@@ -79,10 +84,8 @@ func (p *Path) Import() (*Path, error) {
 		// Checking whether "$GOPATH/src" is a part of the absolute path.
 		if res := strings.TrimPrefix(abs.s, gopath); res != abs.s {
 			// Return the "$GOPATH/src"-less version of the path.
-			// Make sure it has no starting or ending slashes
-			// (they are not allowed in package import paths).
 			return &Path{
-				s:   strings.Trim(res, "/"),
+				s:   res,
 				pkg: true,
 			}, nil
 		}
