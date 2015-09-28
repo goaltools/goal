@@ -1,6 +1,7 @@
 package path
 
 import (
+	"go/build"
 	"os"
 	"path/filepath"
 	"testing"
@@ -92,6 +93,29 @@ func TestPathImport_GetwdError(t *testing.T) {
 	}
 
 	popd(t)
+}
+
+func TestPathPackage(t *testing.T) {
+	gopath := filepath.SplitList(build.Default.GOPATH)[0]
+	imp := "github.com/colegion/goal"
+	exp := filepath.Join(gopath, "src", imp)
+	if p, err := New(imp).Package(); p.String() != exp || err != nil {
+		t.Errorf(
+			`Expected "%s", "nil". Got "%s", "%v".`,
+			exp, p.String(), err,
+		)
+	}
+
+	// Preparing a state for Package to return error.
+	gopaths := build.Default.GOPATH
+	build.Default.GOPATH = ""
+
+	if p, err := New(imp).Package(); p != nil || err == nil {
+		t.Errorf(`GOPATH is empty, error expected. Got "%v", "%v".`, p, err)
+	}
+
+	// Reparing old state.
+	build.Default.GOPATH = gopaths
 }
 
 func pushd(t *testing.T) {

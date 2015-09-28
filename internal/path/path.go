@@ -4,6 +4,7 @@
 package path
 
 import (
+	"errors"
 	"fmt"
 	"go/build"
 	"os"
@@ -58,6 +59,10 @@ func (p *Path) Absolute() (*Path, error) {
 }
 
 // Import returns the path as a correct absolute package import path.
+// For example, the path is:
+//	../
+// And current directory is "$GOPATH/src/user/project/x". Then the result is:
+//	user/project
 func (p *Path) Import() (*Path, error) {
 	// If the path doesn't have "./" at the beginning
 	// it is already a valid go package path.
@@ -94,4 +99,24 @@ func (p *Path) Import() (*Path, error) {
 	// If no import path returned so far,
 	// requested path is not inside "$GOPATH/src".
 	return nil, fmt.Errorf(`path "%s" is not inside "$GOPATH/src"`, p.String())
+}
+
+// Package is an opposite of Import. It gets a valid package import path
+// and returns its absolute path. E.g., there is input:
+//	github.com/username/project
+// It will output:
+//	$GOPATH/src/github.com/username/project
+// The first value in the list of GOPATHs is used.
+func (p *Path) Package() (*Path, error) {
+	// Make sure there is at least one $GOPATH value.
+	gopaths := filepath.SplitList(build.Default.GOPATH)
+	if len(gopaths) == 0 {
+		return nil, errors.New("$GOPATH is not set")
+	}
+
+	// Join input path with the "$GOPATH/src" and return.
+	// Make sure $GOPATH is normalized (i.e. unix style delimiters are used).
+	return &Path{
+		s: path.Join(filepath.ToSlash(gopaths[0]), "src", p.s),
+	}, nil
 }
