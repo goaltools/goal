@@ -39,7 +39,7 @@ func (p *Path) String() string {
 
 // Absolute returns path as an absolute one.
 // It returns an error if current directory cannot
-// be detected.
+// be determined.
 func (p *Path) Absolute() (*Path, error) {
 	// If the path is already absolute, return it as is.
 	if path.IsAbs(p.s) {
