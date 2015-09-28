@@ -1,94 +1,94 @@
-// Package path is a set of helper functions for work with paths in goal package.
+// Package path is a wrapper around standard path, path/filepath,
+// os, and go/build packages for work with paths and
+// import paths.
 package path
 
 import (
+	"errors"
+	"fmt"
 	"go/build"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
-
-	"github.com/colegion/goal/log"
 )
 
-// goalDir returns an absolute path of the directory where a package of goal
-// toolkit is installed (it should be located at "$GOPATH/github.com/colegion/goal/$pkg").
-//
-// For example, to find out the path of goal's root directory use:
-//	path.goalDir()
-// To identify the path of goal/generation/handlers subpackage do the following:
-//	path.goalDir("generation", "handlers")
-func goalDir(pkgs ...string) string {
-	p := filepath.Join(
-		PackageDir(""), goalImport(pkgs...),
-	)
-	return filepath.ToSlash(p)
+// Path is a path in its normalized form
+// (with unix style separators).
+type Path struct {
+	s   string // Normalized (unix like) form of a path.
+	pkg bool   // Whether the path is an import path of a package.
 }
 
-// goalImport is equivalent of the goalDir except it returns
-// a go import path rather than a path to a directory.
-func goalImport(pkgs ...string) string {
-	p := "github.com/colegion/goal"
-	for i := range pkgs {
-		p = filepath.Join(p, pkgs[i])
+// New allocates and returns a new Path.
+func New(p string) *Path {
+	return &Path{
+		s: path.Clean(filepath.ToSlash(p)),
 	}
-	return filepath.ToSlash(p)
 }
 
-// WorkingDir returns a path to the directory where goal program was run.
-// It panics in case of error.
-//
-// So, if we are moving to some directory and starting goal program there:
-//	cd /home/user/somedir
-//	goal ...
-// the WorkingDir() should return "/home/user/somedir"
-//	path := WorkingDir() // Output: "/home/user/somedir"
-func WorkingDir() string {
-	p, err := os.Getwd()
-	log.AssertNil(err)
-	return filepath.ToSlash(p)
+// String returns path as is if it is a package import path,
+// or using a platform specific separators otherwise, e.g.
+// as "path\\to\\smth" on Windows.
+func (p *Path) String() string {
+	if p.pkg {
+		return p.s
+	}
+	return filepath.FromSlash(p.s)
 }
 
-// AbsoluteImport gets an import path and returns its absolute representation.
-// So, if it is already absolute or empty it is returned as is.
-// Otherwise, it's assumed the path is relative to the current working directory.
-// If something goes wrong AbsoluteImport panics.
-func AbsoluteImport(path string) string {
-	// If path is empty, do nothing.
-	if path == "" {
-		return path
+// Absolute returns path as an absolute one.
+// It returns an error if current directory cannot
+// be detected.
+func (p *Path) Absolute() (*Path, error) {
+	// If the path is already absolute, return it as is.
+	if path.IsAbs(p.s) {
+		return &Path{s: p.s}, nil
 	}
 
-	// If it is an absolute path, remove the starting slashes, if any.
-	path = filepath.ToSlash(path)
-	if !strings.HasPrefix(path, ".") {
-		return strings.TrimLeft(path, "/")
+	// Otherwise, join with the current directory.
+	curr, err := os.Getwd()
+	if err != nil {
+		return nil, err
 	}
-
-	// Get absolute import path by removing "$GOPATH/src" at the beginning
-	// of working dir + relative path.
-	gopath := PackageDir("")
-	pkgPath := filepath.ToSlash(filepath.Join(WorkingDir(), path))
-	if !strings.HasPrefix(pkgPath, gopath) { // If there is no $GOPATH at the beginning.
-		log.Error.Panicf("Your project must be located inside of $GOPATH.")
-	}
-	imp := Prefixless(pkgPath, gopath)
-
-	// Import path never starts with a slash.
-	return Prefixless(imp, "/")
+	return &Path{
+		s: path.Join(filepath.ToSlash(curr), p.s),
+	}, nil
 }
 
-// PackageDir gets a golang import path and returns its full path.
-func PackageDir(imp string) string {
+// Import returns the path as a correct absolute package import path.
+func (p *Path) Import() (*Path, error) {
+	// If the path is empty, return an error.
+	if len(p.s) == 0 {
+		return nil, errors.New("undefined path")
+	}
+
+	// Get an absolute form of the path.
+	abs, err := p.Absolute()
+	if err != nil {
+		return nil, err
+	}
+
+	// Check every $GOPATH whether some of them
+	// is a part of the path of absolute form.
 	gopaths := filepath.SplitList(build.Default.GOPATH)
-	return filepath.ToSlash(
-		filepath.Join(gopaths[0], "src", imp), // We are always using the first GOPATH in a list.
-	)
-}
+	for i := 0; i < len(gopaths); i++ {
+		// Getting a normalized form (i.e. Unix style) of "$GOPATH/src".
+		gopath := path.Join(filepath.ToSlash(gopaths[i]), "src")
 
-// Prefixless cuts a prefix of a path and returns the result
-// that is cleaned.
-func Prefixless(path, prefix string) string {
-	return filepath.ToSlash(
-		filepath.Clean(strings.TrimPrefix(path, prefix)),
-	)
+		// Checking whether "$GOPATH/src" is a part of the absolute path.
+		if res := strings.TrimPrefix(abs.s, gopath); res != abs.s {
+			// Return the "$GOPATH/src"-less version of the path.
+			// Make sure it has no starting or ending slashes
+			// (they are not allowed in package import paths).
+			return &Path{
+				s:   strings.Trim(res, "/"),
+				pkg: true,
+			}, nil
+		}
+	}
+
+	// If no import path returned so far,
+	// requested path is not inside "$GOPATH/src".
+	return nil, fmt.Errorf(`path "%s" is not inside "$GOPATH/src"`, p.String())
 }
