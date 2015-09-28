@@ -1,90 +1,74 @@
 package path
 
 import (
-	"go/build"
 	"os"
 	"path/filepath"
 	"testing"
 )
 
-func TestgoalDir(t *testing.T) {
-	p := filepath.ToSlash(filepath.Join(build.Default.GOPATH, "src", spImp))
-
-	if v := goalDir(); v != p {
-		t.Errorf(`Incorrect result. Expected "%s", got "%s".`, p, v)
+func TestPathAbsolute_GetwdError(t *testing.T) {
+	// Preparing a state for os.Getwd to fail.
+	dir := "./someDirectoryThatDoesNotExistYet"
+	err := os.Mkdir(dir, 0755)
+	if err != nil {
+		t.Error(err)
+	}
+	err = os.Chdir(dir)
+	if err != nil {
+		t.Error(err)
+	}
+	err = os.Remove(filepath.Join("../", dir))
+	if err != nil {
+		t.Error(err)
 	}
 
-	hp := filepath.ToSlash(filepath.Join(p, "generation", "handlers"))
-	if v := goalDir("generation", "handlers"); v != hp {
-		t.Errorf(`Incorrect result. Expected "%s", got "%s".`, hp, v)
-	}
-}
-
-func TestgoalImport(t *testing.T) {
-	p := spImp
-
-	if v := goalImport(); v != p {
-		t.Errorf(`Incorrect result. Expected "%s", got "%s".`, p, v)
+	// Testing Absolute().
+	res, err := New("./something").Absolute()
+	if res != nil || err == nil {
+		t.Errorf(`Getwd failed. Error expected; got "%v", "%v".`, res, err)
 	}
 
-	hp := filepath.ToSlash(filepath.Join(p, "generation", "handlers"))
-	if v := goalImport("generation", "handlers"); v != hp {
-		t.Errorf(`Incorrect result. Expected "%s", got "%s".`, hp, v)
-	}
-}
-
-func TestWorkingDir(t *testing.T) {
-	p := filepath.ToSlash(filepath.Join(build.Default.GOPATH, "src"))
-	os.Chdir(p)
-
-	if v := WorkingDir(); v != p {
-		t.Errorf(`Incorrectly detected working directory. Expected "%s", got "%s"`, p, v)
+	// Repairing old state for running tests from current dir.
+	err = os.Chdir("../")
+	if err != nil {
+		t.Error(err)
 	}
 }
 
-func TestAbsoluteImport_AbsImportArgument(t *testing.T) {
-	if v := AbsoluteImport(spImp); v != "github.com/colegion/goal" {
-		t.Errorf(`Incorrect result. Expected "%s", got "%s".`, spImp, v)
+func TestPathAbsolute(t *testing.T) {
+	currDir, err := os.Getwd()
+	if err != nil {
+		t.Errorf("Cannot determine current directory.")
 	}
+	for _, v := range []struct {
+		p *Path
 
-	if v := AbsoluteImport(""); v != "" {
-		t.Errorf(`Empty input: empty output expected, got "%s".`, v)
-	}
-}
+		exp string
+		err bool
+	}{
+		{
+			p: New(""),
 
-func TestAbsoluteImport_OutsideGOPATH(t *testing.T) {
-	p := filepath.ToSlash(filepath.Join(build.Default.GOPATH, "../"))
-	os.Chdir(p)
+			exp: currDir,
+		},
+		{
+			p: New("/home/user/stuff"),
 
-	defer func() {
-		if err := recover(); err == nil {
-			t.Errorf(`Start outside of $GOPATH: "%s", panic expected.`, p)
+			exp: "/home/user/stuff",
+		},
+		{
+			p: New("../"),
+
+			exp: filepath.Join(currDir, "../"),
+		},
+	} {
+		if s, err := v.p.Absolute(); s.String() != v.exp ||
+			(v.err && err == nil) || (!v.err && err != nil) {
+
+			t.Errorf(
+				`Expected "%s", err == nil -> "%v". Got "%s", "%v".`,
+				v.exp, v.err, s.String(), err,
+			)
 		}
-	}()
-	AbsoluteImport("./strings")
-}
-
-func TestAbsoluteImport(t *testing.T) {
-	os.Chdir(filepath.Join(build.Default.GOPATH, "src", spImp))
-
-	d := "./generation"
-	exp := filepath.ToSlash(filepath.Join(spImp, d))
-	if v := AbsoluteImport(d); v != exp {
-		t.Errorf(`Incorrect result. Expected "%s", got "%s".`, exp, v)
-	}
-
-	d = "/string"
-	exp = "string"
-	if v := AbsoluteImport(d); v != exp {
-		t.Errorf(`Incorrect result. Expected "%s", got "%s".`, exp, v)
 	}
 }
-
-func TestPrefixless(t *testing.T) {
-	p := "/colegion/goal"
-	if v := Prefixless(filepath.ToSlash(filepath.Join("github.com", p)), "github.com"); v != p {
-		t.Errorf(`Inncorrect result. Expected "%s", got %s.`, p, v)
-	}
-}
-
-var spImp = "github.com/colegion/goal"
