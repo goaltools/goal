@@ -5,8 +5,6 @@
 package create
 
 import (
-	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
 
@@ -20,65 +18,62 @@ var Handler = command.Handler{
 	Run: main,
 
 	Name:  "new",
-	Usage: "{import_path}",
+	Usage: "{path}",
 	Info:  "create a skeleton application",
-	Desc: `New creates files and directories to get a new app running quickly
-in the requested import path directory.
+	Desc: `New creates files and directories to get a new app running quickly.
+The created files and directories will be saved to the specified path.
 
-The import path must be a directory that does not exist yet, e.g.:
+The path must be a directory that does not exist yet, e.g:
+	./sample
+
+or alternatively:
 	github.com/MyUsername/ProjectName
+
+Moreover, it is required to be located inside "$GOPATH/src".
+
+Examples:
+	cli new github.com/colegion/sample
+	cli new ./sample
+	cli new ../colegion/sample
 `,
 }
 
 // Main is an entry point of the subcommand (tool).
-func main(hs []command.Handler, i int, args []string) error {
-	// Make sure "import path" argument is present.
-	if len(args) == 0 {
-		return errors.New("import path argument is required")
-	}
+func main(hs []command.Handler, i int, args command.Data) {
+	// The first argument in the list is a path.
+	// If it's missing use an empty line instead.
+	p := args.GetDefault(0, "")
 
 	// Prepare source and destination directory paths.
 	src, err := path.New("github.com/colegion/goal/internal/path").Package()
-	if err != nil {
-		return err
-	}
-	dest, err := path.New(args[0]).Absolute()
-	if err != nil {
-		return err
-	}
+	log.AssertNil(err)
+	dest, err := path.New(p).Absolute()
+	log.AssertNil(err)
 
 	// Prepare an import path of the app to be created.
 	destImp, err := dest.Import()
-	if err != nil {
-		return err
-	}
+	log.AssertNil(err)
 
 	// Make sure the requested import path (dest) does not exist yet.
 	if _, err := os.Stat(dest.String()); !os.IsNotExist(err) {
-		return fmt.Errorf(`cannot use "%s", such import path already exists`, dest)
+		log.Error.Panicf(`Cannot use "%s", such import path already exists.`, destImp.String())
 	}
 
 	// Scan the skeleton directory and get a list of directories / files
 	// to be copied / processed.
 	res, err := walk(src.String())
-	if err != nil {
-		return err
-	}
+	log.AssertNil(err)
 
 	// Create the directories in destination path.
 	for i := 0; i < len(res.dirs); i++ {
 		err = os.MkdirAll(filepath.Join(dest.String(), res.dirs[i]), 0755)
-		if err != nil {
-			return err
-		}
+		log.AssertNil(err)
 	}
 
 	// Copy static files to the destination directories.
 	for i := 0; i < len(res.files); i++ {
 		err = copyFile(res.files[i].absolute, filepath.Join(dest.String(), res.files[i].relative))
-		if err != nil {
-			return err
-		}
+		log.AssertNil(err)
 	}
 
 	// Process source files and copy to the destination directories.
@@ -91,13 +86,10 @@ func main(hs []command.Handler, i int, args []string) error {
 				},
 			},
 		)
-		if err != nil {
-			return err
-		}
+		log.AssertNil(err)
 	}
 
 	log.Info.Printf(info, destImp)
-	return nil
 }
 
 // Arguments to format are:
