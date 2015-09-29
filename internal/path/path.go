@@ -64,9 +64,12 @@ func (p *Path) Absolute() (*Path, error) {
 // And current directory is "$GOPATH/src/user/project/x". Then the result is:
 //	user/project
 func (p *Path) Import() (*Path, error) {
-	// If the path doesn't have "./" at the beginning
+	// If the path doesn't have "/", "./", or "../" at the beginning
 	// it is already a valid go package path.
-	if len(p.s) > 1 && p.s[0] != '.' && p.s[1] != '/' {
+	relCurrPref := strings.HasPrefix(p.s, "./") || p.s == "."
+	relBackPref := strings.HasPrefix(p.s, "../") || p.s == ".."
+	absPref := strings.HasPrefix(p.s, "/")
+	if !relCurrPref && !relBackPref && !absPref {
 		return &Path{
 			s:   p.s,
 			pkg: true,
