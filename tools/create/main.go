@@ -45,7 +45,7 @@ func main(hs []command.Handler, i int, args command.Data) {
 	p := args.GetDefault(0, "")
 
 	// Prepare source and destination directory paths.
-	src, err := path.New("github.com/colegion/goal/internal/path").Package()
+	src, err := path.New("github.com/colegion/goal/internal/skeleton").Package()
 	log.AssertNil(err)
 	dest, err := path.New(p).Absolute()
 	log.AssertNil(err)
