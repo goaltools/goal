@@ -3,8 +3,6 @@ package create
 import (
 	"os"
 	"testing"
-
-	"github.com/colegion/goal/log"
 )
 
 func TestCopyFile(t *testing.T) {
@@ -13,11 +11,17 @@ func TestCopyFile(t *testing.T) {
 	copyFile(src, dst)
 
 	sf, err := os.Open(src)
-	log.AssertNil(err)
+	if err != nil {
+		t.Errorf(`Cannot open source file. Error: "%s".`, err)
+		t.FailNow()
+	}
 	defer sf.Close()
 
 	df, err := os.Open(dst)
-	log.AssertNil(err)
+	if err != nil {
+		t.Errorf(`Cannot open destination file. Error: "%s".`, err)
+		t.FailNow()
+	}
 	defer df.Close()
 
 	srcInfo, _ := sf.Stat()
@@ -25,7 +29,10 @@ func TestCopyFile(t *testing.T) {
 
 	d := make([]byte, dstInfo.Size())
 	_, err = df.Read(d)
-	log.AssertNil(err)
+	if err != nil {
+		t.Errorf(`Cannot read from destination file. Error: "%s".`, err)
+		t.FailNow()
+	}
 
 	exp := "package test\n"
 	if r := string(d); r != exp {
@@ -45,16 +52,24 @@ func TestCopyFile(t *testing.T) {
 func TestCopyModifiedFile(t *testing.T) {
 	src := "./testdata/skeleton/test.go"
 	dst := "./testdata/test.go"
-	copyModifiedFile(src, dst, map[string]string{
-		"test": "somethingCool",
+	copyModifiedFile(src, dst, [][][]byte{
+		[][]byte{
+			[]byte{"test"}, []byte{"somethingCool"},
+		},
 	})
 
 	sf, err := os.Open(src)
-	log.AssertNil(err)
+	if err != nil {
+		t.Errorf(`Cannot open source file. Error: "%s".`, err)
+		t.FailNow()
+	}
 	defer sf.Close()
 
 	df, err := os.Open(dst)
-	log.AssertNil(err)
+	if err != nil {
+		t.Errorf(`Cannot open destination file. Error: "%s".`, err)
+		t.FailNow()
+	}
 	defer df.Close()
 
 	srcInfo, _ := sf.Stat()
@@ -62,7 +77,10 @@ func TestCopyModifiedFile(t *testing.T) {
 
 	d := make([]byte, dstInfo.Size())
 	_, err = df.Read(d)
-	log.AssertNil(err)
+	if err != nil {
+		t.Errorf(`Cannot read from destination file. Error: "%s".`, err)
+		t.FailNow()
+	}
 
 	exp := "package somethingCool\n"
 	if r := string(d); r != exp {
