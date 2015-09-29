@@ -41,7 +41,7 @@ Examples:
 // Main is an entry point of the subcommand (tool).
 func main(hs []command.Handler, i int, args command.Data) {
 	// The first argument in the list is a path.
-	// If it's missing use an empty line instead.
+	// If it's missing use an empty string instead.
 	p := args.GetDefault(0, "")
 
 	// Prepare source and destination directory paths.
