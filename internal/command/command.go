@@ -43,7 +43,7 @@ func NewContext(handlers ...Handler) *Context {
 type Handler struct {
 	// Run is an entry function of the handler.
 	// The args are the arguments after the command name.
-	Run func(hs []Handler, i int, args []string) error
+	Run func(hs []Handler, i int, args []string)
 
 	// Default means the handler must be executed if no arguments are
 	// received from user (in addition to when it is called explicitly).
@@ -65,10 +65,11 @@ var ErrIncorrectArgs = errors.New("incorrect command requested")
 // Run gets a list of arguments and either starts an entry function of the
 // requested subcommand (aka tool) or returns an error.
 func (c *Context) Run(args []string) error {
-	// Start default handlers if no arguments are received.
+	// Start default handler's entry function if no arguments are received.
 	if len(args) == 0 {
 		if c.defaultH != nil {
-			return c.list[*c.defaultH].Run(c.list, *c.defaultH, args)
+			c.list[*c.defaultH].Run(c.list, *c.defaultH, args)
+			return nil
 		}
 		return ErrIncorrectArgs
 	}
@@ -77,7 +78,7 @@ func (c *Context) Run(args []string) error {
 	for i := 0; i < len(c.list); i++ {
 		// Check whether current handler belongs to the subcommand (tool)
 		// that is requested by user.
-		if lst, ok := c.list[i].requested(args); ok {
+		if lst, ok := c.list[i].Requested(args); ok {
 			// Parse flags if there are any.
 			err := c.list[i].Flags.Parse(lst)
 			if err != nil {
@@ -86,17 +87,18 @@ func (c *Context) Run(args []string) error {
 
 			// Start the entry function of the handler.
 			// Use h.Flags' non-flag values as arguments.
-			return c.list[i].Run(c.list, i, c.list[i].Flags.Args())
+			c.list[i].Run(c.list, i, c.list[i].Flags.Args())
+			return nil
 		}
 	}
 	return ErrIncorrectArgs
 }
 
-// requested checks whether the handler is the one that is requested by user,
+// Requested checks whether the handler is the one that is requested by user,
 // i.e. handler's name or alias is a part of args.
 // It returns arguments (not including the handler name) and true in case
 // of success, and nil, false otherwise.
-func (h Handler) requested(args []string) ([]string, bool) {
+func (h Handler) Requested(args []string) ([]string, bool) {
 	// Calculate the number of words in the handler's name.
 	// It is equal to the number of spaces plus one.
 	num := strings.Count(h.Name, commandWordSep) + 1

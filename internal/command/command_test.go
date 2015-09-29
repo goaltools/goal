@@ -1,7 +1,6 @@
 package command
 
 import (
-	"errors"
 	"reflect"
 	"strings"
 	"testing"
@@ -12,21 +11,19 @@ func TestRun_Default(t *testing.T) {
 	c := NewContext(
 		Handler{
 			Default: true,
-			Run: func(hs []Handler, i int, args []string) error {
+			Run: func(hs []Handler, i int, args []string) {
 				count++
-				return nil
 			},
 		},
 		Handler{ // Second one must be ignored.
 			Default: true,
-			Run: func(h []Handler, i int, args []string) error {
+			Run: func(h []Handler, i int, args []string) {
 				count++
-				return nil
 			},
 		},
 	)
 	if err := c.Run([]string{}); err != nil || count != 1 {
-		t.Errorf("No arguments received: default handlers expected to be started.")
+		t.Errorf("No arguments received: single default handler expected to be started.")
 	}
 }
 
@@ -34,9 +31,8 @@ func TestRun_NoDefault(t *testing.T) {
 	count := 0
 	c := NewContext(
 		Handler{
-			Run: func(hs []Handler, i int, args []string) error {
+			Run: func(hs []Handler, i int, args []string) {
 				count++
-				return nil
 			},
 		},
 	)
@@ -50,16 +46,14 @@ func TestRun_NotFound(t *testing.T) {
 	c := NewContext(
 		Handler{
 			Name: "run",
-			Run: func(hs []Handler, i int, args []string) error {
+			Run: func(hs []Handler, i int, args []string) {
 				count++
-				return errors.New("test")
 			},
 		},
 		Handler{
 			Name: "go generate",
-			Run: func(hs []Handler, i int, args []string) error {
+			Run: func(hs []Handler, i int, args []string) {
 				count++
-				return errors.New("test")
 			},
 		},
 	)
@@ -69,36 +63,34 @@ func TestRun_NotFound(t *testing.T) {
 }
 
 func TestRun(t *testing.T) {
-	testErr := errors.New("Test error")
+	count := 0
 	c := NewContext(
 		Handler{
 			Name: "run",
-			Run: func(hs []Handler, i int, args []string) error {
-				return nil
+			Run: func(hs []Handler, i int, args []string) {
 			},
 		},
 		Handler{
 			Name: "go generate",
-			Run: func(hs []Handler, i int, args []string) error {
-				return testErr
+			Run: func(hs []Handler, i int, args []string) {
+				count++
 			},
 		},
 		Handler{
 			Name: "new",
-			Run: func(hs []Handler, i int, args []string) error {
-				return nil
+			Run: func(hs []Handler, i int, args []string) {
 			},
 		},
 	)
 	exp := "z"
 	res := c.list[1].Flags.String("x", "default", "comment")
-	if err := c.Run([]string{"go", "generate", "-x", exp}); err != testErr {
+	if err := c.Run([]string{"go", "generate", "-x", exp}); err != nil || count != 1 {
 		t.Errorf(`Apparently, requested handler's entry function was not started. Got "%s".`, err)
 	}
 	if r := res; *r != exp {
 		t.Errorf(`Incorrect value of flag. Expected "%s", got "%s".`, exp, *res)
 	}
-	if err := c.Run([]string{"go", "generate", "--incorrect", "flag"}); err == nil || err == testErr {
+	if err := c.Run([]string{"go", "generate", "--incorrect", "flag"}); err == nil || count != 1 {
 		t.Errorf(`Incorrect flag is used. Error expected, got "%s".`, err)
 	}
 }
@@ -140,7 +132,7 @@ func TestHandlerRequested(t *testing.T) {
 	}
 	for cmd, res := range ts {
 		args := strings.Split(cmd, commandWordSep)
-		if as, ok := res.h.requested(args); !reflect.DeepEqual(as, res.args) || ok != res.ok {
+		if as, ok := res.h.Requested(args); !reflect.DeepEqual(as, res.args) || ok != res.ok {
 			t.Errorf(
 				`Incorrect result. Expected "%v", "%v" got "%v", "%v".`,
 				res.args, res.ok,
