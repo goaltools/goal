@@ -5,6 +5,7 @@ package command
 import (
 	"errors"
 	"flag"
+	"fmt"
 	"strings"
 )
 
@@ -61,10 +62,6 @@ type Handler struct {
 	Flags flag.FlagSet // Set of flags specific to the command.
 }
 
-// ErrIncorrectArgs is returned every time a user is trying
-// to request a command that does not exist.
-var ErrIncorrectArgs = errors.New("incorrect command requested")
-
 // Run gets a list of arguments and either starts an entry function of the
 // requested subcommand (aka tool) or returns an error.
 func (c *Context) Run(args []string) error {
@@ -74,7 +71,7 @@ func (c *Context) Run(args []string) error {
 			c.list[*c.defaultH].Run(c.list, *c.defaultH, args)
 			return nil
 		}
-		return ErrIncorrectArgs
+		return errors.New("no command specified")
 	}
 
 	// Otherwise, iterating over all available handlers of subcommands (aka tools).
@@ -94,7 +91,7 @@ func (c *Context) Run(args []string) error {
 			return nil
 		}
 	}
-	return ErrIncorrectArgs
+	return fmt.Errorf(`unknown command "%s"`, strings.Join(args, commandWordSep))
 }
 
 // Requested checks whether the handler is the one that is requested by user,

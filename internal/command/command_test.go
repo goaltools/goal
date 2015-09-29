@@ -36,7 +36,7 @@ func TestRun_NoDefault(t *testing.T) {
 			},
 		},
 	)
-	if err := c.Run([]string{}); err != ErrIncorrectArgs || count != 0 {
+	if err := c.Run([]string{}); err == nil || count != 0 {
 		t.Errorf("No defaults defined and no arguments received: nothing was expected to be started.")
 	}
 }
@@ -57,8 +57,8 @@ func TestRun_NotFound(t *testing.T) {
 			},
 		},
 	)
-	if err := c.Run([]string{"start --stuff xxx"}); count != 0 || err != ErrIncorrectArgs {
-		t.Errorf(`Non-existent command requested. Expected "%s", got "%s".`, ErrIncorrectArgs, err)
+	if err := c.Run([]string{"start --stuff xxx"}); count != 0 || err == nil {
+		t.Errorf(`Non-existent command requested. Expected "nil", got "%s".`, err)
 	}
 }
 
