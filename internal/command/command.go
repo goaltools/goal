@@ -19,6 +19,9 @@ type Context struct {
 	defaultH *int      // Index of the command that will be started if no arguments received.
 }
 
+// Data represents a set of non-flag arguments for a tool.
+type Data []string
+
 // NewContext gets a number of handlers as arguments, allocates
 // a new Context and returns it.
 func NewContext(handlers ...Handler) *Context {
@@ -43,7 +46,7 @@ func NewContext(handlers ...Handler) *Context {
 type Handler struct {
 	// Run is an entry function of the handler.
 	// The args are the arguments after the command name.
-	Run func(hs []Handler, i int, args []string)
+	Run func(hs []Handler, i int, args Data)
 
 	// Default means the handler must be executed if no arguments are
 	// received from user (in addition to when it is called explicitly).
@@ -115,4 +118,13 @@ func (h Handler) Requested(args []string) ([]string, bool) {
 	}
 
 	return args[num:], true
+}
+
+// GetDefault is a helper for getting a value with specific index
+// or returning a default value if the index does not exist.
+func (a Data) GetDefault(i int, defaultVal string) string {
+	if i >= len(a) {
+		return defaultVal
+	}
+	return a[i]
 }
