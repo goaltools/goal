@@ -11,13 +11,13 @@ func TestRun_Default(t *testing.T) {
 	c := NewContext(
 		Handler{
 			Default: true,
-			Run: func(hs []Handler, i int, args []string) {
+			Run: func(hs []Handler, i int, args Data) {
 				count++
 			},
 		},
 		Handler{ // Second one must be ignored.
 			Default: true,
-			Run: func(h []Handler, i int, args []string) {
+			Run: func(h []Handler, i int, args Data) {
 				count++
 			},
 		},
@@ -31,7 +31,7 @@ func TestRun_NoDefault(t *testing.T) {
 	count := 0
 	c := NewContext(
 		Handler{
-			Run: func(hs []Handler, i int, args []string) {
+			Run: func(hs []Handler, i int, args Data) {
 				count++
 			},
 		},
@@ -46,13 +46,13 @@ func TestRun_NotFound(t *testing.T) {
 	c := NewContext(
 		Handler{
 			Name: "run",
-			Run: func(hs []Handler, i int, args []string) {
+			Run: func(hs []Handler, i int, args Data) {
 				count++
 			},
 		},
 		Handler{
 			Name: "go generate",
-			Run: func(hs []Handler, i int, args []string) {
+			Run: func(hs []Handler, i int, args Data) {
 				count++
 			},
 		},
@@ -67,18 +67,18 @@ func TestRun(t *testing.T) {
 	c := NewContext(
 		Handler{
 			Name: "run",
-			Run: func(hs []Handler, i int, args []string) {
+			Run: func(hs []Handler, i int, args Data) {
 			},
 		},
 		Handler{
 			Name: "go generate",
-			Run: func(hs []Handler, i int, args []string) {
+			Run: func(hs []Handler, i int, args Data) {
 				count++
 			},
 		},
 		Handler{
 			Name: "new",
-			Run: func(hs []Handler, i int, args []string) {
+			Run: func(hs []Handler, i int, args Data) {
 			},
 		},
 	)
@@ -139,5 +139,20 @@ func TestHandlerRequested(t *testing.T) {
 				as, ok,
 			)
 		}
+	}
+}
+
+func TestDataGetDefault(t *testing.T) {
+	args := Data{}
+	if v := args.GetDefault(1, "default"); v != "default" {
+		t.Errorf(`Expected "default", got "%s".`, v)
+	}
+
+	args = Data{"0", "1", "2"}
+	if v := args.GetDefault(10, "default"); v != "default" {
+		t.Errorf(`Expected "default", got "%s".`, v)
+	}
+	if v := args.GetDefault(1, "1"); v != "1" {
+		t.Errorf(`Expected "1", got "%s".`, v)
 	}
 }
