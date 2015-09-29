@@ -5,6 +5,13 @@ import (
 	"testing"
 )
 
+func TestCopyFile_DoesNotExist(t *testing.T) {
+	err := copyFile("fileThatDoesNotExist", "./xxx")
+	if err == nil {
+		t.Errorf("File does not exist, error expected.")
+	}
+}
+
 func TestCopyFile(t *testing.T) {
 	src := "./testdata/skeleton/test.go"
 	dst := "./testdata/test.go"
@@ -47,6 +54,13 @@ func TestCopyFile(t *testing.T) {
 
 	// Remove the created file.
 	os.Remove(dst)
+}
+
+func TestCopyModifiedFile_DoesNotExist(t *testing.T) {
+	err := copyModifiedFile("fileThatDoesNotExist", "./xxx", [][][]byte{})
+	if err == nil {
+		t.Errorf("File does not exist, error expected.")
+	}
 }
 
 func TestCopyModifiedFile(t *testing.T) {
