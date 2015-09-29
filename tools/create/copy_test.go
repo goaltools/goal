@@ -6,10 +6,8 @@ import (
 )
 
 func TestCopyFile_DoesNotExist(t *testing.T) {
-	err := copyFile("fileThatDoesNotExist", "./xxx")
-	if err == nil {
-		t.Errorf("File does not exist, error expected.")
-	}
+	defer expectPanic("File does not exist, panic expected.")
+	copyFile("fileThatDoesNotExist", "./xxx")
 }
 
 func TestCopyFile(t *testing.T) {
@@ -57,10 +55,8 @@ func TestCopyFile(t *testing.T) {
 }
 
 func TestCopyModifiedFile_DoesNotExist(t *testing.T) {
-	err := copyModifiedFile("fileThatDoesNotExist", "./xxx", [][][]byte{})
-	if err == nil {
-		t.Errorf("File does not exist, error expected.")
-	}
+	defer expectPanic("File does not exist, panic expected.")
+	copyModifiedFile("fileThatDoesNotExist", "./xxx", [][][]byte{})
 }
 
 func TestCopyModifiedFile(t *testing.T) {

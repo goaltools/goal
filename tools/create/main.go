@@ -72,13 +72,12 @@ func main(hs []command.Handler, i int, args command.Data) {
 
 	// Copy static files to the destination directories.
 	for i := 0; i < len(res.files); i++ {
-		err = copyFile(res.files[i].absolute, filepath.Join(dest.String(), res.files[i].relative))
-		log.AssertNil(err)
+		copyFile(res.files[i].absolute, filepath.Join(dest.String(), res.files[i].relative))
 	}
 
 	// Process source files and copy to the destination directories.
 	for i := 0; i < len(res.srcs); i++ {
-		err = copyModifiedFile(
+		copyModifiedFile(
 			res.srcs[i].absolute, filepath.Join(dest.String(), res.srcs[i].relative), [][][]byte{
 				[][]byte{
 					[]byte("github.com/colegion/goal/internal/skeleton"),
@@ -86,7 +85,6 @@ func main(hs []command.Handler, i int, args command.Data) {
 				},
 			},
 		)
-		log.AssertNil(err)
 	}
 
 	log.Info.Printf(info, destImp)
