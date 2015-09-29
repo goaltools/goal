@@ -42,13 +42,14 @@ func (m FnMap) Render(pkgName, vsName string, a reflect.Arg) (string, error) {
 // 3. They return 1 argument.
 // This is useful for code generation.
 func Context() FnMap {
+	p, _ := path.New("github.com/colegion/goal/strconv").Package()
 	fs := FnMap{}
-	p := reflect.ParseDir(path.goalDir("strconv"), false)
-	for i := range p.Funcs {
-		if !strconvFunc(p.Funcs[i]) {
+	pkg := reflect.ParseDir(p.String(), false)
+	for i := range pkg.Funcs {
+		if !strconvFunc(pkg.Funcs[i]) {
 			continue
 		}
-		fs[p.Funcs[i].Results[0].Type.String()] = p.Funcs[i]
+		fs[pkg.Funcs[i].Results[0].Type.String()] = pkg.Funcs[i]
 	}
 	return fs
 }
