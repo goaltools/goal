@@ -31,6 +31,9 @@ func main() {
 		}
 	}()
 
+	// Printing a header message with a name of the framework.
+	log.Trace.Println(header)
+
 	// Try to run the command user requested.
 	// Ignoring the first argument as it is name of the executable.
 	flag.Parse()
@@ -39,6 +42,18 @@ func main() {
 		log.Warn.Printf(unknownCmd, err, os.Args[0])
 	}
 }
+
+var header = `~
+~ Goal Framework
+~ https://github.com/colegion/goal
+~
+  ██████╗  ██████╗  █████╗ ██╗
+ ██╔════╝ ██╔═══██╗██╔══██╗██║
+ ██║  ███╗██║   ██║███████║██║
+ ██║   ██║██║   ██║██╔══██║██║
+ ╚██████╔╝╚██████╔╝██║  ██║███████╗
+  ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝
+`
 
 var unknownCmd = `Error: %v.
 Run "%s help" for usage.`
