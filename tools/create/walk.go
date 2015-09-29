@@ -29,11 +29,7 @@ type paths struct {
 // that require additional processing.
 func walk(dest string) (*result, error) {
 	res, fn := walkFunc(dest)
-	err := filepath.Walk(dest, fn)
-	if err != nil {
-		return nil, err
-	}
-	return res, nil
+	return res, filepath.Walk(dest, fn)
 }
 
 // walkFunc returns an allocated result and a function that may be used for validation
