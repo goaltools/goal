@@ -9,11 +9,14 @@ import (
 
 	"github.com/colegion/goal/internal/command"
 	"github.com/colegion/goal/log"
+	"github.com/colegion/goal/tools/create"
 )
 
 // handlers is a stores information about the registered subcommands (aka tools)
 // the framework supports.
-var handlers = command.NewContext()
+var handlers = command.NewContext(
+	create.Handler,
+)
 
 func main() {
 	// Try to run the command user requested.
@@ -25,7 +28,7 @@ func main() {
 	case command.ErrIncorrectArgs: // Incorrect command requested.
 		log.Warn.Printf(unknownCmd, strings.Join(os.Args, " "))
 	default: // Some other error has been received.
-		log.Error.Println(err)
+		log.Error.Printf(`Error: "%v".`, err)
 	}
 }
 
