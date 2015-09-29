@@ -10,6 +10,7 @@ import (
 	"github.com/colegion/goal/internal/command"
 	"github.com/colegion/goal/log"
 	"github.com/colegion/goal/tools/create"
+	"github.com/colegion/goal/tools/run"
 )
 
 var trace = flag.Bool("trace", false, "Show stack trace in case of runtime errors.")
@@ -18,6 +19,7 @@ var trace = flag.Bool("trace", false, "Show stack trace in case of runtime error
 // the framework supports.
 var handlers = command.NewContext(
 	create.Handler,
+	run.Handler,
 )
 
 func main() {

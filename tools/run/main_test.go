@@ -3,12 +3,14 @@ package run
 import (
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"sync"
 	"syscall"
 	"testing"
 	"time"
 
 	"github.com/colegion/goal/internal/command"
+	"github.com/colegion/goal/internal/path"
 )
 
 var mu sync.Mutex
@@ -20,9 +22,9 @@ func TestMain_TestData(t *testing.T) {
 	defer expectPanic(`Application was terminated, panic expected.`)
 
 	// Paths relative to the root directory are used here.
-	defer os.Remove("../tmp.test")
+	defer os.Remove("tmp.test")
 	go func() {
-		ioutil.WriteFile("../tmp.test", []byte{}, 0755)
+		ioutil.WriteFile("tmp.test", []byte{}, 0666)
 		createdFile <- true
 	}()
 	go func() {
@@ -30,54 +32,47 @@ func TestMain_TestData(t *testing.T) {
 		<-createdFile
 		notify <- syscall.SIGTERM
 	}()
-	main("run", command.Data{
-		"run": "./testdata/configs",
-	})
+	main(handlers, 0, command.Data{"./testdata/configs"})
 }
 
 func TestMain_TestData2(t *testing.T) {
-	os.Chdir("../../") // Previous call of main() changed current dir.
-	bs := createConfig(t)
+	createConfig(t)
 
 	defer expectPanic(`Application was terminated, panic expected.`)
 	go func() {
-		// Paths relative to the root directory are used here.
-		err := ioutil.WriteFile("./goal.yml", bs, 0755)
-		if err != nil {
-			t.Error(err)
-		}
+		createConfig(t)
 
 		time.Sleep(time.Second * 4)
 		notify <- syscall.SIGTERM
 	}()
-	main("run", command.Data{
-		"run": "github.com/colegion/goal/internal/programs/run/testdata/configs",
-	})
+	main(handlers, 0, command.Data{"github.com/colegion/goal/tools/run/testdata/configs"})
 }
 
 func TestMain_IncorrectConfig(t *testing.T) {
-	os.Chdir("../../") // Previous call of main() changed current dir.
-
 	defer expectPanic(`A directory without configuration file. Panic expected.`)
-	main("run", command.Data{
-		"run": "./testdata", // Directory without config file.
-	})
+
+	// Directory without config file.
+	main(handlers, 0, command.Data{"./testdata"})
 }
 
 func TestMain(t *testing.T) {
 	defer expectPanic(`Application was terminated, panic expected.`)
 	notify <- syscall.SIGTERM
-	main("run", command.Data{
-		"run": "github.com/colegion/goal/internal/skeleton",
-	})
+	main(handlers, 0, command.Data{"github.com/colegion/goal/internal/skeleton"})
 }
 
 func createConfig(t *testing.T) []byte {
-	bs, err := ioutil.ReadFile("./testdata/configs/goal.src.yml")
+	p, _ := path.New("github.com/colegion/goal/tools/run").Package()
+
+	bs, err := ioutil.ReadFile(
+		filepath.Join(p.String(), "./testdata/configs/goal.src.yml"),
+	)
 	if err != nil {
 		t.Error(err)
 	}
-	err = ioutil.WriteFile("./testdata/configs/goal.yml", bs, 0755)
+	err = ioutil.WriteFile(
+		filepath.Join(p.String(), "./testdata/configs/goal.yml"), bs, 0666,
+	)
 	if err != nil {
 		t.Error(err)
 	}
@@ -89,3 +84,5 @@ func expectPanic(msg string) {
 		panic(msg)
 	}
 }
+
+var handlers = []command.Handler{Handler}
