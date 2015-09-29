@@ -4,13 +4,15 @@
 package main
 
 import (
+	"flag"
 	"os"
-	"strings"
 
 	"github.com/colegion/goal/internal/command"
 	"github.com/colegion/goal/log"
 	"github.com/colegion/goal/tools/create"
 )
+
+var trace = flag.Bool("trace", false, "Show stack trace in case of runtime errors.")
 
 // handlers is a stores information about the registered subcommands (aka tools)
 // the framework supports.
@@ -19,18 +21,24 @@ var handlers = command.NewContext(
 )
 
 func main() {
+	// Do not show stacktrace if something goes wrong
+	// but tracing is disabled.
+	defer func() {
+		if err := recover(); err != nil {
+			if *trace {
+				log.Warn.Fatalf("TRACE: %v.", err)
+			}
+		}
+	}()
+
 	// Try to run the command user requested.
 	// Ignoring the first argument as it is name of the executable.
-	err := handlers.Run(os.Args[1:])
-	switch err {
-	case nil: // Handler's entry function has been successfully executed.
-		// Do nothing.
-	case command.ErrIncorrectArgs: // Incorrect command requested.
-		log.Warn.Printf(unknownCmd, strings.Join(os.Args, " "))
-	default: // Some other error has been received.
-		log.Error.Printf(`Error: "%v".`, err)
+	flag.Parse()
+	err := handlers.Run(flag.Args())
+	if err != nil {
+		log.Warn.Printf(unknownCmd, err, os.Args[0])
 	}
 }
 
-var unknownCmd = `Unknown command "%s".
-Run "goal help" for usage.`
+var unknownCmd = `Error: %v.
+Run "%s help" for usage.`
