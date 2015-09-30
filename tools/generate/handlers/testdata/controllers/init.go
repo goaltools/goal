@@ -3,7 +3,7 @@ package controllers
 import (
 	h "net/http"
 
-	"github.com/colegion/goal/commands/generate/handlers/testdata/controllers/subpackage"
+	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage"
 
 	"github.com/naoina/denco"
 	"github.com/revel/revel/testing"

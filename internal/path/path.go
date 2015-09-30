@@ -23,7 +23,7 @@ type Path struct {
 // New allocates and returns a new Path.
 func New(p string) *Path {
 	return &Path{
-		s: path.Clean(filepath.ToSlash(p)),
+		s: filepath.ToSlash(p),
 	}
 }
 

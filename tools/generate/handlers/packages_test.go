@@ -10,7 +10,7 @@ import (
 
 func TestProcessPackage(t *testing.T) {
 	ps := packages{}
-	ps.processPackage("github.com/colegion/goal/commands/generate/handlers/testdata/controllers")
+	ps.processPackage("github.com/colegion/goal/tools/generate/handlers/testdata/controllers")
 }
 
 func TestParentPackage(t *testing.T) {
@@ -37,7 +37,7 @@ func TestParentPackage(t *testing.T) {
 
 func TestControllerIgnoredArgs(t *testing.T) {
 	c := controller{}
-	a := ps["github.com/colegion/goal/internal/programs/generate/handlers/testdata/controllers"].data["App"].Actions[1]
+	a := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"].data["App"].Actions[1]
 	exp := ", _, _"
 	if r := c.IgnoredArgs(&a); r != exp {
 		t.Errorf(`Incorrect IgnoreArgs result. Expected "%s", got "%s".`, exp, r)
@@ -103,7 +103,7 @@ func assertDeepEqualPkgs(ps1, ps2 packages) {
 }
 
 var ps = packages{
-	"github.com/colegion/goal/internal/programs/generate/handlers/testdata/controllers": controllers{
+	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers": controllers{
 		data: map[string]controller{
 			"Controller": controller{
 				After: &reflect.Func{
@@ -242,7 +242,7 @@ var ps = packages{
 				File: "init.go",
 				Parents: []parent{
 					{
-						Import: "github.com/colegion/goal/internal/programs/generate/handlers/testdata/controllers/subpackage",
+						Import: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage",
 						Name:   "Controller",
 					},
 				},
@@ -325,14 +325,14 @@ var ps = packages{
 				File: "app.go",
 				Parents: []parent{
 					{
-						Import: "github.com/colegion/goal/internal/programs/generate/handlers/testdata/controllers",
+						Import: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers",
 						Name:   "Controller",
 					},
 				},
 			},
 		},
 	},
-	"github.com/colegion/goal/internal/programs/generate/handlers/testdata/controllers/subpackage": controllers{
+	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage": controllers{
 		data: map[string]controller{
 			"Controller": controller{
 				Actions: []reflect.Func{
