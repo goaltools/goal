@@ -47,7 +47,7 @@ func main(hs []command.Handler, i int, args command.Data) {
 	// Prepare source and destination directory paths.
 	src, err := path.New("github.com/colegion/goal/internal/skeleton").Package()
 	log.AssertNil(err)
-	dest, err := path.New(p).Absolute()
+	dest, err := path.New(p).Package()
 	log.AssertNil(err)
 
 	// Prepare an import path of the app to be created.

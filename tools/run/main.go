@@ -60,6 +60,7 @@ func main(hs []command.Handler, i int, args command.Data) {
 
 	// Prepare a path of configuration file.
 	cf := filepath.Join(dir.String(), ConfigFile)
+	println(cf)
 
 	// Start a user tasks runner and instances controller.
 	go instanceController()
@@ -80,6 +81,10 @@ func main(hs []command.Handler, i int, args command.Data) {
 	// Execute all commands from the requested directory.
 	curr, _ := os.Getwd()
 	os.Chdir(dir.String()) // pushd
+	defer func() {
+		// Going back to the initial directory.
+		os.Chdir(curr) // popd
+	}()
 
 	// Load the configuration.
 	reloadConfig()
@@ -87,9 +92,6 @@ func main(hs []command.Handler, i int, args command.Data) {
 	// Cleaning up after we are done.
 	signal.Notify(notify, os.Interrupt, syscall.SIGTERM)
 	<-notify
-
-	// Going back to the initial directory.
-	os.Chdir(curr) // popd
 }
 
 func configDaemon(imp, file string) {
