@@ -10,16 +10,19 @@ import (
 	"github.com/colegion/goal/internal/command"
 	"github.com/colegion/goal/log"
 	"github.com/colegion/goal/tools/create"
+	"github.com/colegion/goal/tools/generate/handlers"
 	"github.com/colegion/goal/tools/run"
 )
 
 var trace = flag.Bool("trace", false, "Show stack trace in case of runtime errors.")
 
-// handlers is a stores information about the registered subcommands (aka tools)
+// tools is a stores information about the registered subcommands (tools)
 // the framework supports.
-var handlers = command.NewContext(
+var tools = command.NewContext(
 	create.Handler,
 	run.Handler,
+
+	handlers.Handler,
 )
 
 func main() {
@@ -39,7 +42,7 @@ func main() {
 	// Try to run the command user requested.
 	// Ignoring the first argument as it is name of the executable.
 	flag.Parse()
-	err := handlers.Run(flag.Args())
+	err := tools.Run(flag.Args())
 	if err != nil {
 		log.Warn.Printf(unknownCmd, err, os.Args[0])
 	}
