@@ -5,8 +5,8 @@ import (
 
 	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage"
 
+	"github.com/colegion/goal/config"
 	"github.com/naoina/denco"
-	"github.com/revel/revel/testing"
 )
 
 // Controller is a struct that should be embedded into every controller
@@ -15,8 +15,8 @@ type Controller struct {
 	*subpackage.Controller
 	*denco.Param
 
-	testing.TestSuite
-	Test testing.TestSuite
+	config.Config
+	Test config.Config
 }
 
 // Before is a magic method that is executed before every request.
