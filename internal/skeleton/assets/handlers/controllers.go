@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	c0 "github.com/colegion/goal/internal/skeleton/assets/handlers/github.com/colegion/goal/controllers/requests"
-	c1 "github.com/colegion/goal/internal/skeleton/assets/handlers/github.com/colegion/goal/controllers/templates"
 	c2 "github.com/colegion/goal/internal/skeleton/assets/handlers/github.com/colegion/goal/controllers/sessions"
+	c1 "github.com/colegion/goal/internal/skeleton/assets/handlers/github.com/colegion/goal/controllers/templates"
 	contr "github.com/colegion/goal/internal/skeleton/controllers"
 
 	"github.com/colegion/goal/config"

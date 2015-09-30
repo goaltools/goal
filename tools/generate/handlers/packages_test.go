@@ -105,7 +105,7 @@ func assertDeepEqualPkgs(ps1, ps2 packages) {
 var ps = packages{
 	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers": controllers{
 		data: map[string]controller{
-			"Controller": controller{
+			"Controller": {
 				After: &reflect.Func{
 					Comments: []string{"// After is a magic method that is executed after every request."},
 					File:     "init.go",
@@ -247,7 +247,7 @@ var ps = packages{
 					},
 				},
 			},
-			"App": controller{
+			"App": {
 				Actions: []reflect.Func{
 					{
 						Comments: []string{"// Index is a sample action."},
@@ -334,7 +334,7 @@ var ps = packages{
 	},
 	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage": controllers{
 		data: map[string]controller{
-			"Controller": controller{
+			"Controller": {
 				Actions: []reflect.Func{
 					{
 						Comments: []string{"// Index is a sample action."},

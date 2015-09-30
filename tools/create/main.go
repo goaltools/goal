@@ -79,7 +79,7 @@ func main(hs []command.Handler, i int, args command.Data) {
 	for i := 0; i < len(res.srcs); i++ {
 		copyModifiedFile(
 			res.srcs[i].absolute, filepath.Join(dest.String(), res.srcs[i].relative), [][][]byte{
-				[][]byte{
+				{
 					[]byte("github.com/colegion/goal/internal/skeleton"),
 					[]byte(destImp.String()),
 				},
