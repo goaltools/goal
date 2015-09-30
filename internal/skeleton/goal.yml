@@ -32,9 +32,6 @@ watch:
     - /run build
     - /single start
   ./views/*:
-    - go generate ./controllers/controllers.go
-    - /start get
-    - /run build
     - /single start
   ./:
     - /run build
