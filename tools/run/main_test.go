@@ -58,7 +58,10 @@ func TestMain_IncorrectConfig(t *testing.T) {
 
 func TestMain(t *testing.T) {
 	defer expectPanic(`Application was terminated, panic expected.`)
-	notify <- syscall.SIGTERM
+	go func() {
+		time.Sleep(time.Second * 4)
+		notify <- syscall.SIGTERM
+	}()
 	main(handlers, 0, command.Data{"github.com/colegion/goal/internal/skeleton"})
 }
 
