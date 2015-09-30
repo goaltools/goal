@@ -87,7 +87,9 @@ func (c controller) IgnoredArgs(f *reflect.Func) (s string) {
 // extracts controllers + actions.
 func (ps packages) processPackage(importPath string) {
 	log.Trace.Printf(`Parsing "%s"...`, importPath)
-	p := reflect.ParseDir(path.PackageDir(importPath), false)
+	dir, err := path.New(importPath).Package()
+	log.AssertNil(err)
+	p := reflect.ParseDir(dir.String(), false)
 	cs := ps.extractControllers(p)
 	if len(cs.data) > 0 {
 		ps[importPath] = controllers{
@@ -117,15 +119,16 @@ func (ps packages) scanAnonEmbStructs(pkg *reflect.Package, i int) (prs []parent
 
 		// Add the field to the list of results.
 		imp, _ := pkg.Imports.Value(pkg.Structs[i].File, pkg.Structs[i].Fields[j].Type.Package)
+		p, _ := path.New(imp).Import()
 		prs = append(prs, parent{
-			Import: path.AbsoluteImport(imp),
+			Import: p.String(),
 			Name:   pkg.Structs[i].Fields[j].Type.Name,
 		})
 
 		// Check whether this import has already been processed.
 		// If not, do it now.
 		if _, ok := ps[imp]; imp != "" && !ok {
-			ps.processPackage(path.AbsoluteImport(imp))
+			ps.processPackage(p.String())
 		}
 	}
 	return
