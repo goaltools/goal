@@ -3,7 +3,7 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/revel/revel/testing"
+	"github.com/colegion/goal/config"
 )
 
 // App is a sample controller.
@@ -42,7 +42,7 @@ func (c *Controller) Finally(w http.ResponseWriter, r *http.Request) bool {
 
 // UnsupportedAction is not an action as it requires argument that is not
 // of builtin type.
-func (c Controller) UnsupportedAction(t testing.TestSuite) http.Handler {
+func (c Controller) UnsupportedAction(t config.Getter) http.Handler {
 	return nil
 }
 
