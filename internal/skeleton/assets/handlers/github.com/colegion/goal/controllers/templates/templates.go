@@ -93,6 +93,38 @@ func (t tTemplates) RenderTemplate(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// RenderError is a handler that was generated automatically.
+// It calls Before, After, Finally methods, and RenderError action found at
+// github.com/colegion/goal/controllers/templates/templates.go
+// in appropriate order.
+//
+// RenderError is an action that renders Error 500 page.
+func (t tTemplates) RenderError(w http.ResponseWriter, r *http.Request) {
+	var h http.Handler
+	c := Templates.New()
+	defer func() {
+		if h != nil {
+			h.ServeHTTP(w, r)
+		}
+	}()
+	defer Templates.Finally(c, w, r)
+	if finish := Templates.Initially(c, w, r); finish {
+		return
+	}
+	if res := Templates.Before(c, w, r); res != nil {
+		h = res
+		return
+	}
+	if res := c.RenderError( // "Binding" parameters.
+	); res != nil {
+		h = res
+		return
+	}
+	if res := Templates.After(c, w, r); res != nil {
+		h = res
+	}
+}
+
 // RenderNotFound is a handler that was generated automatically.
 // It calls Before, After, Finally methods, and RenderNotFound action found at
 // github.com/colegion/goal/controllers/templates/templates.go
