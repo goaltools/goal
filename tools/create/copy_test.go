@@ -63,7 +63,7 @@ func TestCopyModifiedFile(t *testing.T) {
 	src := "./testdata/skeleton/test.go"
 	dst := "./testdata/test.go"
 	copyModifiedFile(src, dst, [][][]byte{
-		[][]byte{
+		{
 			[]byte("test"), []byte("somethingCool"),
 		},
 	})
