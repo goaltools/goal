@@ -56,7 +56,7 @@ func TestPathImport(t *testing.T) {
 	}{
 		{
 			p:   New(""),
-			exp: "github.com/colegion/goal/internal/path",
+			exp: "",
 		},
 		{
 			p:   New("github.com/revel/revel"),
