@@ -106,6 +106,16 @@ func TestPathPackage(t *testing.T) {
 		)
 	}
 
+	imp = "./some/stuff"
+	curr, _ := os.Getwd()
+	exp = filepath.Join(curr, "some/stuff")
+	if p, err := New(imp).Package(); p.String() != exp || err != nil {
+		t.Errorf(
+			`Expected "%s", "nil". Got "%s", "%v".`,
+			exp, p.String(), err,
+		)
+	}
+
 	// Preparing a state for Package to return error.
 	gopaths := build.Default.GOPATH
 	build.Default.GOPATH = ""

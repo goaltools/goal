@@ -111,6 +111,11 @@ func (p *Path) Import() (*Path, error) {
 //	$GOPATH/src/github.com/username/project
 // The first value in the list of GOPATHs is used.
 func (p *Path) Package() (*Path, error) {
+	imp, err := p.Import()
+	if err != nil {
+		return nil, err
+	}
+
 	// Make sure there is at least one $GOPATH value.
 	gopaths := filepath.SplitList(build.Default.GOPATH)
 	if len(gopaths) == 0 {
@@ -120,6 +125,6 @@ func (p *Path) Package() (*Path, error) {
 	// Join input path with the "$GOPATH/src" and return.
 	// Make sure $GOPATH is normalized (i.e. unix style delimiters are used).
 	return &Path{
-		s: path.Join(filepath.ToSlash(gopaths[0]), "src", p.s),
+		s: path.Join(filepath.ToSlash(gopaths[0]), "src", imp.String()),
 	}, nil
 }
