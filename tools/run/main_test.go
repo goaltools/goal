@@ -50,6 +50,7 @@ func TestMain_TestData2(t *testing.T) {
 
 func TestMain_IncorrectConfig(t *testing.T) {
 	defer expectPanic(`A directory without configuration file. Panic expected.`)
+	notify <- syscall.SIGTERM
 
 	// Directory without config file.
 	main(handlers, 0, command.Data{"./testdata"})
