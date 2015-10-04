@@ -1,0 +1,55 @@
+// Package <@.package> is generated automatically.
+// Please, do not edit it manually.
+package <@.package>
+
+// Root is a directory where templates are located.
+var Root = "<@.ctx.input>"
+
+// List is a list of files that were found at "<@.ctx.input>"
+// in a form of slice of strings.
+var List []string
+
+// Paths stores information about all files that
+// were found at "<@.ctx.input>".
+var Paths tPaths
+
+// tPaths represents a root directory with files.
+type tPaths struct {
+	//
+	// Below are the assets of root directory.
+	//
+:	<@template "rangePaths" .ctx.listing.RootAssets>
+}
+
+<@range $name, $paths := .ctx.listing.Dirs>\
+:	// t<@$name> is a type that represents a directory.
+:	type tPath<@$name> struct {
+:		//
+:		// Below are the assets of this directory.
+:		//
+:	:	<@template "rangePaths" $paths>
+:	}
+
+<@end>\
+\
+func init() {
+:	<@range $file, $path := .ctx.listing.FilePaths>\
+:		Paths.<@$file> = "<@$path>"
+:	<@end>\
+	List = []string{ // Make file paths available in a form of slice of strings.
+:	:	<@range $file, $path := .ctx.listing.FilePaths>\
+:			Paths.<@$file>,
+:	:	<@end>\
+	}
+}
+<@define "rangePaths">\
+:	<@range $i, $path := .>\
+:	:	<@if $path.Dir>
+:	:		// <@$path.Name> is a "<@$path.String>" directory.
+:	:		<@$path.Name> tPath<@$path.DirStructName>\
+:	:	<@else>
+:	:		// <@$path.Name> is a "<@$path.String>" file.
+:	:		<@$path.Name> string\
+:	:	<@end>\
+:	<@end>\
+<@end>\
