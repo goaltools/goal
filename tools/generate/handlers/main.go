@@ -6,7 +6,7 @@ import (
 	"github.com/colegion/goal/internal/command"
 )
 
-// Handler is an instance of "new" subcommand (tool).
+// Handler is an instance of "generate handlers" subcommand (tool).
 var Handler = command.Handler{
 	Run: main,
 
