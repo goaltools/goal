@@ -66,18 +66,19 @@ func main(hs []command.Handler, i int, args command.Data) {
 	t.Extension = ".go" // Save generated file as a .go source.
 	t.Context = map[string]interface{}{
 		"listing": fs,
-		"input":   *input,
+		"input":   filepath.ToSlash(*input),
 	}
 	t.Generate()
 
 	// Generate and save ini config with file names.
 	tpl, err = p.New("github.com/colegion/goal/tools/generate/listing/listing.ini.template").Package()
 	log.AssertNil(err)
+	t = generation.NewType(*pkg, tpl.String())
 	t.Path = *output
 	t.Extension = ".ini"
 	t.Context = map[string]interface{}{
 		"listing": fs,
-		"input":   *input,
+		"input":   filepath.ToSlash(*input),
 	}
 	t.Generate()
 }
