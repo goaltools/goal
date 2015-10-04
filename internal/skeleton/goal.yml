@@ -27,7 +27,7 @@ watch:
   # "*" at the end of path means watch recursively.
   # Empty tasks are not allowed.
   ./controllers/*:
-    - go generate ./controllers/init.go
+    - go generate ./controllers
     - /start get
     - /run build
     - /single start

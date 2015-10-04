@@ -11,6 +11,7 @@ import (
 	"github.com/colegion/goal/log"
 	"github.com/colegion/goal/tools/create"
 	"github.com/colegion/goal/tools/generate/handlers"
+	"github.com/colegion/goal/tools/generate/listing"
 	"github.com/colegion/goal/tools/run"
 )
 
@@ -23,6 +24,7 @@ var tools = command.NewContext(
 	run.Handler,
 
 	handlers.Handler,
+	listing.Handler,
 )
 
 func main() {

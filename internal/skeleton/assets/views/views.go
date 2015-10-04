@@ -1,4 +1,4 @@
-// Package views is generated automatically by goal toolkit.
+// Package views is generated automatically.
 // Please, do not edit it manually.
 package views
 

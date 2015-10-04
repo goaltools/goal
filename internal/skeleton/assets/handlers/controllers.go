@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	c0 "github.com/colegion/goal/internal/skeleton/assets/handlers/github.com/colegion/goal/controllers/requests"
-	c2 "github.com/colegion/goal/internal/skeleton/assets/handlers/github.com/colegion/goal/controllers/sessions"
 	c1 "github.com/colegion/goal/internal/skeleton/assets/handlers/github.com/colegion/goal/controllers/templates"
+	c2 "github.com/colegion/goal/internal/skeleton/assets/handlers/github.com/colegion/goal/controllers/sessions"
 	contr "github.com/colegion/goal/internal/skeleton/controllers"
 
 	"github.com/colegion/goal/config"
@@ -102,6 +102,13 @@ func (t tControllers) Finally(c *contr.Controllers, w http.ResponseWriter, r *ht
 		return finish
 	}
 	return
+}
+
+// Init is used to initialize controllers of "github.com/colegion/goal/internal/skeleton/controllers"
+// and its parents.
+func Init(g config.Getter) {
+	initApp(g)
+	initControllers(g)
 }
 
 func initControllers(g config.Getter) {

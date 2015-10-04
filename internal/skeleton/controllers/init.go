@@ -15,6 +15,12 @@ import (
 //
 //go:generate goal generate handlers --input ./ --output ../assets/handlers
 
+// The line below tells golang's generate command you want
+// it to scan your views and generate a listing.
+// Please, do not delete it unless you know what you are doing.
+//
+//go:generate goal generate listing --input ../views --output ../assets/views
+
 // Controllers is a struct that should be embedded into every controller
 // of your app to make methods and fields provided by standard controllers available.
 type Controllers struct {
