@@ -67,6 +67,6 @@ func Init(g config.Getter) {
 
 	root := g.StringDefault("root.directory", "./")
 	views := g.StringDefault("views.directory", "views/")
-	templates := g.Section("templates")
+	templates := g.Section("views")
 	load(root, views, templates)
 }
