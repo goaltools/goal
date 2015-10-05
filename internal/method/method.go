@@ -84,9 +84,9 @@ func Func(pkg *reflect.Package) func(f *reflect.Func) bool {
 			return false
 		}
 
-		// Make sure there are 2 arguments and they are
-		// http.ResponseWriter and *http.Request.
-		if len(f.Params) != 2 {
+		// Make sure there are 3 arguments and they are
+		// http.ResponseWriter, *http.Request, []interface{}.
+		if len(f.Params) != 3 {
 			return false
 		}
 		respWr := f.Params[0].Type.String() == fmt.Sprintf(
@@ -95,7 +95,8 @@ func Func(pkg *reflect.Package) func(f *reflect.Func) bool {
 		req := f.Params[1].Type.String() == fmt.Sprintf(
 			"*%s.%s", importName[f.File], request,
 		)
-		if !respWr || !req {
+		sl := f.Params[2].Type.String() == "[]interface{}"
+		if !respWr || !req || !sl {
 			return false
 		}
 
