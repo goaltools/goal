@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"path/filepath"
 	r "reflect"
 	"testing"
 
@@ -9,8 +10,9 @@ import (
 )
 
 func TestProcessPackage(t *testing.T) {
-	ps := packages{}
-	ps.processPackage("github.com/colegion/goal/tools/generate/handlers/testdata/controllers")
+	psR := packages{}
+	psR.processPackage("github.com/colegion/goal/tools/generate/handlers/testdata/controllers")
+	assertDeepEqualPkgs(ps, psR)
 }
 
 func TestParentPackage(t *testing.T) {
@@ -37,7 +39,7 @@ func TestParentPackage(t *testing.T) {
 
 func TestControllerIgnoredArgs(t *testing.T) {
 	c := controller{}
-	a := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"].data["App"].Actions[1]
+	a := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"].data["App"].Actions[0]
 	exp := ", _, _"
 	if r := c.IgnoredArgs(&a); r != exp {
 		t.Errorf(`Incorrect IgnoreArgs result. Expected "%s", got "%s".`, exp, r)
@@ -53,7 +55,7 @@ func assertDeepEqualController(c1, c2 *controller) {
 		}
 		return
 	}
-	if c1.File != c2.File {
+	if filepath.Base(c1.File) != filepath.Base(c2.File) {
 		log.Error.Panicf("Controllers are from different files: %s != %s.", c1.File, c2.File)
 	}
 	if !r.DeepEqual(c1.Comments, c2.Comments) {
@@ -62,15 +64,23 @@ func assertDeepEqualController(c1, c2 *controller) {
 	if !r.DeepEqual(c1.Parents, c2.Parents) {
 		log.Error.Panicf("Controllers have different parent controllers: %#v != %#v.", c1.Parents, c2.Parents)
 	}
+	log.Trace.Println("Actions...")
 	if err := reflect.AssertEqualFuncs(c1.Actions, c2.Actions); err != nil {
 		log.Error.Panic(err)
 	}
-	if err := reflect.AssertEqualFunc(c1.After, c2.After); err != nil {
-		log.Error.Panic(err)
-	}
+	log.Trace.Println("Before...")
 	if err := reflect.AssertEqualFunc(c1.Before, c2.Before); err != nil {
 		log.Error.Panic(err)
 	}
+	log.Trace.Println("After...")
+	if err := reflect.AssertEqualFunc(c1.After, c2.After); err != nil {
+		log.Error.Panic(err)
+	}
+	log.Trace.Println("Initially...")
+	if err := reflect.AssertEqualFunc(c1.Initially, c2.Initially); err != nil {
+		log.Error.Panic(err)
+	}
+	log.Trace.Println("Finally...")
 	if err := reflect.AssertEqualFunc(c1.Finally, c2.Finally); err != nil {
 		log.Error.Panic(err)
 	}
@@ -83,9 +93,12 @@ func assertDeepEqualControllers(cs1, cs2 controllers) {
 			cs1.data, cs2.data, len(cs1.data), len(cs2.data),
 		)
 	}
-	for i := range cs1.data {
-		c1 := cs1.data[i]
-		c2 := cs2.data[i]
+	if err := reflect.AssertEqualFunc(cs1.init, cs2.init); err != nil {
+		log.Error.Panic(err)
+	}
+	for k := range cs1.data {
+		c1 := cs1.data[k]
+		c2 := cs2.data[k]
 		assertDeepEqualController(&c1, &c2)
 	}
 }
@@ -97,14 +110,99 @@ func assertDeepEqualPkgs(ps1, ps2 packages) {
 			ps1, ps2, len(ps1), len(ps2),
 		)
 	}
-	for i := range ps1 {
-		assertDeepEqualControllers(ps1[i], ps2[i])
+	for k := range ps1 {
+		assertDeepEqualControllers(ps1[k], ps2[k])
 	}
 }
 
 var ps = packages{
 	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers": controllers{
 		data: map[string]controller{
+			"App": {
+				Actions: []reflect.Func{
+					{
+						Comments: []string{"// HelloWorld is a sample action."},
+						File:     "app.go",
+						Name:     "HelloWorld",
+						Params: []reflect.Arg{
+							{
+								Name: "page",
+								Type: &reflect.Type{
+									Name: "int",
+								},
+							},
+						},
+						Recv: &reflect.Arg{
+							Name: "c",
+							Type: &reflect.Type{
+								Name: "App",
+							},
+						},
+						Results: []reflect.Arg{
+							{
+								Type: &reflect.Type{
+									Name:    "Handler",
+									Package: "http",
+								},
+							},
+							{
+								Type: &reflect.Type{
+									Name: "bool",
+								},
+							},
+							{
+								Type: &reflect.Type{
+									Name: "error",
+								},
+							},
+						},
+					},
+					{
+						Comments: []string{"// Index is a sample action."},
+						File:     "init.go",
+						Name:     "Index",
+						Params: []reflect.Arg{
+							{
+								Name: "page",
+								Type: &reflect.Type{
+									Name: "int",
+								},
+							},
+						},
+						Recv: &reflect.Arg{
+							Name: "c",
+							Type: &reflect.Type{
+								Name: "App",
+								Star: true,
+							},
+						},
+						Results: []reflect.Arg{
+							{
+								Type: &reflect.Type{
+									Name:    "Handler",
+									Package: "h",
+								},
+							},
+						},
+					},
+				},
+
+				Comments: []string{
+					"// App is a sample controller.",
+				},
+				File: "app.go",
+				Parents: []parent{
+					{
+						Name: "Controller",
+					},
+					{
+						Name: "NotController",
+					},
+					{
+						Name: "NotController1",
+					},
+				},
+			},
 			"Controller": {
 				After: &reflect.Func{
 					Comments: []string{"// After is a magic method that is executed after every request."},
@@ -185,7 +283,7 @@ var ps = packages{
 						{
 							Name: "a",
 							Type: &reflect.Type{
-								Name: "[]interface{}",
+								Name: "[]string",
 							},
 						},
 					},
@@ -227,7 +325,7 @@ var ps = packages{
 						{
 							Name: "a",
 							Type: &reflect.Type{
-								Name: "[]interface{}",
+								Name: "[]string",
 							},
 						},
 					},
@@ -257,94 +355,29 @@ var ps = packages{
 						Import: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage",
 						Name:   "Controller",
 					},
-				},
-			},
-			"App": {
-				Actions: []reflect.Func{
 					{
-						Comments: []string{"// Index is a sample action."},
-						File:     "init.go",
-						Name:     "Index",
-						Params: []reflect.Arg{
-							{
-								Name: "page",
-								Type: &reflect.Type{
-									Name: "int",
-								},
-							},
-						},
-						Recv: &reflect.Arg{
-							Name: "c",
-							Type: &reflect.Type{
-								Name: "App",
-								Star: true,
-							},
-						},
-						Results: []reflect.Arg{
-							{
-								Type: &reflect.Type{
-									Name:    "Handler",
-									Package: "h",
-								},
-							},
-						},
-					},
-					{
-						Comments: []string{"// HelloWorld is a sample action."},
-						File:     "app.go",
-						Name:     "HelloWorld",
-						Params: []reflect.Arg{
-							{
-								Name: "page",
-								Type: &reflect.Type{
-									Name: "int",
-								},
-							},
-						},
-						Recv: &reflect.Arg{
-							Name: "c",
-							Type: &reflect.Type{
-								Name: "App",
-							},
-						},
-						Results: []reflect.Arg{
-							{
-								Type: &reflect.Type{
-									Name:    "Handler",
-									Package: "http",
-								},
-							},
-							{
-								Type: &reflect.Type{
-									Name: "bool",
-								},
-							},
-							{
-								Type: &reflect.Type{
-									Name: "error",
-								},
-							},
-						},
-					},
-				},
-				After:   &reflect.Func{},
-				Before:  &reflect.Func{},
-				Finally: &reflect.Func{},
-
-				Comments: []string{
-					"// App is a sample controller.",
-				},
-				File: "app.go",
-				Parents: []parent{
-					{
-						Import: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers",
-						Name:   "Controller",
+						Import: "github.com/naoina/denco",
+						Name:   "Param",
 					},
 				},
 			},
 		},
 	},
 	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage": controllers{
+		init: &reflect.Func{
+			Comments: []string{"// Init ..."},
+			File:     "app.go",
+			Name:     "Init",
+			Params: []reflect.Arg{
+				{
+					Name: "g",
+					Type: &reflect.Type{
+						Name:    "Getter",
+						Package: "config",
+					},
+				},
+			},
+		},
 		data: map[string]controller{
 			"Controller": {
 				Actions: []reflect.Func{
@@ -363,8 +396,7 @@ var ps = packages{
 						Recv: &reflect.Arg{
 							Name: "c",
 							Type: &reflect.Type{
-								Name: "App",
-								Star: true,
+								Name: "Controller",
 							},
 						},
 						Results: []reflect.Arg{
@@ -449,7 +481,7 @@ var ps = packages{
 						{
 							Name: "a",
 							Type: &reflect.Type{
-								Name: "[]interface{}",
+								Name: "[]string",
 							},
 						},
 					},
@@ -472,8 +504,7 @@ var ps = packages{
 				Comments: []string{
 					"// Controller is some controller.",
 				},
-				File:    "app.go",
-				Parents: []parent{},
+				File: "app.go",
 			},
 		},
 	},

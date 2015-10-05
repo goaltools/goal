@@ -49,14 +49,49 @@ func (t tTemplates) After(c *contr.Templates, w http.ResponseWriter, r *http.Req
 
 // Initially is a method that is started by every handler function at the very beginning
 // of their execution phase.
-func (t tTemplates) Initially(c *contr.Templates, w http.ResponseWriter, r *http.Request, a []interface{}) (finish bool) {
-	return
+func (t tTemplates) Initially(c *contr.Templates, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
+	// Call magic Initially method of (github.com/colegion/goal/controllers/templates).Templates.
+	return c.Initially(w, r, a)
 }
 
 // Finally is a method that is started by every handler function at the very end
 // of their execution phase no matter what.
-func (t tTemplates) Finally(c *contr.Templates, w http.ResponseWriter, r *http.Request, a []interface{}) (finish bool) {
+func (t tTemplates) Finally(c *contr.Templates, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
 	return
+}
+
+// Render is a handler that was generated automatically.
+// It calls Before, After, Finally methods, and Render action found at
+// github.com/colegion/goal/controllers/templates/templates.go
+// in appropriate order.
+//
+// Render is an equivalent of
+// RenderTemplate(ControllerName+"/"+ActionName+".html").
+func (t tTemplates) Render(w http.ResponseWriter, r *http.Request) {
+	var h http.Handler
+	c := Templates.New()
+	defer func() {
+		if h != nil {
+			h.ServeHTTP(w, r)
+		}
+	}()
+	a := []string{"Templates", "Render"}
+	defer Templates.Finally(c, w, r, a)
+	if finish := Templates.Initially(c, w, r, a); finish {
+		return
+	}
+	if res := Templates.Before(c, w, r); res != nil {
+		h = res
+		return
+	}
+	if res := c.Render( // "Binding" parameters.
+	); res != nil {
+		h = res
+		return
+	}
+	if res := Templates.After(c, w, r); res != nil {
+		h = res
+	}
 }
 
 // RenderTemplate is a handler that was generated automatically.
@@ -74,7 +109,7 @@ func (t tTemplates) RenderTemplate(w http.ResponseWriter, r *http.Request) {
 			h.ServeHTTP(w, r)
 		}
 	}()
-	a := []interface{}{"Templates", "RenderTemplate"}
+	a := []string{"Templates", "RenderTemplate"}
 	defer Templates.Finally(c, w, r, a)
 	if finish := Templates.Initially(c, w, r, a); finish {
 		return
@@ -108,7 +143,7 @@ func (t tTemplates) RenderError(w http.ResponseWriter, r *http.Request) {
 			h.ServeHTTP(w, r)
 		}
 	}()
-	a := []interface{}{"Templates", "RenderError"}
+	a := []string{"Templates", "RenderError"}
 	defer Templates.Finally(c, w, r, a)
 	if finish := Templates.Initially(c, w, r, a); finish {
 		return
@@ -141,7 +176,7 @@ func (t tTemplates) RenderNotFound(w http.ResponseWriter, r *http.Request) {
 			h.ServeHTTP(w, r)
 		}
 	}()
-	a := []interface{}{"Templates", "RenderNotFound"}
+	a := []string{"Templates", "RenderNotFound"}
 	defer Templates.Finally(c, w, r, a)
 	if finish := Templates.Initially(c, w, r, a); finish {
 		return
