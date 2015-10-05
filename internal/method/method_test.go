@@ -126,6 +126,12 @@ var magicM = &reflect.Func{
 				Star:    true,
 			},
 		},
+		{
+			Name: "a",
+			Type: &reflect.Type{
+				Name: "[]interface{}",
+			},
+		},
 	},
 	Recv: &reflect.Arg{
 		Name: "c",
