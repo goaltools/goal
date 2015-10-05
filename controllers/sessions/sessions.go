@@ -23,14 +23,14 @@ type Sessions struct {
 	Session map[string]string
 }
 
-// Before is a magic actions of Sessions controller.
+// Before is a magic action of Sessions controller.
 func (c *Sessions) Before() http.Handler {
 	return nil
 }
 
 // Initially is a magic method that gets session info from a request
 // and initializes Session field.
-func (c *Sessions) Initially(w http.ResponseWriter, r *http.Request) bool {
+func (c *Sessions) Initially(w http.ResponseWriter, r *http.Request, a []string) bool {
 	c.Session = map[string]string{}
 	if cookie, err := r.Cookie(cookieName); err == nil {
 		s.Decode(cookieName, cookie.Value, &c.Session)
@@ -40,7 +40,7 @@ func (c *Sessions) Initially(w http.ResponseWriter, r *http.Request) bool {
 
 // Finally is a magic method that will be executed at the very end of request
 // life cycle and is responsible for creating a signed cookie with session info.
-func (c *Sessions) Finally(w http.ResponseWriter, r *http.Request) bool {
+func (c *Sessions) Finally(w http.ResponseWriter, r *http.Request, a []string) bool {
 	if encoded, err := s.Encode(cookieName, c.Session); err == nil {
 		cookie := &http.Cookie{
 			Name:     cookieName,
