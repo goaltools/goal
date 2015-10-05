@@ -182,6 +182,12 @@ var ps = packages{
 								Star:    true,
 							},
 						},
+						{
+							Name: "a",
+							Type: &reflect.Type{
+								Name: "[]interface{}",
+							},
+						},
 					},
 					Recv: &reflect.Arg{
 						Name: "c",
@@ -216,6 +222,12 @@ var ps = packages{
 								Package: "http",
 								Name:    "Request",
 								Star:    true,
+							},
+						},
+						{
+							Name: "a",
+							Type: &reflect.Type{
+								Name: "[]interface{}",
 							},
 						},
 					},
@@ -432,6 +444,12 @@ var ps = packages{
 								Package: "http",
 								Name:    "Request",
 								Star:    true,
+							},
+						},
+						{
+							Name: "a",
+							Type: &reflect.Type{
+								Name: "[]interface{}",
 							},
 						},
 					},
