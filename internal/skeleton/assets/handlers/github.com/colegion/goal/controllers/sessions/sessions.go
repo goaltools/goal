@@ -48,20 +48,13 @@ func (t tSessions) After(c *contr.Sessions, w http.ResponseWriter, r *http.Reque
 
 // Initially is a method that is started by every handler function at the very beginning
 // of their execution phase.
-func (t tSessions) Initially(c *contr.Sessions, w http.ResponseWriter, r *http.Request) (finish bool) {
-	// Call magic Initially method of (github.com/colegion/goal/controllers/sessions).Sessions.
-	return c.Initially(w, r)
+func (t tSessions) Initially(c *contr.Sessions, w http.ResponseWriter, r *http.Request, a []interface{}) (finish bool) {
+	return
 }
 
 // Finally is a method that is started by every handler function at the very end
 // of their execution phase no matter what.
-func (t tSessions) Finally(c *contr.Sessions, w http.ResponseWriter, r *http.Request) (finish bool) {
-	// Call magic Finally method of (github.com/colegion/goal/controllers/sessions).Sessions.
-	defer func() {
-		if !finish {
-			finish = c.Finally(w, r)
-		}
-	}()
+func (t tSessions) Finally(c *contr.Sessions, w http.ResponseWriter, r *http.Request, a []interface{}) (finish bool) {
 	return
 }
 
