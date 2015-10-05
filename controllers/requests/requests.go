@@ -13,6 +13,11 @@ type Requests struct {
 	Request *http.Request
 }
 
+// Before is a magic action of Requests controller.
+func (c *Requests) Before() http.Handler {
+	return nil
+}
+
 // Initially calls ParseForm on the request and saves it to c.Request.
 // At the same time, if used with a standard goal routing package,
 // parameters extracted from URN are saved to the Form field of the Request.

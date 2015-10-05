@@ -23,7 +23,7 @@ type Sessions struct {
 	Session map[string]string
 }
 
-// Before is a magic actions of Sessions controller.
+// Before is a magic action of Sessions controller.
 func (c *Sessions) Before() http.Handler {
 	return nil
 }
