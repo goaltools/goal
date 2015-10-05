@@ -16,7 +16,7 @@ type Requests struct {
 // Initially calls ParseForm on the request and saves it to c.Request.
 // At the same time, if used with a standard goal routing package,
 // parameters extracted from URN are saved to the Form field of the Request.
-func (c *Requests) Initially(w http.ResponseWriter, r *http.Request) bool {
+func (c *Requests) Initially(w http.ResponseWriter, r *http.Request, a []interface{}) bool {
 	// Save the old value of Form, "github.com/colegion/goal/routing"
 	// stores parameters extracted from URN there.
 	t := r.Form
