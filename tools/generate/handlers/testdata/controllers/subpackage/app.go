@@ -25,6 +25,6 @@ func (c *Controller) After() http.Handler {
 
 // Finally is a magic function that is executed after any request
 // no matter what.
-func (c *Controller) Finally(http.ResponseWriter, *http.Request) bool {
+func (c *Controller) Finally(http.ResponseWriter, *http.Request, []interface{}) bool {
 	return false
 }
