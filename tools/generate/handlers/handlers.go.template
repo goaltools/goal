@@ -56,18 +56,18 @@ func (t t<@.ctx.name>) <@.ctx.after>(c *contr.<@.ctx.name>, w http.ResponseWrite
 
 // <@.ctx.initially> is a method that is started by every handler function at the very beginning
 // of their execution phase.
-func (t t<@.ctx.name>) <@.ctx.initially>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request) (finish bool) {
+func (t t<@.ctx.name>) <@.ctx.initially>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
 :	<@if .ctx.parents>\
 :		// Execute magic <@.ctx.initially> methods of embedded controllers.
 :	:	<@range $i, $v := .ctx.parents>\
-:	:		if finish = <@$v.Package "."><@$v.Name>.<@$.ctx.initially>(c.<@$v.Name>, w, r); finish {
+:	:		if finish = <@$v.Package "."><@$v.Name>.<@$.ctx.initially>(c.<@$v.Name>, w, r, a); finish {
 :	:			return finish
 :	:		}
 :	:	<@end>\
 :	<@end>\
 :	<@if .ctx.controller.Initially>\
 :		// Call magic <@.ctx.initially> method of (<@.ctx.import>).<@.ctx.name>.
-:		return c.<@.ctx.initially>(w, r)
+:		return c.<@.ctx.initially>(w, r, a)
 :	<@else>\
 :		return
 :	<@end>\
@@ -75,19 +75,19 @@ func (t t<@.ctx.name>) <@.ctx.initially>(c *contr.<@.ctx.name>, w http.ResponseW
 
 // <@.ctx.finally> is a method that is started by every handler function at the very end
 // of their execution phase no matter what.
-func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request) (finish bool) {
+func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
 :	<@if .ctx.controller.Finally>\
 :		// Call magic <@.ctx.finally> method of (<@.ctx.import>).<@.ctx.name>.
 :		defer func() {
 :			if !finish {
-:				finish = c.<@.ctx.finally>(w, r)
+:				finish = c.<@.ctx.finally>(w, r, a)
 :			}
 :		}()
 :	<@end>\
 :	<@if .ctx.parents>\
 :		// Execute magic <@.ctx.finally> methods of embedded controllers.
 :	:	<@range $i, $v := .ctx.parents>\
-:	:		if finish = <@$v.Package "."><@$v.Name>.<@$.ctx.finally>(c.<@$v.Name>, w, r); finish {
+:	:		if finish = <@$v.Package "."><@$v.Name>.<@$.ctx.finally>(c.<@$v.Name>, w, r, a); finish {
 :	:			return finish
 :	:		}
 :	:	<@end>\
@@ -109,8 +109,9 @@ func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWri
 :				h.ServeHTTP(w, r)
 :			}
 :		}()
-:		defer <@$.ctx.name>.Finally(c, w, r)
-:		if finish := <@$.ctx.name>.Initially(c, w, r); finish {
+:		a := []string{"<@$.ctx.name>", "<@$f.Name>"}
+:		defer <@$.ctx.name>.Finally(c, w, r, a)
+:		if finish := <@$.ctx.name>.Initially(c, w, r, a); finish {
 :			return
 :		}
 :		if res := <@$.ctx.name>.Before(c, w, r); res != nil {

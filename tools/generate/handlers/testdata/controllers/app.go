@@ -31,12 +31,12 @@ func (c App) HelloWorld(page int) (http.Handler, bool, error) {
 }
 
 // Initially is a magic method that is executed before every request.
-func (c *Controller) Initially(w http.ResponseWriter, r *http.Request) bool {
+func (c *Controller) Initially(w http.ResponseWriter, r *http.Request, a []string) bool {
 	return false
 }
 
 // Finally is a magic method that is executed after every request.
-func (c *Controller) Finally(w http.ResponseWriter, r *http.Request) bool {
+func (c *Controller) Finally(w http.ResponseWriter, r *http.Request, a []string) bool {
 	return false
 }
 
