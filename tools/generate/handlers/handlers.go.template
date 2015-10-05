@@ -56,7 +56,7 @@ func (t t<@.ctx.name>) <@.ctx.after>(c *contr.<@.ctx.name>, w http.ResponseWrite
 
 // <@.ctx.initially> is a method that is started by every handler function at the very beginning
 // of their execution phase.
-func (t t<@.ctx.name>) <@.ctx.initially>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request, a []interface{}) (finish bool) {
+func (t t<@.ctx.name>) <@.ctx.initially>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
 :	<@if .ctx.parents>\
 :		// Execute magic <@.ctx.initially> methods of embedded controllers.
 :	:	<@range $i, $v := .ctx.parents>\
@@ -75,7 +75,7 @@ func (t t<@.ctx.name>) <@.ctx.initially>(c *contr.<@.ctx.name>, w http.ResponseW
 
 // <@.ctx.finally> is a method that is started by every handler function at the very end
 // of their execution phase no matter what.
-func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request, a []interface{}) (finish bool) {
+func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
 :	<@if .ctx.controller.Finally>\
 :		// Call magic <@.ctx.finally> method of (<@.ctx.import>).<@.ctx.name>.
 :		defer func() {
@@ -109,7 +109,7 @@ func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWri
 :				h.ServeHTTP(w, r)
 :			}
 :		}()
-:		a := []interface{}{"<@$.ctx.name>", "<@$f.Name>"}
+:		a := []string{"<@$.ctx.name>", "<@$f.Name>"}
 :		defer <@$.ctx.name>.Finally(c, w, r, a)
 :		if finish := <@$.ctx.name>.Initially(c, w, r, a); finish {
 :			return

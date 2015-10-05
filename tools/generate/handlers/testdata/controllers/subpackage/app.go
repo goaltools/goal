@@ -2,6 +2,8 @@ package subpackage
 
 import (
 	"net/http"
+
+	"github.com/colegion/goal/config"
 )
 
 // Controller is some controller.
@@ -25,6 +27,10 @@ func (c *Controller) After() http.Handler {
 
 // Finally is a magic function that is executed after any request
 // no matter what.
-func (c *Controller) Finally(http.ResponseWriter, *http.Request, []interface{}) bool {
+func (c *Controller) Finally(w http.ResponseWriter, r *http.Request, a []string) bool {
 	return false
+}
+
+// Init ...
+func Init(g config.Getter) {
 }

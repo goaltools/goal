@@ -3,6 +3,7 @@
 package templates
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 
@@ -28,12 +29,31 @@ type Templates struct {
 
 	// Status is a status code that will be returned when rendering.
 	Status int
+
+	defaultTemplate string
+}
+
+// Initially sets default template name as CurrentController + CurrentAction + .html.
+// Third argument is garanteed to contain Controller as a 0th argument
+// and Action as a 1st.
+func (c *Templates) Initially(w http.ResponseWriter, r *http.Request, a []string) bool {
+	c.defaultTemplate = fmt.Sprintf("%s/%s.html", a[0], a[1])
+	return false
 }
 
 // Before initializes Context that will be passed to template.
 func (c *Templates) Before() http.Handler {
 	c.Context = map[string]interface{}{}
 	return nil
+}
+
+// Render is an equivalent of
+// RenderTemplate(ControllerName+"/"+ActionName+".html").
+func (c *Templates) Render() http.Handler {
+	return &Handler{
+		context:  c.Context,
+		template: c.defaultTemplate,
+	}
 }
 
 // RenderTemplate is an action that gets a path to template
