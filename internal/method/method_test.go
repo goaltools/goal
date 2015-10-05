@@ -126,6 +126,12 @@ var magicM = &reflect.Func{
 				Star:    true,
 			},
 		},
+		{
+			Name: "a",
+			Type: &reflect.Type{
+				Name: "[]string",
+			},
+		},
 	},
 	Recv: &reflect.Arg{
 		Name: "c",
