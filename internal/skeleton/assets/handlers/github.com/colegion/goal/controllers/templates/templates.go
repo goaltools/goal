@@ -49,13 +49,13 @@ func (t tTemplates) After(c *contr.Templates, w http.ResponseWriter, r *http.Req
 
 // Initially is a method that is started by every handler function at the very beginning
 // of their execution phase.
-func (t tTemplates) Initially(c *contr.Templates, w http.ResponseWriter, r *http.Request) (finish bool) {
+func (t tTemplates) Initially(c *contr.Templates, w http.ResponseWriter, r *http.Request, a []interface{}) (finish bool) {
 	return
 }
 
 // Finally is a method that is started by every handler function at the very end
 // of their execution phase no matter what.
-func (t tTemplates) Finally(c *contr.Templates, w http.ResponseWriter, r *http.Request) (finish bool) {
+func (t tTemplates) Finally(c *contr.Templates, w http.ResponseWriter, r *http.Request, a []interface{}) (finish bool) {
 	return
 }
 
@@ -74,8 +74,9 @@ func (t tTemplates) RenderTemplate(w http.ResponseWriter, r *http.Request) {
 			h.ServeHTTP(w, r)
 		}
 	}()
-	defer Templates.Finally(c, w, r)
-	if finish := Templates.Initially(c, w, r); finish {
+	a := []interface{}{"Templates", "RenderTemplate"}
+	defer Templates.Finally(c, w, r, a)
+	if finish := Templates.Initially(c, w, r, a); finish {
 		return
 	}
 	if res := Templates.Before(c, w, r); res != nil {
@@ -107,8 +108,9 @@ func (t tTemplates) RenderError(w http.ResponseWriter, r *http.Request) {
 			h.ServeHTTP(w, r)
 		}
 	}()
-	defer Templates.Finally(c, w, r)
-	if finish := Templates.Initially(c, w, r); finish {
+	a := []interface{}{"Templates", "RenderError"}
+	defer Templates.Finally(c, w, r, a)
+	if finish := Templates.Initially(c, w, r, a); finish {
 		return
 	}
 	if res := Templates.Before(c, w, r); res != nil {
@@ -139,8 +141,9 @@ func (t tTemplates) RenderNotFound(w http.ResponseWriter, r *http.Request) {
 			h.ServeHTTP(w, r)
 		}
 	}()
-	defer Templates.Finally(c, w, r)
-	if finish := Templates.Initially(c, w, r); finish {
+	a := []interface{}{"Templates", "RenderNotFound"}
+	defer Templates.Finally(c, w, r, a)
+	if finish := Templates.Initially(c, w, r, a); finish {
 		return
 	}
 	if res := Templates.Before(c, w, r); res != nil {

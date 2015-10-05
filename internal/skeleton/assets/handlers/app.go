@@ -59,9 +59,9 @@ func (t tApp) After(c *contr.App, w http.ResponseWriter, r *http.Request) http.H
 
 // Initially is a method that is started by every handler function at the very beginning
 // of their execution phase.
-func (t tApp) Initially(c *contr.App, w http.ResponseWriter, r *http.Request) (finish bool) {
+func (t tApp) Initially(c *contr.App, w http.ResponseWriter, r *http.Request, a []interface{}) (finish bool) {
 	// Execute magic Initially methods of embedded controllers.
-	if finish = Controllers.Initially(c.Controllers, w, r); finish {
+	if finish = Controllers.Initially(c.Controllers, w, r, a); finish {
 		return finish
 	}
 	return
@@ -69,9 +69,9 @@ func (t tApp) Initially(c *contr.App, w http.ResponseWriter, r *http.Request) (f
 
 // Finally is a method that is started by every handler function at the very end
 // of their execution phase no matter what.
-func (t tApp) Finally(c *contr.App, w http.ResponseWriter, r *http.Request) (finish bool) {
+func (t tApp) Finally(c *contr.App, w http.ResponseWriter, r *http.Request, a []interface{}) (finish bool) {
 	// Execute magic Finally methods of embedded controllers.
-	if finish = Controllers.Finally(c.Controllers, w, r); finish {
+	if finish = Controllers.Finally(c.Controllers, w, r, a); finish {
 		return finish
 	}
 	return
@@ -91,8 +91,9 @@ func (t tApp) Index(w http.ResponseWriter, r *http.Request) {
 			h.ServeHTTP(w, r)
 		}
 	}()
-	defer App.Finally(c, w, r)
-	if finish := App.Initially(c, w, r); finish {
+	a := []interface{}{"App", "Index"}
+	defer App.Finally(c, w, r, a)
+	if finish := App.Initially(c, w, r, a); finish {
 		return
 	}
 	if res := App.Before(c, w, r); res != nil {
@@ -124,8 +125,9 @@ func (t tApp) PostGreet(w http.ResponseWriter, r *http.Request) {
 			h.ServeHTTP(w, r)
 		}
 	}()
-	defer App.Finally(c, w, r)
-	if finish := App.Initially(c, w, r); finish {
+	a := []interface{}{"App", "PostGreet"}
+	defer App.Finally(c, w, r, a)
+	if finish := App.Initially(c, w, r, a); finish {
 		return
 	}
 	if res := App.Before(c, w, r); res != nil {
@@ -141,6 +143,13 @@ func (t tApp) PostGreet(w http.ResponseWriter, r *http.Request) {
 	if res := App.After(c, w, r); res != nil {
 		h = res
 	}
+}
+
+// Init is used to initialize controllers of "github.com/colegion/goal/internal/skeleton/controllers"
+// and its parents.
+func Init(g config.Getter) {
+	initApp(g)
+	initControllers(g)
 }
 
 func initApp(g config.Getter) {
