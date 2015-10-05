@@ -48,13 +48,14 @@ func (t tRequests) After(c *contr.Requests, w http.ResponseWriter, r *http.Reque
 
 // Initially is a method that is started by every handler function at the very beginning
 // of their execution phase.
-func (t tRequests) Initially(c *contr.Requests, w http.ResponseWriter, r *http.Request, a []interface{}) (finish bool) {
-	return
+func (t tRequests) Initially(c *contr.Requests, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
+	// Call magic Initially method of (github.com/colegion/goal/controllers/requests).Requests.
+	return c.Initially(w, r, a)
 }
 
 // Finally is a method that is started by every handler function at the very end
 // of their execution phase no matter what.
-func (t tRequests) Finally(c *contr.Requests, w http.ResponseWriter, r *http.Request, a []interface{}) (finish bool) {
+func (t tRequests) Finally(c *contr.Requests, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
 	return
 }
 

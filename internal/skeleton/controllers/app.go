@@ -19,7 +19,7 @@ func (c *App) Before(name string, pages []int) http.Handler {
 // Index is an action that is used for generation of a greeting form.
 func (c *App) Index() http.Handler {
 	c.Context["name"] = c.Session["name"]
-	return c.RenderTemplate(v.Paths.App.IndexHTML)
+	return c.Render()
 }
 
 // PostGreet prints received user fullname. If it is not valid,

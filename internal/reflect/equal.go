@@ -5,6 +5,7 @@ package reflect
 
 import (
 	"fmt"
+	"path/filepath"
 	r "reflect"
 )
 
@@ -70,7 +71,7 @@ func AssertEqualFunc(f1, f2 *Func) error {
 	if f1.Name != f2.Name {
 		return fmt.Errorf("functions have different names: %s != %s", f1.Name, f2.Name)
 	}
-	if f1.File != f2.File {
+	if filepath.Base(f1.File) != filepath.Base(f2.File) {
 		return fmt.Errorf("functions are from different files: %s != %s", f1.File, f2.File)
 	}
 	if !r.DeepEqual(f1.Comments, f2.Comments) {
@@ -114,7 +115,7 @@ func AssertEqualStruct(s1, s2 *Struct) error {
 	if s1.Name != s2.Name {
 		return fmt.Errorf("structures have different names: %s != %s", s1.Name, s2.Name)
 	}
-	if s1.File != s2.File {
+	if filepath.Base(s1.File) != filepath.Base(s2.File) {
 		return fmt.Errorf("structures are from different files: %s != %s", s1.File, s2.File)
 	}
 	if !r.DeepEqual(s1.Comments, s2.Comments) {

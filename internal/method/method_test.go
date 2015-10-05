@@ -129,7 +129,7 @@ var magicM = &reflect.Func{
 		{
 			Name: "a",
 			Type: &reflect.Type{
-				Name: "[]interface{}",
+				Name: "[]string",
 			},
 		},
 	},

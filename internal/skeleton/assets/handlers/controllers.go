@@ -74,7 +74,7 @@ func (t tControllers) After(c *contr.Controllers, w http.ResponseWriter, r *http
 
 // Initially is a method that is started by every handler function at the very beginning
 // of their execution phase.
-func (t tControllers) Initially(c *contr.Controllers, w http.ResponseWriter, r *http.Request, a []interface{}) (finish bool) {
+func (t tControllers) Initially(c *contr.Controllers, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
 	// Execute magic Initially methods of embedded controllers.
 	if finish = c0.Requests.Initially(c.Requests, w, r, a); finish {
 		return finish
@@ -90,7 +90,7 @@ func (t tControllers) Initially(c *contr.Controllers, w http.ResponseWriter, r *
 
 // Finally is a method that is started by every handler function at the very end
 // of their execution phase no matter what.
-func (t tControllers) Finally(c *contr.Controllers, w http.ResponseWriter, r *http.Request, a []interface{}) (finish bool) {
+func (t tControllers) Finally(c *contr.Controllers, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
 	// Execute magic Finally methods of embedded controllers.
 	if finish = c0.Requests.Finally(c.Requests, w, r, a); finish {
 		return finish
@@ -102,6 +102,13 @@ func (t tControllers) Finally(c *contr.Controllers, w http.ResponseWriter, r *ht
 		return finish
 	}
 	return
+}
+
+// Init is used to initialize controllers of "github.com/colegion/goal/internal/skeleton/controllers"
+// and its parents.
+func Init(g config.Getter) {
+	initApp(g)
+	initControllers(g)
 }
 
 func initControllers(g config.Getter) {

@@ -95,7 +95,7 @@ func Func(pkg *reflect.Package) func(f *reflect.Func) bool {
 		req := f.Params[1].Type.String() == fmt.Sprintf(
 			"*%s.%s", importName[f.File], request,
 		)
-		sl := f.Params[2].Type.String() == "[]interface{}"
+		sl := f.Params[2].Type.String() == "[]string"
 		if !respWr || !req || !sl {
 			return false
 		}
