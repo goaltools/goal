@@ -5,14 +5,14 @@ package handlers
 import (
 	"net/http"
 
-	contr "github.com/colegion/goal/controllers/templates"
+	contr "github.com/colegion/contrib/controllers/templates"
 
 	"github.com/colegion/goal/config"
 	"github.com/colegion/goal/strconv"
 )
 
 // Templates is an insance of tTemplates that is automatically generated from Templates controller
-// being found at "github.com/colegion/goal/controllers/templates/templates.go",
+// being found at "github.com/colegion/contrib/controllers/templates/templates.go",
 // and contains methods to be used as handler functions.
 //
 // Templates is a controller that provides support of HTML result
@@ -25,16 +25,16 @@ var Templates tTemplates
 type tTemplates struct {
 }
 
-// New allocates (github.com/colegion/goal/controllers/templates).Templates controller,
+// New allocates (github.com/colegion/contrib/controllers/templates).Templates controller,
 // then returns it.
 func (t tTemplates) New() *contr.Templates {
 	c := &contr.Templates{}
 	return c
 }
 
-// Before calls (github.com/colegion/goal/controllers/templates).Templates.Before.
+// Before calls (github.com/colegion/contrib/controllers/templates).Templates.Before.
 func (t tTemplates) Before(c *contr.Templates, w http.ResponseWriter, r *http.Request) http.Handler {
-	// Call magic Before action of (github.com/colegion/goal/controllers/templates).Templates.
+	// Call magic Before action of (github.com/colegion/contrib/controllers/templates).Templates.
 	if res := c.Before( // "Binding" parameters.
 	); res != nil {
 		return res
@@ -50,7 +50,7 @@ func (t tTemplates) After(c *contr.Templates, w http.ResponseWriter, r *http.Req
 // Initially is a method that is started by every handler function at the very beginning
 // of their execution phase.
 func (t tTemplates) Initially(c *contr.Templates, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
-	// Call magic Initially method of (github.com/colegion/goal/controllers/templates).Templates.
+	// Call magic Initially method of (github.com/colegion/contrib/controllers/templates).Templates.
 	return c.Initially(w, r, a)
 }
 
@@ -62,7 +62,7 @@ func (t tTemplates) Finally(c *contr.Templates, w http.ResponseWriter, r *http.R
 
 // Render is a handler that was generated automatically.
 // It calls Before, After, Finally methods, and Render action found at
-// github.com/colegion/goal/controllers/templates/templates.go
+// github.com/colegion/contrib/controllers/templates/templates.go
 // in appropriate order.
 //
 // Render is an equivalent of
@@ -96,7 +96,7 @@ func (t tTemplates) Render(w http.ResponseWriter, r *http.Request) {
 
 // RenderTemplate is a handler that was generated automatically.
 // It calls Before, After, Finally methods, and RenderTemplate action found at
-// github.com/colegion/goal/controllers/templates/templates.go
+// github.com/colegion/contrib/controllers/templates/templates.go
 // in appropriate order.
 //
 // RenderTemplate is an action that gets a path to template
@@ -131,7 +131,7 @@ func (t tTemplates) RenderTemplate(w http.ResponseWriter, r *http.Request) {
 
 // RenderError is a handler that was generated automatically.
 // It calls Before, After, Finally methods, and RenderError action found at
-// github.com/colegion/goal/controllers/templates/templates.go
+// github.com/colegion/contrib/controllers/templates/templates.go
 // in appropriate order.
 //
 // RenderError is an action that renders Error 500 page.
@@ -164,7 +164,7 @@ func (t tTemplates) RenderError(w http.ResponseWriter, r *http.Request) {
 
 // RenderNotFound is a handler that was generated automatically.
 // It calls Before, After, Finally methods, and RenderNotFound action found at
-// github.com/colegion/goal/controllers/templates/templates.go
+// github.com/colegion/contrib/controllers/templates/templates.go
 // in appropriate order.
 //
 // RenderNotFound is an action that renders Error 404 page.
@@ -195,7 +195,7 @@ func (t tTemplates) RenderNotFound(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Init is used to initialize controllers of "github.com/colegion/goal/controllers/templates"
+// Init is used to initialize controllers of "github.com/colegion/contrib/controllers/templates"
 // and its parents.
 func Init(g config.Getter) {
 	initTemplates(g)
