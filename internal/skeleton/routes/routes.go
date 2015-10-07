@@ -5,7 +5,7 @@ import (
 
 	h "github.com/colegion/goal/internal/skeleton/assets/handlers"
 
-	r "github.com/colegion/goal/routing"
+	r "github.com/colegion/contrib/routers/denco"
 )
 
 // List is a slice of routes of the following form:
