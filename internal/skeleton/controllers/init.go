@@ -3,9 +3,9 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/colegion/goal/controllers/requests"
-	"github.com/colegion/goal/controllers/sessions"
-	"github.com/colegion/goal/controllers/templates"
+	"github.com/colegion/contrib/controllers/requests"
+	"github.com/colegion/contrib/controllers/sessions"
+	"github.com/colegion/contrib/controllers/templates"
 )
 
 // The line below tells golang's generate command you want

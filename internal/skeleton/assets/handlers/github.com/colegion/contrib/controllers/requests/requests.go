@@ -5,14 +5,14 @@ package handlers
 import (
 	"net/http"
 
-	contr "github.com/colegion/goal/controllers/requests"
+	contr "github.com/colegion/contrib/controllers/requests"
 
 	"github.com/colegion/goal/config"
 	"github.com/colegion/goal/strconv"
 )
 
 // Requests is an insance of tRequests that is automatically generated from Requests controller
-// being found at "github.com/colegion/goal/controllers/requests/requests.go",
+// being found at "github.com/colegion/contrib/controllers/requests/requests.go",
 // and contains methods to be used as handler functions.
 //
 // Requests is a controller that does two things:
@@ -24,16 +24,16 @@ var Requests tRequests
 type tRequests struct {
 }
 
-// New allocates (github.com/colegion/goal/controllers/requests).Requests controller,
+// New allocates (github.com/colegion/contrib/controllers/requests).Requests controller,
 // then returns it.
 func (t tRequests) New() *contr.Requests {
 	c := &contr.Requests{}
 	return c
 }
 
-// Before calls (github.com/colegion/goal/controllers/requests).Requests.Before.
+// Before calls (github.com/colegion/contrib/controllers/requests).Requests.Before.
 func (t tRequests) Before(c *contr.Requests, w http.ResponseWriter, r *http.Request) http.Handler {
-	// Call magic Before action of (github.com/colegion/goal/controllers/requests).Requests.
+	// Call magic Before action of (github.com/colegion/contrib/controllers/requests).Requests.
 	if res := c.Before( // "Binding" parameters.
 	); res != nil {
 		return res
@@ -49,7 +49,7 @@ func (t tRequests) After(c *contr.Requests, w http.ResponseWriter, r *http.Reque
 // Initially is a method that is started by every handler function at the very beginning
 // of their execution phase.
 func (t tRequests) Initially(c *contr.Requests, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
-	// Call magic Initially method of (github.com/colegion/goal/controllers/requests).Requests.
+	// Call magic Initially method of (github.com/colegion/contrib/controllers/requests).Requests.
 	return c.Initially(w, r, a)
 }
 
@@ -59,7 +59,7 @@ func (t tRequests) Finally(c *contr.Requests, w http.ResponseWriter, r *http.Req
 	return
 }
 
-// Init is used to initialize controllers of "github.com/colegion/goal/controllers/requests"
+// Init is used to initialize controllers of "github.com/colegion/contrib/controllers/requests"
 // and its parents.
 func Init(g config.Getter) {
 	initRequests(g)
