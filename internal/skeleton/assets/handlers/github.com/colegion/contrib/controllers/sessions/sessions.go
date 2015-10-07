@@ -5,14 +5,14 @@ package handlers
 import (
 	"net/http"
 
-	contr "github.com/colegion/goal/controllers/sessions"
+	contr "github.com/colegion/contrib/controllers/sessions"
 
 	"github.com/colegion/goal/config"
 	"github.com/colegion/goal/strconv"
 )
 
 // Sessions is an insance of tSessions that is automatically generated from Sessions controller
-// being found at "github.com/colegion/goal/controllers/sessions/sessions.go",
+// being found at "github.com/colegion/contrib/controllers/sessions/sessions.go",
 // and contains methods to be used as handler functions.
 //
 // Sessions is a controller that makes Session field
@@ -24,16 +24,16 @@ var Sessions tSessions
 type tSessions struct {
 }
 
-// New allocates (github.com/colegion/goal/controllers/sessions).Sessions controller,
+// New allocates (github.com/colegion/contrib/controllers/sessions).Sessions controller,
 // then returns it.
 func (t tSessions) New() *contr.Sessions {
 	c := &contr.Sessions{}
 	return c
 }
 
-// Before calls (github.com/colegion/goal/controllers/sessions).Sessions.Before.
+// Before calls (github.com/colegion/contrib/controllers/sessions).Sessions.Before.
 func (t tSessions) Before(c *contr.Sessions, w http.ResponseWriter, r *http.Request) http.Handler {
-	// Call magic Before action of (github.com/colegion/goal/controllers/sessions).Sessions.
+	// Call magic Before action of (github.com/colegion/contrib/controllers/sessions).Sessions.
 	if res := c.Before( // "Binding" parameters.
 	); res != nil {
 		return res
@@ -49,14 +49,14 @@ func (t tSessions) After(c *contr.Sessions, w http.ResponseWriter, r *http.Reque
 // Initially is a method that is started by every handler function at the very beginning
 // of their execution phase.
 func (t tSessions) Initially(c *contr.Sessions, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
-	// Call magic Initially method of (github.com/colegion/goal/controllers/sessions).Sessions.
+	// Call magic Initially method of (github.com/colegion/contrib/controllers/sessions).Sessions.
 	return c.Initially(w, r, a)
 }
 
 // Finally is a method that is started by every handler function at the very end
 // of their execution phase no matter what.
 func (t tSessions) Finally(c *contr.Sessions, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
-	// Call magic Finally method of (github.com/colegion/goal/controllers/sessions).Sessions.
+	// Call magic Finally method of (github.com/colegion/contrib/controllers/sessions).Sessions.
 	defer func() {
 		if !finish {
 			finish = c.Finally(w, r, a)
@@ -65,7 +65,7 @@ func (t tSessions) Finally(c *contr.Sessions, w http.ResponseWriter, r *http.Req
 	return
 }
 
-// Init is used to initialize controllers of "github.com/colegion/goal/controllers/sessions"
+// Init is used to initialize controllers of "github.com/colegion/contrib/controllers/sessions"
 // and its parents.
 func Init(g config.Getter) {
 	initSessions(g)
