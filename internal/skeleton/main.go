@@ -9,6 +9,7 @@ import (
 	"github.com/colegion/goal/internal/skeleton/assets/handlers"
 	"github.com/colegion/goal/internal/skeleton/routes"
 
+	"github.com/colegion/contrib/servers/grace"
 	c "github.com/colegion/goal/config"
 )
 
@@ -32,7 +33,7 @@ func main() {
 
 	// Starting the server.
 	log.Printf(`Listening on "%s".`, s.Addr)
-	log.Fatal(serve(s))
+	log.Fatal(grace.Serve(s))
 }
 
 func init() {
