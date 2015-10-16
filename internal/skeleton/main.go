@@ -2,22 +2,28 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
-	"runtime"
 
 	"github.com/colegion/goal/internal/skeleton/assets/handlers"
 	"github.com/colegion/goal/internal/skeleton/routes"
 
+	"github.com/colegion/contrib/configs/iniflag"
 	"github.com/colegion/contrib/servers/grace"
-	c "github.com/colegion/goal/config"
 )
 
-var config = c.New()
+var addr = flag.String("http.addr", ":8080", "address the application will listen on")
 
 func main() {
-	// Set max procs for multi-thread executing.
-	runtime.GOMAXPROCS(runtime.NumCPU())
+	// Parse configuration files and flags.
+	err := iniflag.Parse("config/config.ini")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Initialization of handlers.
+	handlers.Init()
 
 	// Build the routes and handler.
 	handler, err := routes.List.Build()
@@ -27,22 +33,11 @@ func main() {
 
 	// Prepare a new server.
 	s := &http.Server{
-		Addr:    config.StringDefault("http.addr", ":8080"),
+		Addr:    *addr,
 		Handler: handler,
 	}
 
 	// Starting the server.
 	log.Printf(`Listening on "%s".`, s.Addr)
 	log.Fatal(grace.Serve(s))
-}
-
-func init() {
-	// Openning configuration file.
-	err := config.ParseFile("config/config.ini", c.ReadFromFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Initialization of handlers.
-	handlers.Init(config)
 }
