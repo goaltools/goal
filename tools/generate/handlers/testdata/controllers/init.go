@@ -2,10 +2,10 @@ package controllers
 
 import (
 	h "net/http"
+	"testing"
 
 	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage"
 
-	"github.com/colegion/goal/config"
 	"github.com/naoina/denco"
 )
 
@@ -15,8 +15,8 @@ type Controller struct {
 	*subpackage.Controller
 	*denco.Param
 
-	config.Config
-	Test config.Config
+	testing.M
+	Test testing.M
 }
 
 // Before is a magic method that is executed before every request.
