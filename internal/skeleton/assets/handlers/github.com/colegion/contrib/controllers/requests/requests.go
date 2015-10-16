@@ -7,7 +7,6 @@ import (
 
 	contr "github.com/colegion/contrib/controllers/requests"
 
-	"github.com/colegion/goal/config"
 	"github.com/colegion/goal/strconv"
 )
 
@@ -61,11 +60,11 @@ func (t tRequests) Finally(c *contr.Requests, w http.ResponseWriter, r *http.Req
 
 // Init is used to initialize controllers of "github.com/colegion/contrib/controllers/requests"
 // and its parents.
-func Init(g config.Getter) {
-	initRequests(g)
+func Init() {
+	initRequests()
 }
 
-func initRequests(g config.Getter) {
+func initRequests() {
 }
 
 func init() {

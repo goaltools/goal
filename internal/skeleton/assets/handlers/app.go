@@ -7,7 +7,6 @@ import (
 
 	contr "github.com/colegion/goal/internal/skeleton/controllers"
 
-	"github.com/colegion/goal/config"
 	"github.com/colegion/goal/strconv"
 )
 
@@ -145,7 +144,14 @@ func (t tApp) PostGreet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func initApp(g config.Getter) {
+// Init is used to initialize controllers of "github.com/colegion/goal/internal/skeleton/controllers"
+// and its parents.
+func Init() {
+	initApp()
+	initControllers()
+}
+
+func initApp() {
 }
 
 func init() {
