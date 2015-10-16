@@ -12,7 +12,6 @@ import (
 :	<@end>\
 	contr "<@.ctx.import>"
 
-	"github.com/colegion/goal/config"
 	"github.com/colegion/goal/strconv"
 )
 
@@ -136,21 +135,21 @@ func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWri
 <@if not .ctx.num>\
 :	// Init is used to initialize controllers of "<@.ctx.import>"
 :	// and its parents.
-:	func Init(g config.Getter) {
+:	func Init() {
 :	:	<@range $name, $v := .ctx.controllers>\
-:	:		init<@$name>(g)
+:	:		init<@$name>()
 :	:	<@end>\
 :	:	<@if .ctx.initFunc>\
-:	:		contr.Init(g)
+:	:		contr.Init()
 :	:	<@end>\
 :	}
 
 <@end>\
 \
-func init<@.ctx.name>(g config.Getter) {
+func init<@.ctx.name>() {
 :	<@range $i, $v := .ctx.parents>\
 :	:	<@if $v.Import>\
-:	:		<@$v.Package ".">Init(g)
+:	:		<@$v.Package ".">Init()
 :	:	<@end>\
 :	<@end>\
 }
