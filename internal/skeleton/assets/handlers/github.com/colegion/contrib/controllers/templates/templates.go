@@ -7,7 +7,6 @@ import (
 
 	contr "github.com/colegion/contrib/controllers/templates"
 
-	"github.com/colegion/goal/config"
 	"github.com/colegion/goal/strconv"
 )
 
@@ -197,12 +196,12 @@ func (t tTemplates) RenderNotFound(w http.ResponseWriter, r *http.Request) {
 
 // Init is used to initialize controllers of "github.com/colegion/contrib/controllers/templates"
 // and its parents.
-func Init(g config.Getter) {
-	initTemplates(g)
-	contr.Init(g)
+func Init() {
+	initTemplates()
+	contr.Init()
 }
 
-func initTemplates(g config.Getter) {
+func initTemplates() {
 }
 
 func init() {

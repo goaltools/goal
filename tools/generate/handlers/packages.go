@@ -142,14 +142,7 @@ func (ps packages) extractInitFunc(pkg *reflect.Package) *reflect.Func {
 		if f.Recv != nil {
 			return false
 		}
-		if len(f.Params) != 1 {
-			return false
-		}
-		impName, ok := pkg.Imports.Name(f.File, f.Params[0].Type.Package)
-		if !ok || f.Params[0].Type.Package != impName || f.Params[0].Type.Star {
-			return false
-		}
-		if f.Params[0].Type.Name != "Getter" {
+		if len(f.Params) != 0 {
 			return false
 		}
 		log.Trace.Printf(`Magic "%s" function will be added to generated "%s" file.`, f.Name, f.File)
