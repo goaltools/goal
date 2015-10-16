@@ -2,8 +2,7 @@ package controllers
 
 import (
 	"net/http"
-
-	"github.com/colegion/goal/config"
+	"testing"
 )
 
 // App is a sample controller.
@@ -42,7 +41,7 @@ func (c *Controller) Finally(w http.ResponseWriter, r *http.Request, a []string)
 
 // UnsupportedAction is not an action as it requires argument that is not
 // of builtin type.
-func (c Controller) UnsupportedAction(t config.Getter) http.Handler {
+func (c Controller) UnsupportedAction(t *testing.T) http.Handler {
 	return nil
 }
 
