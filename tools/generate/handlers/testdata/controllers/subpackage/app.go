@@ -2,8 +2,6 @@ package subpackage
 
 import (
 	"net/http"
-
-	"github.com/colegion/goal/config"
 )
 
 // Controller is some controller.
@@ -32,5 +30,5 @@ func (c *Controller) Finally(w http.ResponseWriter, r *http.Request, a []string)
 }
 
 // Init ...
-func Init(g config.Getter) {
+func Init() {
 }
