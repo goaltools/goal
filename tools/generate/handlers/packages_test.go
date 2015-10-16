@@ -368,15 +368,6 @@ var ps = packages{
 			Comments: []string{"// Init ..."},
 			File:     "app.go",
 			Name:     "Init",
-			Params: []reflect.Arg{
-				{
-					Name: "g",
-					Type: &reflect.Type{
-						Name:    "Getter",
-						Package: "config",
-					},
-				},
-			},
 		},
 		data: map[string]controller{
 			"Controller": {
