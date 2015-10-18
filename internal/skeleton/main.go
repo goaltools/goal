@@ -26,7 +26,7 @@ func main() {
 		Handler: handler,
 	}
 
-	// Starting the server.
+	// Start the server.
 	log.Printf(`Listening on "%s".`, s.Addr)
 	log.Fatal(grace.Serve(s))
 }
