@@ -15,7 +15,7 @@ import (
 	"github.com/colegion/goal/tools/run"
 )
 
-var trace = flag.Bool("trace", false, "Show stack trace in case of runtime errors.")
+var trace = flag.Bool("trace", false, "show stack trace in case of runtime errors")
 
 // tools is a stores information about the registered subcommands (tools)
 // the framework supports.
