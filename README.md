@@ -1,5 +1,5 @@
-# goal
-Toolkit for high productivity web development in Go language.
+# Goal
+Goal is a toolkit for high productivity web development in Go language.
 
 Goal, being mostly inspired by [Revel Framework](https://github.com/revel/revel)
 and its discussions, is built around the concept of
@@ -15,7 +15,25 @@ At the same time goal is very customizable (you can bring your own router, templ
 and any other component). But that's without prejudice to the easiness and seamless of experience
 thanks to good defaults.
 
-Status of the project: **PoC** (not ready for use in the wild).
+# Getting Started
+
+1. Install Goal toolkit:
+
+        go get -u github.com/colegion/goal
+
+2. Create a new skeleton application:
+
+        goal new github.com/$username/$project
+
+3. Start a watcher / task runner:
+
+        goal run github.com/$username/$project
+
+* [Documentation](http://colegion.github.io/goal)
+
+# Status
+
+**PoC** (not ready for use in the wild).
 
 [![GoDoc](https://godoc.org/github.com/colegion/goal?status.svg)](https://godoc.org/github.com/colegion/goal)
 [![Build Status](https://travis-ci.org/colegion/goal.svg?branch=master)](https://travis-ci.org/colegion/goal)
