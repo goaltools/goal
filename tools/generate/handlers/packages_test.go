@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/colegion/goal/internal/reflect"
-	"github.com/colegion/goal/log"
+	"github.com/colegion/goal/utils/log"
 )
 
 func TestProcessPackage(t *testing.T) {

@@ -1,5 +1,5 @@
-// Package log is a simple wrapper on golang standard log
-// package and terminal colorizer (that colorizes result on win and *nix systems).
+// Package log is a simple wrapper around golang standard log
+// package and terminal colorizer (that works both on win and *nix systems).
 // There are four predefined loggers. They are Error, Warn, Trace, and Info.
 package log
 
