@@ -6,16 +6,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/colegion/goal/internal/command"
+	"github.com/colegion/goal/utils/tool"
 )
 
-var handlers []command.Handler
+var handlers []tool.Handler
 
 func init() {
 	Handler.Flags.Set("input", "./testdata/views")
 	Handler.Flags.Set("output", "./testdata/assets/views")
 
-	handlers = []command.Handler{Handler}
+	handlers = []tool.Handler{Handler}
 }
 
 func TestStart(t *testing.T) {

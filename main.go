@@ -7,19 +7,19 @@ import (
 	"flag"
 	"os"
 
-	"github.com/colegion/goal/internal/command"
-	"github.com/colegion/goal/log"
 	"github.com/colegion/goal/tools/create"
 	"github.com/colegion/goal/tools/generate/handlers"
 	"github.com/colegion/goal/tools/generate/listing"
 	"github.com/colegion/goal/tools/run"
+	"github.com/colegion/goal/utils/log"
+	"github.com/colegion/goal/utils/tool"
 )
 
 var trace = flag.Bool("trace", false, "show stack trace in case of runtime errors")
 
 // tools is a stores information about the registered subcommands (tools)
 // the framework supports.
-var tools = command.NewContext(
+var tools = tool.NewContext(
 	create.Handler,
 	run.Handler,
 
