@@ -54,8 +54,26 @@ func ImportToAbsolute(imp string) (string, error) {
 	p := filepath.FromSlash(imp)
 
 	// Make sure the path is not a valid absolute path.
-	if filepath.IsAbs(imp) {
+	if filepath.IsAbs(p) {
 		return p, nil
+	}
+
+	// If the path starts with a ".", transform it into an absolute path
+	// and then get a full package import.
+	if p == "." || p == ".." || filepath.HasPrefix(p, "./") || filepath.HasPrefix(p, "../") {
+		var err error
+
+		// Transforming to the absolute representation.
+		p, err = filepath.Abs(p)
+		if err != nil {
+			return "", err
+		}
+
+		// Getting an absolute import path.
+		p, err = AbsoluteToImport(p)
+		if err != nil {
+			return "", err
+		}
 	}
 
 	// Split $GOPATH list to use the first value.
