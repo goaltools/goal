@@ -6,9 +6,9 @@ import (
 
 	a "github.com/colegion/goal/internal/action"
 	m "github.com/colegion/goal/internal/method"
-	"github.com/colegion/goal/internal/path"
 	"github.com/colegion/goal/internal/reflect"
-	"github.com/colegion/goal/log"
+	"github.com/colegion/goal/utils/log"
+	"github.com/colegion/goal/utils/path"
 )
 
 // packages represents packages of controllers. The format is the following:
@@ -87,9 +87,9 @@ func (c controller) IgnoredArgs(f *reflect.Func) (s string) {
 // extracts controllers + actions.
 func (ps packages) processPackage(importPath string) {
 	log.Trace.Printf(`Parsing "%s"...`, importPath)
-	dir, err := path.New(importPath).Package()
+	dir, err := path.ImportToAbsolute(importPath)
 	log.AssertNil(err)
-	p := reflect.ParseDir(dir.String(), false)
+	p := reflect.ParseDir(dir, false)
 	cs := ps.extractControllers(p)
 	if len(cs.data) > 0 {
 		ps[importPath] = controllers{
@@ -119,16 +119,16 @@ func (ps packages) scanAnonEmbStructs(pkg *reflect.Package, i int) (prs []parent
 
 		// Add the field to the list of results.
 		imp, _ := pkg.Imports.Value(pkg.Structs[i].File, pkg.Structs[i].Fields[j].Type.Package)
-		p, _ := path.New(imp).Import()
+		p, _ := path.CleanImport(imp)
 		prs = append(prs, parent{
-			Import: p.String(),
+			Import: p,
 			Name:   pkg.Structs[i].Fields[j].Type.Name,
 		})
 
 		// Check whether this import has already been processed.
 		// If not, do it now.
 		if _, ok := ps[imp]; imp != "" && !ok {
-			ps.processPackage(p.String())
+			ps.processPackage(p)
 		}
 	}
 	return
