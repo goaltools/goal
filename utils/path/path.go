@@ -50,6 +50,13 @@ func AbsoluteToImport(abs string) (string, error) {
 //	$GOPATH/src/github.com/username/project
 // NOTE: The first value from the list of GOPATHs is always used.
 func ImportToAbsolute(imp string) (string, error) {
+	// Make sure the input import path is not relative.
+	var err error
+	imp, err = CleanImport(imp)
+	if err != nil {
+		return "", err
+	}
+
 	// Replace the "/" by the platform specific separators.
 	p := filepath.FromSlash(imp)
 
@@ -58,28 +65,30 @@ func ImportToAbsolute(imp string) (string, error) {
 		return p, nil
 	}
 
-	// If the path starts with a ".", transform it into an absolute path
-	// and then get a full package import.
-	if p == "." || p == ".." || filepath.HasPrefix(p, "./") || filepath.HasPrefix(p, "../") {
-		var err error
-
-		// Transforming to the absolute representation.
-		p, err = filepath.Abs(p)
-		if err != nil {
-			return "", err
-		}
-
-		// Getting an absolute import path.
-		p, err = AbsoluteToImport(p)
-		if err != nil {
-			return "", err
-		}
-	}
-
 	// Split $GOPATH list to use the first value.
 	gopaths := filepath.SplitList(build.Default.GOPATH)
 
 	// Join input path with the "$GOPATH/src" and return.
 	// Make sure $GOPATH is normalized (i.e. unix style delimiters are used).
 	return path.Join(gopaths[0], "src", p), nil
+}
+
+// CleanImport gets a package import path and returns it as is if it is absolute.
+// Otherwise, it tryes to convert it to an absolute form.
+func CleanImport(imp string) (string, error) {
+	// If the path is not relative, return it as is.
+	if imp != "." && imp != ".." &&
+		!filepath.HasPrefix(imp, "./") && !filepath.HasPrefix(imp, "../") {
+
+		return imp, nil
+	}
+
+	// Find a full absolute path to the requested import.
+	abs, err := filepath.Abs(imp)
+	if err != nil {
+		return "", err
+	}
+
+	// Extract package's import from it.
+	return AbsoluteToImport(abs)
 }
