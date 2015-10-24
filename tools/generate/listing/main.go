@@ -16,10 +16,10 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/colegion/goal/internal/command"
 	"github.com/colegion/goal/internal/generation"
-	p "github.com/colegion/goal/internal/path"
-	"github.com/colegion/goal/log"
+	"github.com/colegion/goal/utils/log"
+	p "github.com/colegion/goal/utils/path"
+	"github.com/colegion/goal/utils/tool"
 )
 
 var fileNamePattern = regexp.MustCompile(
@@ -27,7 +27,7 @@ var fileNamePattern = regexp.MustCompile(
 )
 
 // Handler is an instance of "generate listing" subcommand (tool).
-var Handler = command.Handler{
+var Handler = tool.Handler{
 	Run: main,
 
 	Name:  "generate listing",
@@ -49,19 +49,19 @@ a template that does not exist.
 var input, output, pkg *string
 
 // main is an entry point of listing subcommand.
-func main(hs []command.Handler, i int, args command.Data) {
+func main(hs []tool.Handler, i int, args tool.Data) {
 	// Prepare a path to scan.
-	path, err := p.New(*input).Absolute()
+	path, err := p.ImportToAbsolute(*input)
 	log.AssertNil(err)
 
 	// Start search of files.
-	fs, fn := walkFunc(path.String())
-	filepath.Walk(path.String(), fn)
+	fs, fn := walkFunc(path)
+	filepath.Walk(path, fn)
 
 	// Generate and save a new package.
-	tpl, err := p.New("github.com/colegion/goal/tools/generate/listing/listing.go.template").Package()
+	tpl, err := p.ImportToAbsolute("github.com/colegion/goal/tools/generate/listing/listing.go.template")
 	log.AssertNil(err)
-	t := generation.NewType(*pkg, tpl.String())
+	t := generation.NewType(*pkg, tpl)
 	t.CreateDir(*output)
 	t.Extension = ".go" // Save generated file as a .go source.
 	t.Context = map[string]interface{}{
@@ -71,9 +71,9 @@ func main(hs []command.Handler, i int, args command.Data) {
 	t.Generate()
 
 	// Generate and save ini config with file names.
-	tpl, err = p.New("github.com/colegion/goal/tools/generate/listing/listing.ini.template").Package()
+	tpl, err = p.ImportToAbsolute("github.com/colegion/goal/tools/generate/listing/listing.ini.template")
 	log.AssertNil(err)
-	t = generation.NewType(*pkg, tpl.String())
+	t = generation.NewType(*pkg, tpl)
 	t.Path = *output
 	t.Extension = ".ini"
 	t.Context = map[string]interface{}{

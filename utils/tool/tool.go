@@ -1,6 +1,6 @@
-// Package command is used for parsing input parameters,
+// Package tool is used for parsing input parameters,
 // and starting subcommands (aka tools).
-package command
+package tool
 
 import (
 	"errors"
