@@ -30,13 +30,8 @@ func (t tSessions) New() *contr.Sessions {
 	return c
 }
 
-// Before calls (github.com/colegion/contrib/controllers/sessions).Sessions.Before.
+// Before is a dump method that always returns nil.
 func (t tSessions) Before(c *contr.Sessions, w http.ResponseWriter, r *http.Request) http.Handler {
-	// Call magic Before action of (github.com/colegion/contrib/controllers/sessions).Sessions.
-	if res := c.Before( // "Binding" parameters.
-	); res != nil {
-		return res
-	}
 	return nil
 }
 
