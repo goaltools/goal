@@ -7,6 +7,17 @@ import (
 // Funcs is a type that represents a list of functions.
 type Funcs []Func
 
+// Len returns number of functions in the list.
+func (fs Funcs) Len() int { return len(fs) }
+
+// Swap changes positions of functions with requested indexes.
+func (fs Funcs) Swap(i, j int) { fs[i], fs[j] = fs[j], fs[i] }
+
+// Less compares file names + names of two functions.
+func (fs Funcs) Less(i, j int) bool {
+	return fs[i].Name < fs[j].Name
+}
+
 // Func is a type that represents information about a function or method.
 type Func struct {
 	Comments Comments // Comments that are located right above the function declaration.
