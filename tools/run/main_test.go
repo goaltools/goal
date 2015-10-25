@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/colegion/goal/internal/command"
-	"github.com/colegion/goal/internal/path"
+	"github.com/colegion/goal/utils/path"
+	"github.com/colegion/goal/utils/tool"
 )
 
 var mu sync.Mutex
@@ -32,7 +32,7 @@ func TestMain_TestData(t *testing.T) {
 		<-createdFile
 		notify <- syscall.SIGTERM
 	}()
-	main(handlers, 0, command.Data{"./testdata/configs"})
+	main(handlers, 0, tool.Data{"./testdata/configs"})
 }
 
 func TestMain_TestData2(t *testing.T) {
@@ -45,7 +45,7 @@ func TestMain_TestData2(t *testing.T) {
 		time.Sleep(time.Second * 4)
 		notify <- syscall.SIGTERM
 	}()
-	main(handlers, 0, command.Data{"github.com/colegion/goal/tools/run/testdata/configs"})
+	main(handlers, 0, tool.Data{"github.com/colegion/goal/tools/run/testdata/configs"})
 }
 
 func TestMain_IncorrectConfig(t *testing.T) {
@@ -53,7 +53,7 @@ func TestMain_IncorrectConfig(t *testing.T) {
 	notify <- syscall.SIGTERM
 
 	// Directory without config file.
-	main(handlers, 0, command.Data{"./testdata"})
+	main(handlers, 0, tool.Data{"./testdata"})
 }
 
 func TestMain(t *testing.T) {
@@ -62,20 +62,20 @@ func TestMain(t *testing.T) {
 		time.Sleep(time.Second * 4)
 		notify <- syscall.SIGTERM
 	}()
-	main(handlers, 0, command.Data{"github.com/colegion/goal/internal/skeleton"})
+	main(handlers, 0, tool.Data{"github.com/colegion/goal/internal/skeleton"})
 }
 
 func createConfig(t *testing.T) []byte {
-	p, _ := path.New("github.com/colegion/goal/tools/run").Package()
+	p, _ := path.ImportToAbsolute("github.com/colegion/goal/tools/run")
 
 	bs, err := ioutil.ReadFile(
-		filepath.Join(p.String(), "./testdata/configs/goal.src.yml"),
+		filepath.Join(p, "./testdata/configs/goal.src.yml"),
 	)
 	if err != nil {
 		t.Error(err)
 	}
 	err = ioutil.WriteFile(
-		filepath.Join(p.String(), "./testdata/configs/goal.yml"), bs, 0666,
+		filepath.Join(p, "./testdata/configs/goal.yml"), bs, 0666,
 	)
 	if err != nil {
 		t.Error(err)
@@ -89,4 +89,4 @@ func expectPanic(msg string) {
 	}
 }
 
-var handlers = []command.Handler{Handler}
+var handlers = []tool.Handler{Handler}

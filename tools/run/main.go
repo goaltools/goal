@@ -12,10 +12,10 @@ import (
 	"path/filepath"
 	"syscall"
 
-	"github.com/colegion/goal/internal/command"
-	"github.com/colegion/goal/internal/path"
 	"github.com/colegion/goal/internal/watcher"
-	"github.com/colegion/goal/log"
+	"github.com/colegion/goal/utils/log"
+	"github.com/colegion/goal/utils/path"
+	"github.com/colegion/goal/utils/tool"
 
 	"github.com/tsuru/config"
 	"gopkg.in/fsnotify.v1"
@@ -26,7 +26,7 @@ import (
 var ConfigFile = "goal.yml"
 
 // Handler is an instance of "run" subcommand (tool).
-var Handler = command.Handler{
+var Handler = tool.Handler{
 	Run: main,
 
 	Name:  "run",
@@ -47,26 +47,26 @@ var (
 )
 
 // main is an entry point of the "run" subcommand (tool).
-func main(hs []command.Handler, i int, args command.Data) {
+func main(hs []tool.Handler, i int, args tool.Data) {
 	// The first argument in the list is a path.
 	// If it's missing use an empty string instead.
 	p := args.GetDefault(0, "")
 
 	// Determine import path and absolute path of the project to run.
-	imp, err := path.New(p).Import()
+	imp, err := path.CleanImport(p)
 	log.AssertNil(err)
-	dir, err := path.New(p).Package()
+	dir, err := path.ImportToAbsolute(imp)
 	log.AssertNil(err)
 
 	// Prepare a path of configuration file.
-	cf := filepath.Join(dir.String(), ConfigFile)
+	cf := filepath.Join(dir, ConfigFile)
 	println(cf)
 
 	// Start a user tasks runner and instances controller.
 	go instanceController()
 
 	// Start a configuration file watcher.
-	go configDaemon(imp.String(), cf)
+	go configDaemon(imp, cf)
 
 	// Show user friendly errors and terminate subprograms
 	// in case of panics.
@@ -80,7 +80,7 @@ func main(hs []command.Handler, i int, args command.Data) {
 
 	// Execute all commands from the requested directory.
 	curr, _ := os.Getwd()
-	os.Chdir(dir.String()) // pushd
+	os.Chdir(dir) // pushd
 	defer func() {
 		// Going back to the initial directory.
 		os.Chdir(curr) // popd
