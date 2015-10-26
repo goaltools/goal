@@ -33,8 +33,6 @@ type tPathApp struct {
 	// Below are the assets of this directory.
 	//
 
-	// GreetHTML is a "App/Greet.html" file.
-	GreetHTML string
 	// IndexHTML is a "App/Index.html" file.
 	IndexHTML string
 }
@@ -50,12 +48,10 @@ type tPathErrors struct {
 }
 
 func init() {
-	Paths.App.GreetHTML = "App/Greet.html"
 	Paths.App.IndexHTML = "App/Index.html"
 	Paths.BaseHTML = "Base.html"
 	Paths.Errors.NotFoundHTML = "Errors/NotFound.html"
 	List = []string{ // Make file paths available in a form of slice of strings.
-		Paths.App.GreetHTML,
 		Paths.App.IndexHTML,
 		Paths.BaseHTML,
 		Paths.Errors.NotFoundHTML,

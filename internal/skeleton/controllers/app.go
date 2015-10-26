@@ -2,32 +2,22 @@ package controllers
 
 import (
 	"net/http"
-
-	v "github.com/colegion/goal/internal/skeleton/assets/views"
+	"time"
 )
 
-// App is a sample controller that is used for demonstration purposes.
+// App is a sample controller.
 type App struct {
 	*Controllers
 }
 
-// Before is a magic method that is executed before every request.
-func (c *App) Before(name string, pages []int) http.Handler {
+// Before is a magic action that is started before every
+// other action of the App controller to render current year.
+func (c *App) Before() http.Handler {
+	c.Context["year"] = time.Now().Year()
 	return nil
 }
 
-// Index is an action that is used for generation of a greeting form.
+// Index is an action that renders a home page.
 func (c *App) Index() http.Handler {
-	c.Context["name"] = c.Session["name"]
 	return c.Render()
-}
-
-// PostGreet prints received user fullname. If it is not valid,
-// user is redirected back to index page.
-func (c *App) PostGreet(name string) http.Handler {
-	c.Context["name"] = name
-	c.Context["message"] = c.Request.FormValue("message")
-
-	c.Session["name"] = name
-	return c.RenderTemplate(v.Paths.App.GreetHTML)
 }
