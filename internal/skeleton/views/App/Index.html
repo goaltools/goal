@@ -1,20 +1,7 @@
-{% define "title" %}Hello, world!{% end %}
+{% define "title" %}Hello, World!{% end %}
 {% define "body" %}
-<div>
-	This is an automatically generated skeleton application.
-</div>
-<div>
-	<h2>
-		Greet yourself{% if .name %}, {% .name %}{% end %}
-	</h2>
-	<form method="POST" action="/greet/user">
-		<label for="message">
-			Message:
-		</label>
-		<input type="text" name="message" id="message">
-		<p>
-			<input type="submit" value="ok">
-		</p>
-	</form>
-</div>
+<p>
+	This is a skeleton application that has been automatically generated
+	by <a href="https://github.com/colegion/goal">Goal Toolkit</a>.
+</p>
 {% end %}

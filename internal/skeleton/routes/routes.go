@@ -1,3 +1,4 @@
+// Package routes defines application routes.
 package routes
 
 import (
@@ -8,18 +9,13 @@ import (
 	r "github.com/colegion/contrib/routers/denco"
 )
 
-// List is a slice of routes of the following form:
-//	Route:
-//		Pattern
-//		Handlers:
-//			Method: Handler
-// If using a standard router just call Context.Build() to get http handler
-// as the first argument and an error (or nil) as the second one.
+// List is a slice of routes. If using a default router call Build
+// to get an HTTP handler.
 var List = r.Routes{
 	r.Get("/", h.App.Index),
-	r.Get("/greet/:name", h.App.PostGreet),
-	r.Post("/greet/:name", h.App.PostGreet),
 
-	// Serve static files of ./static directory.
-	r.Get("/static/*filepath", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))).ServeHTTP),
+	// Serve static files of "./static" directory.
+	r.Get("/static/*filepath", http.StripPrefix(
+		"/static/", http.FileServer(http.Dir("./static")),
+	).ServeHTTP),
 }
