@@ -14,7 +14,7 @@ import (
 // being found at "github.com/colegion/goal/internal/skeleton/controllers/app.go",
 // and contains methods to be used as handler functions.
 //
-// App is a sample controller that is used for demonstration purposes.
+// App is a sample controller.
 var App tApp
 
 // tApp is a type with handler methods of App controller.
@@ -30,8 +30,7 @@ func (t tApp) New() *contr.App {
 }
 
 // Before executes magic actions of embedded controllers, and
-// calls (github.com/colegion/goal/internal/skeleton/controllers).App.Before with arguments
-// that are extracted from r.Form and converted to appropriate types.
+// calls (github.com/colegion/goal/internal/skeleton/controllers).App.Before.
 func (t tApp) Before(c *contr.App, w http.ResponseWriter, r *http.Request) http.Handler {
 	// Execute magic Before actions of embedded controllers.
 	if res := Controllers.Before(c.Controllers, w, r); res != nil {
@@ -39,8 +38,6 @@ func (t tApp) Before(c *contr.App, w http.ResponseWriter, r *http.Request) http.
 	}
 	// Call magic Before action of (github.com/colegion/goal/internal/skeleton/controllers).App.
 	if res := c.Before( // "Binding" parameters.
-		strconv.String(r.Form, "name"),
-		strconv.Ints(r.Form, "pages"),
 	); res != nil {
 		return res
 	}
@@ -81,7 +78,7 @@ func (t tApp) Finally(c *contr.App, w http.ResponseWriter, r *http.Request, a []
 // github.com/colegion/goal/internal/skeleton/controllers/app.go
 // in appropriate order.
 //
-// Index is an action that is used for generation of a greeting form.
+// Index is an action that renders a home page.
 func (t tApp) Index(w http.ResponseWriter, r *http.Request) {
 	var h http.Handler
 	c := App.New()
@@ -100,41 +97,6 @@ func (t tApp) Index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if res := c.Index( // "Binding" parameters.
-	); res != nil {
-		h = res
-		return
-	}
-	if res := App.After(c, w, r); res != nil {
-		h = res
-	}
-}
-
-// PostGreet is a handler that was generated automatically.
-// It calls Before, After, Finally methods, and PostGreet action found at
-// github.com/colegion/goal/internal/skeleton/controllers/app.go
-// in appropriate order.
-//
-// PostGreet prints received user fullname. If it is not valid,
-// user is redirected back to index page.
-func (t tApp) PostGreet(w http.ResponseWriter, r *http.Request) {
-	var h http.Handler
-	c := App.New()
-	defer func() {
-		if h != nil {
-			h.ServeHTTP(w, r)
-		}
-	}()
-	a := []string{"App", "PostGreet"}
-	defer App.Finally(c, w, r, a)
-	if finish := App.Initially(c, w, r, a); finish {
-		return
-	}
-	if res := App.Before(c, w, r); res != nil {
-		h = res
-		return
-	}
-	if res := c.PostGreet( // "Binding" parameters.
-		strconv.String(r.Form, "name"),
 	); res != nil {
 		h = res
 		return
