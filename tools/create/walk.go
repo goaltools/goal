@@ -9,7 +9,7 @@ import (
 // rather than just copied.
 // As an example, "github.com/colegion/goal/internal/skeleton"
 // inside such files must be replaced by their new import path.
-var sourceFiles = []string{".go", ".yml"}
+var sourceFiles = []string{".go", ".yml", ".md"}
 
 // result represents objects found when scanning a skeleton directory.
 // There are a few possible kind of them: directories, static files,
