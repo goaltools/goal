@@ -1,15 +1,25 @@
 {% define "base" %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<title>{% template "title" . %}</title>
+		<title>{% template "title" . %} - Goal Toolkit</title>
+
+		<link href="/static/styles/app.css" rel="stylesheet">
 	</head>
 
 	<body>
-		<h1>{% template "title" . %}</h1>
+		<header>
+			<h1>{% template "title" . %}</h1>
+		</header>
 
-		{% template "body" . %}
+		<article>
+			{% template "body" . %}
+		</article>
+
+		<footer>
+			<small>Copyright &copy; {% .year %}</small>
+		</footer>
 	</body>
 </html>
 {% end %}
