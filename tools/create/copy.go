@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/colegion/goal/log"
+	"github.com/colegion/goal/utils/log"
 )
 
 // copyFile reads a source file and copies it to the destination.

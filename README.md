@@ -40,5 +40,33 @@ thanks to good defaults.
 [![Coverage Status](https://coveralls.io/repos/colegion/goal/badge.svg?branch=master)](https://coveralls.io/r/colegion/goal?branch=master)
 [![Go Report Card](http://goreportcard.com/badge/colegion/goal?t=3)](http:/goreportcard.com/report/colegion/goal)
 
+### Getting started
+* Installation of goal toolkit.
+Flag `-u` is to make sure the latest version will be installed.
+```bash
+go get -u github.com/colegion/goal
+```
+
+* Creation of a new skeleton application.
+A new project will be saved to `$GOPATH/src/new/import/path`.
+```bash
+goal new new/import/path
+```
+
+* Start of a file watcher / task runner for the app.
+```bash
+goal run new/import/path
+```
+
+### Tools
+Goal toolkit provides the following tools:
+
+* [new](#) - create a new skeleton application.
+* [run](#) - start a file watcher / task runner.
+* [generate handlers](#)<sup>1</sup> - generate a package of Go handler functions from controllers.
+* [generate listing](#)<sup>1</sup> - generate a list of file paths found in a requested directory.
+
+<sup>1</sup> - tools that may be used with [`go generate`](https://blog.golang.org/generate).
+
 ### License
 Distributed under the BSD 2-clause "Simplified" License unless otherwise noted.

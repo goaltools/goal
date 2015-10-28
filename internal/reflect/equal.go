@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"path/filepath"
 	r "reflect"
+	"sort"
 )
 
 // AssertEqualType gets two *Type arguments and returns nil in case they
@@ -95,6 +96,9 @@ func AssertEqualFuncs(fs1, fs2 Funcs) error {
 			fs1, fs2, len(fs1), len(fs2),
 		)
 	}
+	// Sort slices to fix #15.
+	sort.Sort(fs1)
+	sort.Sort(fs2)
 	for i := range fs1 {
 		if err := AssertEqualFunc(&fs1[i], &fs2[i]); err != nil {
 			return err

@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"go/ast"
 
-	"github.com/colegion/goal/internal/path"
 	"github.com/colegion/goal/internal/reflect"
+	"github.com/colegion/goal/utils/path"
 )
 
 // UnsupportedTypeErr is an error that indicates that there is no conversion
@@ -42,9 +42,9 @@ func (m FnMap) Render(pkgName, vsName string, a reflect.Arg) (string, error) {
 // 3. They return 1 argument.
 // This is useful for code generation.
 func Context() FnMap {
-	p, _ := path.New("github.com/colegion/goal/strconv").Package()
+	p, _ := path.ImportToAbsolute("github.com/colegion/goal/strconv")
 	fs := FnMap{}
-	pkg := reflect.ParseDir(p.String(), false)
+	pkg := reflect.ParseDir(p, false)
 	for i := range pkg.Funcs {
 		if !strconvFunc(pkg.Funcs[i]) {
 			continue
