@@ -3,7 +3,7 @@ package run
 import (
 	"strings"
 
-	"github.com/colegion/goal/log"
+	"github.com/colegion/goal/utils/log"
 
 	"github.com/tsuru/config"
 )
