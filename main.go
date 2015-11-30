@@ -35,7 +35,7 @@ func main() {
 			if *trace {
 				log.Warn.Fatalf("TRACE: %v.", err)
 			}
-			os.Exit(1) // Exit from the program with non-zero code.
+			os.Exit(0)
 		}
 	}()
 
