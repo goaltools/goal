@@ -3,4 +3,6 @@ init:
 watch:
   smth:
     - /pass
-  smth_else: "not a list but a string value"
+  smth_else:
+    -
+      - a list of lists is not expected here
