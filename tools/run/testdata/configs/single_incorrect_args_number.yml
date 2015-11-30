@@ -3,4 +3,5 @@ init:
 watch:
   smth:
     - /pass
-test: /echo "smth"
+test:
+  - /echo "smth"

@@ -12,4 +12,5 @@ watch:
     - /pass
 test:
   - goal generate xxx
-help: goal generate xxx
+help:
+  - goal generate xxx
