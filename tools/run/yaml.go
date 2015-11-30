@@ -12,7 +12,7 @@ func parseFile(file string) (yaml.Map, error) {
 	// Read the YAML configuration file.
 	f, err := yaml.ReadFile(file)
 	if err != nil {
-		return nil, fmt.Errorf(`failed to read file "%s"`, file)
+		return nil, fmt.Errorf(`check your "%s" configuration file, error: %v`, file, err)
 	}
 
 	// Make sure it is a map (with "init", "watch", etc. keys).

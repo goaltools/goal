@@ -60,7 +60,6 @@ func main(hs []tool.Handler, i int, args tool.Data) {
 
 	// Prepare a path of configuration file.
 	cf := filepath.Join(dir, ConfigFile)
-	println(cf)
 
 	// Start a user tasks runner and instances controller.
 	go instanceController()
