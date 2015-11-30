@@ -9,17 +9,17 @@ init:
 watch:
   # Watcher commands will be started every time their related files are modified.
   # "*" at the end of path means watch recursively.
-  "./controllers/*":
+  ./controllers/*:
     - go generate ./controllers
     - /start getAssets
     - /run buildApp
     - /single startApp
-  "./views/*":
+  ./views/*:
     - /single startApp
-  "./":
+  ./:
     - /run buildApp
     - /single startApp
-  "./routes/*":
+  ./routes/*:
     - /run buildApp
     - /single startApp
 buildApp:
