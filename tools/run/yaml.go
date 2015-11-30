@@ -6,6 +6,23 @@ import (
 	"github.com/kylelemons/go-gypsy/yaml"
 )
 
+// parseFile opens the requested file, makes sure it contains
+// a yaml.Map of parameters and returns the latter.
+func parseFile(file string) (yaml.Map, error) {
+	// Read the YAML configuration file.
+	f, err := yaml.ReadFile(file)
+	if err != nil {
+		return nil, fmt.Errorf(`failed to read file "%s"`, file)
+	}
+
+	// Make sure it is a map (with "init", "watch", etc. keys).
+	root, ok := f.Root.(yaml.Map)
+	if !ok {
+		return nil, fmt.Errorf(`configuration must be a map with "init", "watch", at al keys`)
+	}
+	return root, nil
+}
+
 // parseMap gets a yaml.Map and a key which's value must be transformed
 // into map[string][]string.
 // It returns an error if the transformation is not possible.
@@ -22,7 +39,7 @@ func parseMap(m yaml.Map, key string) (map[string][]string, error) {
 		return nil, fmt.Errorf(`no "%s" key found in YAML configuration file`, key)
 	}
 
-	// Make sure the value is a map.
+	// Make sure the value associated with the key is a map.
 	val, ok := t.(yaml.Map)
 	if !ok {
 		return nil, fmt.Errorf(`"%s" must be a map`, key)
@@ -71,7 +88,7 @@ func parseSlice(m yaml.Map, key string) ([]string, error) {
 		}
 
 		// If so, add the element to the list.
-		res = append(res, s.String())
+		res[i] = s.String()
 	}
 	return res, nil
 }
