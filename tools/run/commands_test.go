@@ -38,7 +38,7 @@ func TestStartSingleInstance_IncorrectCommand(t *testing.T) {
 	c := "gxgbhsjdjdduuhdhsh"
 	go instanceController()
 
-	startSingleInstance("smth", c)
+	startSingleInstance([]string{c}, "smth")
 
 	channel <- message{action: "exit"}
 	<-stopped
@@ -47,9 +47,9 @@ func TestStartSingleInstance_IncorrectCommand(t *testing.T) {
 func TestStartSingleInstance(t *testing.T) {
 	go instanceController()
 
-	startSingleInstance("app", "goal run github.com/colegion/goal/internal/skeleton")
-	startSingleInstance("smth", "goal help")
-	startSingleInstance("app", "goal run github.com/colegion/goal/internal/skeleton")
+	startSingleInstance([]string{"goal run github.com/colegion/goal/internal/skeleton"}, "app")
+	startSingleInstance([]string{"goal help"}, "smth")
+	startSingleInstance([]string{"goal run github.com/colegion/goal/internal/skeleton"}, "app")
 
 	channel <- message{action: "exit"}
 	<-stopped

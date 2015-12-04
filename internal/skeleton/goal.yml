@@ -1,30 +1,31 @@
-# goal.yml is a configuration file of "goal run" task runner / file watcher.
+# goal.yml is a configuration file of "goal run" file watcher / task runner.
 init:
   # Commands of this section will be executed once per start of `goal run`.
   - /echo "Starting work on 'github.com/colegion/goal/internal/skeleton'"
   - go generate ./...
   - go get github.com/colegion/goal/internal/skeleton/...
-  - /run build
-  - /single start
+  - /run buildApp
+  - /single startApp
 watch:
   # Watcher commands will be started every time their related files are modified.
-  # "*" at the end of path means watch recursively. Empty tasks are not allowed.
+  # "*" at the end of path means watch recursively.
   ./controllers/*:
     - go generate ./controllers
-    - /start get
-    - /run build
-    - /single start
+    - /start getAssets
+    - /run buildApp
+    - /single startApp
   ./views/*:
-    - /single start
+    - /single startApp
   ./:
-    - /run build
-    - /single start
+    - /run buildApp
+    - /single startApp
   ./routes/*:
-    - /run build
-    - /single start
-build:
+    - /run buildApp
+    - /single startApp
+buildApp:
   - go build -o ./bin/run:EXT github.com/colegion/goal/internal/skeleton
-get:
+getAssets:
   # Getting dependencies for correct work of autocomplete in editors and IDEs.
   - go get github.com/colegion/goal/internal/skeleton/assets/...
-start: ./bin/run:EXT
+startApp:
+  - ./bin/run:EXT

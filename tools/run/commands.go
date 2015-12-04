@@ -1,6 +1,7 @@
 package run
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 
@@ -63,11 +64,13 @@ func run(tasks []string) {
 // as start. However, if there is already an instance with
 // the same name, it will be stopped first
 // before running a new one.
-func startSingleInstance(name, task string) {
-	channel <- message{
-		action: "start",
-		name:   name,
-		task:   task,
+func startSingleInstance(tasks []string, name string) {
+	for i := 0; i < len(tasks); i++ {
+		channel <- message{
+			action: "start",
+			name:   fmt.Sprintf("%s-%d", name, i),
+			task:   tasks[i],
+		}
 	}
 }
 

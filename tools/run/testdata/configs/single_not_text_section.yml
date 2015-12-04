@@ -1,9 +1,0 @@
-init:
-  - /single test
-watch:
-  smth:
-    - /pass
-test:
-  - /pass
-  - /echo "A list of commands instead of a single value"
-  - /pass
