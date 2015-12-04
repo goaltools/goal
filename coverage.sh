@@ -15,7 +15,7 @@ fail=0
 for dir in $(find . -maxdepth 10 -not -path "*testdata*" -not -path './.git*' -not -path '*/_*' -type d);
 do
 	if ls $dir/*.go &> /dev/null; then
-		go test -v -race -coverprofile=profile.out $dir || fail=1
+		go test -coverprofile=profile.out $dir || fail=1
 		if [ -f profile.out ]
 		then
 			cat profile.out | grep -v "mode: set" >> acc.out
