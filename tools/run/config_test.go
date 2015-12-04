@@ -20,9 +20,9 @@ func TestParseConf_StartTextSection(t *testing.T) {
 	parseConf("./testdata/configs/start_not_list_section.yml")
 }
 
-func TestParseConf_SingleListSection(t *testing.T) {
-	defer expectPanic(`/single's first argument should be a section containing a text value. Got list, panic expected.`)
-	parseConf("./testdata/configs/single_not_text_section.yml")
+func TestParseConf_SingleTextSection(t *testing.T) {
+	defer expectPanic(`/single's first argument should be a section containing a list. Got text, panic expected.`)
+	parseConf("./testdata/configs/single_not_list_section.yml")
 }
 
 func TestParseConf_RunIncorrectArgsNum(t *testing.T) {
@@ -46,6 +46,7 @@ func TestParseConf_PassIncorrectArgsNum(t *testing.T) {
 }
 
 func TestParseConf_EmptyWatch(t *testing.T) {
+	defer expectPanic(`No empty configuration files are allowed, panic expected.`)
 	parseConf("./testdata/configs/empty_watch.yml")
 }
 

@@ -3,7 +3,7 @@ init:
   - /pass
   - /echo "Init section"
   - /pass
-  - /run watch:smth
+  - /run smth
 watch:
   smth:
     - /pass
@@ -14,4 +14,5 @@ watch:
     - /single smth_else
 smth:
   - /pass
-smth_else: /echo "Single instance"
+smth_else:
+  - /echo "Single instance"
