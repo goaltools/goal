@@ -4,7 +4,6 @@
 package watcher
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 	"sync"
@@ -175,13 +174,13 @@ func glob(pattern string) (ds []string) {
 		}
 
 		// Make sure the path represents a directory.
-		if info.IsDir() {
-			ds = append(ds, path) // Add current path to the list.
+		if !info.IsDir() {
 			return nil
 		}
 
-		// Otherwise, return an error.
-		return errors.New("not a directory")
+		// Add the directory path to the list.
+		ds = append(ds, path)
+		return nil
 	})
 	return
 }
