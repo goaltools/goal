@@ -11,8 +11,8 @@ import (
 	"github.com/colegion/goal/internal/skeleton/assets/handlers"
 	"github.com/colegion/goal/internal/skeleton/routes"
 
-	"github.com/colegion/contrib/configs/iniflag"
 	"github.com/colegion/contrib/servers/grace"
+	"github.com/goaltools/iniflag"
 )
 
 var addr = flag.String("http.addr", ":8080", "HTTP address the app must listen on")
