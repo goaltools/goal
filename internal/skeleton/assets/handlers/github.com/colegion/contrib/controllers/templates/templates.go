@@ -194,6 +194,41 @@ func (t tTemplates) RenderNotFound(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Redirect is a handler that was generated automatically.
+// It calls Before, After, Finally methods, and Redirect action found at
+// github.com/colegion/contrib/controllers/templates/templates.go
+// in appropriate order.
+//
+// Redirect gets a URI or URN (e.g. "https://si.te/smt or "/users")
+// and returns a handler for user's redirect using 303 status code.
+func (t tTemplates) Redirect(w http.ResponseWriter, r *http.Request) {
+	var h http.Handler
+	c := Templates.New()
+	defer func() {
+		if h != nil {
+			h.ServeHTTP(w, r)
+		}
+	}()
+	a := []string{"Templates", "Redirect"}
+	defer Templates.Finally(c, w, r, a)
+	if finish := Templates.Initially(c, w, r, a); finish {
+		return
+	}
+	if res := Templates.Before(c, w, r); res != nil {
+		h = res
+		return
+	}
+	if res := c.Redirect( // "Binding" parameters.
+		strconv.String(r.Form, "urn"),
+	); res != nil {
+		h = res
+		return
+	}
+	if res := Templates.After(c, w, r); res != nil {
+		h = res
+	}
+}
+
 // Init is used to initialize controllers of "github.com/colegion/contrib/controllers/templates"
 // and its parents.
 func Init() {
