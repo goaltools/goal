@@ -30,8 +30,17 @@ func (m FnMap) Render(pkgName, vsName string, a reflect.Arg) (string, error) {
 		return "", ErrUnsupportedType
 	}
 
+	// If argument is of slice type (e.g. []int), make sure the argument name
+	// ends with []. For illustration, there is a variable:
+	//	var names []string
+	// In order to bind it, we have to retreive "names[]" from the request's Form.
+	n := a.Name
+	if s := a.Type.String(); len(s) > 2 && s[0] == '[' && s[1] == ']' {
+		n += "[]"
+	}
+
 	// Return the fragment of code we need.
-	return fmt.Sprintf(`%s.%s(%s, "%s")`, pkgName, f.Name, vsName, a.Name), nil
+	return fmt.Sprintf(`%s.%s(%s, "%s")`, pkgName, f.Name, vsName, n), nil
 }
 
 // Context returns mappings between types that can be parsed using
