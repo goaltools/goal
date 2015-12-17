@@ -9,7 +9,7 @@ import (
 func TestRender(t *testing.T) {
 	c := Context()
 	a := r.Arg{Name: "names", Type: &r.Type{Name: "[]string"}}
-	exp := `strconv.Strings(r.Form, "names")`
+	exp := `strconv.Strings(r.Form, "names[]")`
 	var expErr error
 	if r, err := c.Render("strconv", "r.Form", a); err != expErr || r != exp {
 		t.Errorf("Incorrect result of Render. Expected `%v`, `%v`;\ngot `%v`, `%v`.", exp, expErr, r, err)
