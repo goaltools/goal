@@ -31,13 +31,8 @@ func (t tTemplates) New() *contr.Templates {
 	return c
 }
 
-// Before calls (github.com/colegion/contrib/controllers/templates).Templates.Before.
+// Before is a dump method that always returns nil.
 func (t tTemplates) Before(c *contr.Templates, w http.ResponseWriter, r *http.Request) http.Handler {
-	// Call magic Before action of (github.com/colegion/contrib/controllers/templates).Templates.
-	if res := c.Before( // "Binding" parameters.
-	); res != nil {
-		return res
-	}
 	return nil
 }
 
@@ -57,40 +52,6 @@ func (t tTemplates) Initially(c *contr.Templates, w http.ResponseWriter, r *http
 // of their execution phase no matter what.
 func (t tTemplates) Finally(c *contr.Templates, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
 	return
-}
-
-// Render is a handler that was generated automatically.
-// It calls Before, After, Finally methods, and Render action found at
-// github.com/colegion/contrib/controllers/templates/templates.go
-// in appropriate order.
-//
-// Render is an equivalent of
-// RenderTemplate(ControllerName+"/"+ActionName+".html").
-func (t tTemplates) Render(w http.ResponseWriter, r *http.Request) {
-	var h http.Handler
-	c := Templates.New()
-	defer func() {
-		if h != nil {
-			h.ServeHTTP(w, r)
-		}
-	}()
-	a := []string{"Templates", "Render"}
-	defer Templates.Finally(c, w, r, a)
-	if finish := Templates.Initially(c, w, r, a); finish {
-		return
-	}
-	if res := Templates.Before(c, w, r); res != nil {
-		h = res
-		return
-	}
-	if res := c.Render( // "Binding" parameters.
-	); res != nil {
-		h = res
-		return
-	}
-	if res := Templates.After(c, w, r); res != nil {
-		h = res
-	}
 }
 
 // RenderTemplate is a handler that was generated automatically.
@@ -128,13 +89,18 @@ func (t tTemplates) RenderTemplate(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// RenderError is a handler that was generated automatically.
-// It calls Before, After, Finally methods, and RenderError action found at
+// Render is a handler that was generated automatically.
+// It calls Before, After, Finally methods, and Render action found at
 // github.com/colegion/contrib/controllers/templates/templates.go
 // in appropriate order.
 //
-// RenderError is an action that renders Error 500 page.
-func (t tTemplates) RenderError(w http.ResponseWriter, r *http.Request) {
+// Render is an equivalent of the following:
+//	RenderTemplate(CurrentController + "/" + CurrentAction + ".html")
+// The default path pattern may be overriden by adding the following
+// line to your configuration file:
+//	[templates]
+//	default.pattern = %s/%s.tpl
+func (t tTemplates) Render(w http.ResponseWriter, r *http.Request) {
 	var h http.Handler
 	c := Templates.New()
 	defer func() {
@@ -142,7 +108,7 @@ func (t tTemplates) RenderError(w http.ResponseWriter, r *http.Request) {
 			h.ServeHTTP(w, r)
 		}
 	}()
-	a := []string{"Templates", "RenderError"}
+	a := []string{"Templates", "Render"}
 	defer Templates.Finally(c, w, r, a)
 	if finish := Templates.Initially(c, w, r, a); finish {
 		return
@@ -151,40 +117,7 @@ func (t tTemplates) RenderError(w http.ResponseWriter, r *http.Request) {
 		h = res
 		return
 	}
-	if res := c.RenderError( // "Binding" parameters.
-	); res != nil {
-		h = res
-		return
-	}
-	if res := Templates.After(c, w, r); res != nil {
-		h = res
-	}
-}
-
-// RenderNotFound is a handler that was generated automatically.
-// It calls Before, After, Finally methods, and RenderNotFound action found at
-// github.com/colegion/contrib/controllers/templates/templates.go
-// in appropriate order.
-//
-// RenderNotFound is an action that renders Error 404 page.
-func (t tTemplates) RenderNotFound(w http.ResponseWriter, r *http.Request) {
-	var h http.Handler
-	c := Templates.New()
-	defer func() {
-		if h != nil {
-			h.ServeHTTP(w, r)
-		}
-	}()
-	a := []string{"Templates", "RenderNotFound"}
-	defer Templates.Finally(c, w, r, a)
-	if finish := Templates.Initially(c, w, r, a); finish {
-		return
-	}
-	if res := Templates.Before(c, w, r); res != nil {
-		h = res
-		return
-	}
-	if res := c.RenderNotFound( // "Binding" parameters.
+	if res := c.Render( // "Binding" parameters.
 	); res != nil {
 		h = res
 		return

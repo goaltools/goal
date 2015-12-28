@@ -106,6 +106,13 @@ func (t tApp) Index(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Init is used to initialize controllers of "github.com/colegion/goal/internal/skeleton/controllers"
+// and its parents.
+func Init() {
+	initApp()
+	initControllers()
+}
+
 func initApp() {
 }
 
