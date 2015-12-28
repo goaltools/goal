@@ -80,7 +80,8 @@ func CleanImport(imp string) (string, error) {
 	if imp != "." && imp != ".." &&
 		!filepath.HasPrefix(imp, "./") && !filepath.HasPrefix(imp, "../") {
 
-		return imp, nil
+		// Get rid of trailing slashes.
+		return strings.TrimRight(imp, "/"), nil
 	}
 
 	// Find a full absolute path to the requested import.

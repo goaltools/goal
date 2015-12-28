@@ -26,6 +26,10 @@ func TestAbsoluteToImport(t *testing.T) {
 			exp: "github.com/revel/revel",
 		},
 		{
+			abs: filepath.Join(build.Default.GOPATH, "src/github.com/revel/revel/"),
+			exp: "github.com/revel/revel",
+		},
+		{
 			abs: filepath.Join(build.Default.GOPATH, "src"),
 			exp: "",
 		},
@@ -102,6 +106,39 @@ func TestImportToAbsolute_GetwdError(t *testing.T) {
 	}
 
 	popd(t)
+}
+
+func TestCleanImport(t *testing.T) {
+	for _, v := range []struct {
+		imp string
+		exp string
+		exE bool // indicates whether an error expected.
+	}{
+		{
+			imp: "",
+			exp: "",
+		},
+		{
+			imp: "github.com/revel/revel",
+			exp: "github.com/revel/revel",
+		},
+		{
+			imp: "github.com/revel/revel/",
+			exp: "github.com/revel/revel",
+		},
+		{
+			imp: "./",
+			exp: "github.com/colegion/goal/utils/path",
+		},
+	} {
+
+		if p, err := CleanImport(v.imp); p != v.exp || v.exE && err == nil || !v.exE && err != nil {
+			t.Errorf(
+				`"%s": expected "%s", (err == nil -> "%v"). Got "%s", ("%v").`,
+				v.imp, v.exp, v.exE, p, err,
+			)
+		}
+	}
 }
 
 func value(v interface{}, err error) interface{} {
