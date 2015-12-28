@@ -1,4 +1,7 @@
 {% define "title" %}Error 404{% end %}
 {% define "body" %}
-<h2>Page not found</h2>
+	<h2>Page not found</h2>
+	{% range $i, $message := .messages %}
+		<h3>{% $message %}</h3>
+	{% end %}
 {% end %}
