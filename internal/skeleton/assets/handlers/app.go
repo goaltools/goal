@@ -111,6 +111,7 @@ func (t tApp) Index(w http.ResponseWriter, r *http.Request) {
 func Init() {
 	initApp()
 	initControllers()
+	initErrors()
 }
 
 func initApp() {
