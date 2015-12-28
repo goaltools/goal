@@ -19,3 +19,7 @@ var List = r.Routes{
 		"/static/", http.FileServer(http.Dir("./static")),
 	).ServeHTTP),
 }
+
+func init() {
+	r.NotFound = h.Errors.NotFound
+}
