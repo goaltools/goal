@@ -1,6 +1,0 @@
-; This configuration file is generated automatically.
-; Please, DO NOT EDIT IT MANUALLY.
-[<@.package>]
-<@range $file, $path := .ctx.listing.FilePaths>\
-:	<@$file> = <@$path>
-<@end>\
