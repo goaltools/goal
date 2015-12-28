@@ -2,15 +2,15 @@
 init:
   # Commands of this section will be executed once per start of `goal run`.
   - /echo "Starting work on 'github.com/colegion/goal/internal/skeleton'"
-  - go generate ./...
-  - go get github.com/colegion/goal/internal/skeleton/...
+  - /run genHandlers
+  - /start getAssets
   - /run buildApp
   - /single startApp
 watch:
   # Watcher commands will be started every time their related files are modified.
   # "*" at the end of path means watch recursively.
   ./controllers/*:
-    - go generate ./controllers
+    - /run genHandlers
     - /start getAssets
     - /run buildApp
     - /single startApp
@@ -29,3 +29,6 @@ getAssets:
   - go get github.com/colegion/goal/internal/skeleton/assets/...
 startApp:
   - ./bin/run:EXT
+genHandlers:
+  # Generating handler functions from controllers.
+  - goal generate handlers --input ./controllers/ --output ./assets/handlers/
