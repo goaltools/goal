@@ -2,6 +2,7 @@ package generation
 
 import (
 	"fmt"
+	"path"
 	"path/filepath"
 	"text/template"
 )
@@ -10,6 +11,7 @@ var funcs = template.FuncMap{
 	"base":    filepath.Base,
 	"dict":    dict,
 	"join":    filepath.Join,
+	"joinImp": path.Join,
 	"set":     set,
 	"sprintf": fmt.Sprintf,
 }

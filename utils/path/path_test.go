@@ -97,17 +97,6 @@ func TestImportToAbsolute(t *testing.T) {
 	}
 }
 
-func TestImportToAbsolute_GetwdError(t *testing.T) {
-	pushd(t)
-
-	p, err := ImportToAbsolute("../")
-	if p != "" || err == nil {
-		t.Errorf(`Getwd failed, error expected. Got "%s", "%v".`, p, err)
-	}
-
-	popd(t)
-}
-
 func TestCleanImport(t *testing.T) {
 	for _, v := range []struct {
 		imp string
@@ -143,29 +132,4 @@ func TestCleanImport(t *testing.T) {
 
 func value(v interface{}, err error) interface{} {
 	return v
-}
-
-func pushd(t *testing.T) {
-	// Preparing a state for os.Getwd to fail.
-	dir := "./someDirectoryThatDoesNotExistYet"
-	err := os.Mkdir(dir, 0755)
-	if err != nil {
-		t.Error(err)
-	}
-	err = os.Chdir(dir)
-	if err != nil {
-		t.Error(err)
-	}
-	err = os.Remove(filepath.Join("../", dir))
-	if err != nil {
-		t.Error(err)
-	}
-}
-
-func popd(t *testing.T) {
-	// Repairing old state for running tests from current dir.
-	err := os.Chdir("../")
-	if err != nil {
-		t.Error(err)
-	}
 }
