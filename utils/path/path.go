@@ -6,7 +6,6 @@ package path
 import (
 	"fmt"
 	"go/build"
-	"path"
 	"path/filepath"
 	"strings"
 )
@@ -70,7 +69,7 @@ func ImportToAbsolute(imp string) (string, error) {
 
 	// Join input path with the "$GOPATH/src" and return.
 	// Make sure $GOPATH is normalized (i.e. unix style delimiters are used).
-	return path.Join(gopaths[0], "src", p), nil
+	return filepath.Join(gopaths[0], "src", p), nil
 }
 
 // CleanImport gets a package import path and returns it as is if it is absolute.
@@ -78,10 +77,11 @@ func ImportToAbsolute(imp string) (string, error) {
 func CleanImport(imp string) (string, error) {
 	// If the path is not relative, return it as is.
 	if imp != "." && imp != ".." &&
-		!filepath.HasPrefix(imp, "./") && !filepath.HasPrefix(imp, "../") {
+		!filepath.HasPrefix(imp, fmt.Sprintf(".%c", filepath.Separator)) &&
+		!filepath.HasPrefix(imp, fmt.Sprintf("..%c", filepath.Separator)) {
 
 		// Get rid of trailing slashes.
-		return strings.TrimRight(imp, "/"), nil
+		return strings.TrimRight(imp, fmt.Sprintf("%c", filepath.Separator)), nil
 	}
 
 	// Find a full absolute path to the requested import.
