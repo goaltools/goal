@@ -4,6 +4,7 @@ init:
   - /echo "Starting work on 'github.com/colegion/goal/internal/skeleton'"
   - /run genHandlers
   - /start getAssets
+  - go get github.com/colegion/goal/internal/skeleton/...
   - /run buildApp
   - /single startApp
 watch:
