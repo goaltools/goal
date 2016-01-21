@@ -76,16 +76,17 @@ func ImportToAbsolute(imp string) (string, error) {
 // Otherwise, it tryes to convert it to an absolute form.
 func CleanImport(imp string) (string, error) {
 	// If the path is not relative, return it as is.
-	if imp != "." && imp != ".." &&
-		!filepath.HasPrefix(imp, fmt.Sprintf(".%c", filepath.Separator)) &&
-		!filepath.HasPrefix(imp, fmt.Sprintf("..%c", filepath.Separator)) {
+	impNorm := filepath.ToSlash(imp)
+	if impNorm != "." && impNorm != ".." &&
+		!filepath.HasPrefix(impNorm, "./") &&
+		!filepath.HasPrefix(impNorm, "../") {
 
 		// Get rid of trailing slashes.
-		return strings.TrimRight(imp, fmt.Sprintf("%c", filepath.Separator)), nil
+		return strings.TrimRight(impNorm, "/"), nil
 	}
 
 	// Find a full absolute path to the requested import.
-	abs, err := filepath.Abs(imp)
+	abs, err := filepath.Abs(filepath.FromSlash(imp))
 	if err != nil {
 		return "", err
 	}

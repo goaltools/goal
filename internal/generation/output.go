@@ -46,10 +46,12 @@ type Type struct {
 // elision is supported. Moreover, ":" + "\t" are removed too for
 // a possibility of a better code formatting.
 func NewType(pkg, templatePath string) Type {
-	// Read the template file, cut all "\" + "\n".
+	// Read the template file, cut all "\" + line break.
 	f, err := ioutil.ReadFile(templatePath)
 	log.AssertNil(err)
-	s := strings.Replace(string(f), "\\\n", "", -1)
+	s := strings.Replace(string(f), "\\\r\n", "", -1)
+	s = strings.Replace(s, "\\\n", "", -1)
+	s = strings.Replace(s, "\\\r", "", -1)
 	s = strings.Replace(s, ":\t", "", -1)
 
 	// Allocate a new type, initialize template, then return.
