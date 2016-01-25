@@ -79,6 +79,7 @@ func startSingleInstance(tasks []string, name string) {
 // of user apps.
 func instanceController() {
 	// terminate is used for killing an instance of a task.
+	commands := map[string]*exec.Cmd{}
 	var terminate = func(name string, cmd *exec.Cmd) {
 		if cmd.Process == nil {
 			return
@@ -89,11 +90,9 @@ func instanceController() {
 		if err == nil {
 			cmd.Process.Wait()
 		}
-
-		cmd.Process = nil // Manually set it to nil, so we can reuse the command.
+		delete(commands, name)
 		log.Trace.Printf(`Active instance of "%s" (PID %d) has been terminated.`, name, pid)
 	}
-	commands := map[string]*exec.Cmd{}
 
 	// Clean up on termination.
 	defer func() {
@@ -118,28 +117,19 @@ func instanceController() {
 
 			// If this is the first time this command is requested
 			// to be run, initialize things.
-			if !ok {
-				n, as := parseTask(m.task)
-				log.Trace.Printf(`Preparing "%s"...`, n)
-				cmd = exec.Command(n, as...)
-				cmd.Stderr = os.Stderr
-				cmd.Stdout = os.Stdout
-			}
+			n, as := parseTask(m.task)
+			log.Trace.Printf(`Preparing "%s"...`, n)
+			cmd = exec.Command(n, as...)
+			cmd.Stderr = os.Stderr
+			cmd.Stdout = os.Stdout
 
 			// Starting the task.
-			t := replaceVars(m.task)
-			log.Trace.Printf("Starting a new instance of `%s`...", t)
+			log.Trace.Printf("Starting a new instance of `%s` (%v)...", n, as)
 			err := cmd.Start()
 			if err != nil {
-				log.Error.Printf("Failed to start a command `%s`, error: %v.", t, err)
+				log.Error.Printf("Failed to start a command `%s`, error: %v.", n, err)
 			}
-
-			// If this is the first time this command is requested
-			// and the program has been started successfully, register it
-			// so we'll be able to terminate it.
-			if !ok {
-				commands[m.name] = cmd
-			}
+			commands[m.name] = cmd // Register the command so we can terminate it.
 		case "exit":
 			return
 		}
