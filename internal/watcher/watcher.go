@@ -66,15 +66,15 @@ func (t *Type) ListenFile(path string, fn func()) *fsnotify.Watcher {
 	w, err := fsnotify.NewWatcher()
 	log.AssertNil(err)
 
-	// Clean path and replace back slashes
-	// to the normal ones.
-	path = filepath.ToSlash(path)
-
 	// Watch a directory instead of file.
 	// See issue #17 of fsnotify to find out more
 	// why we do this.
-	dir := filepath.Join(path, "../")
+	dir := filepath.Dir(path)
 	w.Add(dir)
+
+	// Clean path and replace back slashes
+	// to the normal ones.
+	path = filepath.ToSlash(path)
 
 	// Start watching process.
 	t.files[path] = true
