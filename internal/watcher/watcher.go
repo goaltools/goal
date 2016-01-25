@@ -126,7 +126,7 @@ func (t *Type) NotifyOnUpdate(pattern string, watcher *fsnotify.Watcher, fn func
 func restartRequired(event fsnotify.Event) bool {
 	// Do not restart if "./bin" directory is modified.
 	// TODO: make this configurable.
-	d := filepath.FromSlash(event.Name)
+	d := filepath.ToSlash(event.Name)
 	if d == "./bin" || d == "bin" {
 		return false
 	}
@@ -134,6 +134,8 @@ func restartRequired(event fsnotify.Event) bool {
 	if event.Op&fsnotify.Chmod == fsnotify.Chmod {
 		return false
 	}
+
+	log.Trace.Printf(`FS object "%s" has been modified, restarting...`, event.Name)
 	return true
 }
 
