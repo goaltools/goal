@@ -2,7 +2,7 @@
 init:
   # Commands of this section will be executed once per start of `goal run`.
   - /echo "Starting work on 'github.com/colegion/goal/internal/skeleton'"
-  - go get -t github.com/colegion/goal/internal/skeleton/...
+  - go get -d github.com/colegion/goal/internal/skeleton/...
   - /run genHandlers
   - /run buildApp
   - /single startApp
