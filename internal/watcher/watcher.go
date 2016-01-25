@@ -124,10 +124,11 @@ func (t *Type) NotifyOnUpdate(pattern string, watcher *fsnotify.Watcher, fn func
 // restartRequired checks whether event indicates a file
 // has been modified. If so, it returns true.
 func restartRequired(event fsnotify.Event) bool {
-	// Do not restart if "./bin" directory is modified.
-	// TODO: make this configurable.
+	// Do not restart if system directories are modified.
+	// TODO: make the directories configurable.
 	d := filepath.ToSlash(event.Name)
-	if d == "./bin" || d == "bin" {
+	switch d {
+	case "./bin", "bin", "./assets", "assets":
 		return false
 	}
 
