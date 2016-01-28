@@ -134,6 +134,8 @@ func (t tErrors) InternalError(w http.ResponseWriter, r *http.Request) {
 }
 
 func initErrors() {
+	context.Add("Errors", "NotFound")
+	context.Add("Errors", "InternalError")
 }
 
 func init() {

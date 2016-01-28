@@ -4,6 +4,7 @@ package handlers
 
 import (
 	"net/http"
+	"net/url"
 
 	contr "github.com/colegion/goal/internal/skeleton/controllers"
 
@@ -16,6 +17,9 @@ import (
 //
 // App is a sample controller.
 var App tApp
+
+// context stores names of all controllers and packages of the app.
+var context = url.Values{}
 
 // tApp is a type with handler methods of App controller.
 type tApp struct {
@@ -115,6 +119,7 @@ func Init() {
 }
 
 func initApp() {
+	context.Add("App", "Index")
 }
 
 func init() {
