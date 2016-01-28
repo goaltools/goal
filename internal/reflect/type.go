@@ -76,6 +76,10 @@ func processType(typ interface{}) *Type {
 			t.Name = fmt.Sprintf("...%s", t.Name) // Add "..." to the type name.
 		}
 		return t
+	case *ast.InterfaceType:
+		return &Type{
+			Name: "interface{}",
+		}
 	default: // Ignore unsupported types.
 		// TODO: add a better support of map and support of anonymous structs.
 	}
