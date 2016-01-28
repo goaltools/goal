@@ -16,7 +16,7 @@ type Test struct {
 type MapFunc map[string]reflect.Func
 
 // Hello is a method.
-func (t Test) Hello(names []string, args ...int) string {
+func (t Test) Hello(names []string, x interface{}, args ...int) string {
 	l.Trace.Println("Greeting returned...")
 	return fmt.Sprintf("Hello, %s!", t.Name)
 }

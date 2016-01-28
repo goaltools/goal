@@ -96,6 +96,12 @@ func TestParseDir(t *testing.T) {
 							},
 						},
 						{
+							Name: "x",
+							Type: &Type{
+								Name: "interface{}",
+							},
+						},
+						{
 							Name: "args",
 							Type: &Type{
 								Name: "...int",
