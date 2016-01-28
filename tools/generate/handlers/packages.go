@@ -142,7 +142,14 @@ func (ps packages) extractInitFunc(pkg *reflect.Package) *reflect.Func {
 		if f.Recv != nil {
 			return false
 		}
-		if len(f.Params) != 0 {
+		if len(f.Params) != 1 {
+			return false
+		}
+		if f.Params[0].Type.Name != "Values" {
+			return false
+		}
+		v, _ := pkg.Imports.Value(f.File, f.Params[0].Type.Package)
+		if v != "net/url" {
 			return false
 		}
 		log.Trace.Printf(`Magic "%s" function will be added to generated "%s" file.`, f.Name, f.File)

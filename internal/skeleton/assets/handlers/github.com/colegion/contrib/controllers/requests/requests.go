@@ -4,6 +4,7 @@ package handlers
 
 import (
 	"net/http"
+	"net/url"
 
 	contr "github.com/colegion/contrib/controllers/requests"
 
@@ -18,6 +19,9 @@ import (
 // 1. Calls Request.ParseForm to parse GET / POST requests;
 // 2. Makes Request available in your controller (use c.Request).
 var Requests tRequests
+
+// context stores names of all controllers and packages of the app.
+var context = url.Values{}
 
 // tRequests is a type with handler methods of Requests controller.
 type tRequests struct {

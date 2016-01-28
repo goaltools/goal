@@ -4,6 +4,7 @@ package handlers
 
 import (
 	"net/http"
+	"net/url"
 
 	contr "github.com/colegion/contrib/controllers/sessions"
 
@@ -18,6 +19,9 @@ import (
 // available for your actions when you're using this
 // controller as a parent.
 var Sessions tSessions
+
+// context stores names of all controllers and packages of the app.
+var context = url.Values{}
 
 // tSessions is a type with handler methods of Sessions controller.
 type tSessions struct {
@@ -63,7 +67,7 @@ func (t tSessions) Finally(c *contr.Sessions, w http.ResponseWriter, r *http.Req
 // and its parents.
 func Init() {
 	initSessions()
-	contr.Init()
+	contr.Init(context)
 }
 
 func initSessions() {

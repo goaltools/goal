@@ -4,6 +4,9 @@ package <@.ctx.package>
 
 import (
 	"net/http"
+:	<@if not .ctx.num>\
+	"net/url"
+:	<@end>\
 
 :	<@range $i, $v := .ctx.parents>\
 :	:	<@if $v.Import>\
@@ -21,6 +24,12 @@ import (
 <@template "printComments" dict (set "comments" .ctx.controller.Comments)>\
 var <@.ctx.name> t<@.ctx.name>
 
+<@if not .ctx.num>\
+:	// context stores names of all controllers and packages of the app.
+:	var context = url.Values{}
+
+<@end>\
+\
 // t<@.ctx.name> is a type with handler methods of <@.ctx.name> controller.
 type t<@.ctx.name> struct {
 }
@@ -140,7 +149,7 @@ func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWri
 :	:		init<@$name>()
 :	:	<@end>\
 :	:	<@if .ctx.initFunc>\
-:	:		contr.Init()
+:	:		contr.Init(context)
 :	:	<@end>\
 :	}
 
@@ -151,6 +160,9 @@ func init<@.ctx.name>() {
 :	:	<@if $v.Import>\
 :	:		<@$v.Package ".">Init()
 :	:	<@end>\
+:	<@end>\
+:	<@range $i, $f := .ctx.controller.Actions>\
+:		context.Add("<@$.ctx.name>", "<@$f.Name>")
 :	<@end>\
 }
 

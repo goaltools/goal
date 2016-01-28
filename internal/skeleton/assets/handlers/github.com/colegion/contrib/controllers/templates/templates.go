@@ -4,6 +4,7 @@ package handlers
 
 import (
 	"net/http"
+	"net/url"
 
 	contr "github.com/colegion/contrib/controllers/templates"
 
@@ -19,6 +20,9 @@ import (
 // Use SetTemplatePaths to register templates and
 // call c.RenderTemplate from your action to render some.
 var Templates tTemplates
+
+// context stores names of all controllers and packages of the app.
+var context = url.Values{}
 
 // tTemplates is a type with handler methods of Templates controller.
 type tTemplates struct {
@@ -166,10 +170,13 @@ func (t tTemplates) Redirect(w http.ResponseWriter, r *http.Request) {
 // and its parents.
 func Init() {
 	initTemplates()
-	contr.Init()
+	contr.Init(context)
 }
 
 func initTemplates() {
+	context.Add("Templates", "RenderTemplate")
+	context.Add("Templates", "Render")
+	context.Add("Templates", "Redirect")
 }
 
 func init() {

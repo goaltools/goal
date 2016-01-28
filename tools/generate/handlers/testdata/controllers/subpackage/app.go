@@ -2,6 +2,7 @@ package subpackage
 
 import (
 	"net/http"
+	"net/url"
 )
 
 // Controller is some controller.
@@ -30,5 +31,5 @@ func (c *Controller) Finally(w http.ResponseWriter, r *http.Request, a []string)
 }
 
 // Init ...
-func Init() {
+func Init(ctx url.Values) {
 }
