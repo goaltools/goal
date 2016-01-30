@@ -53,7 +53,7 @@ func (t *Type) Listen(pattern string, fn func()) *fsnotify.Watcher {
 
 // ListenFile is equivalent of Listen but for files.
 // If file is added using ListenFile and the same file
-// is withing a pattern of Listen, only the first one
+// is within a pattern of Listen, only the first one
 // will trigger restarts.
 // I.e. we have the following calls:
 //	w.Listen("./", fn1)

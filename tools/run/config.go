@@ -59,7 +59,7 @@ func (c *conf) processTasksFn(tasks []string, section string) (func(), error) {
 	log.Trace.Printf(`Processing section "%s" of configuration file...`, section)
 	fns := []func(){}
 	for i := range tasks {
-		// We are parsing everthing first to show errors early,
+		// We are parsing everything first to show errors early,
 		// not during runtime.
 		fn, err := c.processTaskFn(tasks[i], section)
 		if err != nil {

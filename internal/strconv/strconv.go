@@ -11,7 +11,7 @@ import (
 	"github.com/colegion/goal/utils/path"
 )
 
-// UnsupportedTypeErr is an error that indicates that there is no conversion
+// ErrUnsupportedType is an error that indicates that there is no conversion
 // function for the requested type.
 var ErrUnsupportedType = errors.New("unsupported type")
 
@@ -33,7 +33,7 @@ func (m FnMap) Render(pkgName, vsName string, a reflect.Arg) (string, error) {
 	// If argument is of slice type (e.g. []int), make sure the argument name
 	// ends with []. For illustration, there is a variable:
 	//	var names []string
-	// In order to bind it, we have to retreive "names[]" from the request's Form.
+	// In order to bind it, we have to retrieve "names[]" from the request's Form.
 	n := a.Name
 	if s := a.Type.String(); len(s) > 2 && s[0] == '[' && s[1] == ']' {
 		n += "[]"
@@ -45,7 +45,7 @@ func (m FnMap) Render(pkgName, vsName string, a reflect.Arg) (string, error) {
 
 // Context returns mappings between types that can be parsed using
 // strconv package and functions for that conversions.
-// All conversion functions meet the following criterias:
+// All conversion functions meet the following criteria:
 // 1. They are exported.
 // 2. They expect 3 arguments: url.Values, string, ...int.
 // 3. They return 1 argument.

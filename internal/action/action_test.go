@@ -40,7 +40,7 @@ func TestFunc(t *testing.T) {
 		Name: "Test",
 		File: "init.go",
 	})
-	res = fn(&reflect.Func{ // The second try must be ignored immidiately.
+	res = fn(&reflect.Func{ // The second try must be ignored immediately.
 		Name: "Test",
 		File: "init.go",
 	})

@@ -56,7 +56,7 @@ func (i Imports) Value(file, name string) (string, bool) {
 // in the requested file. If so, it's name and true are returned.
 // Otherwise, empty string and false will be the results.
 // Imports are ensured to end with the value rather than be equal to it
-// for compatability with "vendor" package manager.
+// for compatibility with "vendor" package manager.
 func (i Imports) Name(file, value string) (string, bool) {
 	// Check whether such file exists.
 	f, ok := i[file]
