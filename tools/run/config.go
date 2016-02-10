@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/colegion/goal/utils/log"
+	"github.com/colegion/goal/internal/log"
 	"github.com/kylelemons/go-gypsy/yaml"
 )
 
@@ -31,21 +31,31 @@ func parseConf(file string) *conf {
 
 	// Parse the configuration file..
 	c.m, err = parseFile(file)
-	log.AssertNil(err)
+	if err != nil {
+		log.Error.Panic(err)
+	}
 
 	// Extract init tasks.
 	init, err := parseSlice(c.m, initSection)
-	log.AssertNil(err)
+	if err != nil {
+		log.Error.Panic(err)
+	}
 	c.init, err = c.processTasksFn(init, initSection)
-	log.AssertNil(err)
+	if err != nil {
+		log.Error.Panic(err)
+	}
 
 	// Extract patterns and tasks from watch section of config file.
 	watch, err := parseMap(c.m, watchSection)
-	log.AssertNil(err)
+	if err != nil {
+		log.Error.Panic(err)
+	}
 	for pattern, tasks := range watch {
 		section := watchSection + ":" + pattern // It is used for debug messages.
 		c.watch[pattern], err = c.processTasksFn(tasks, section)
-		log.AssertNil(err)
+		if err != nil {
+			log.Error.Panic(err)
+		}
 	}
 
 	log.Trace.Printf(`Config file "%s" has been parsed.`, file)

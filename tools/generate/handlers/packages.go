@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	a "github.com/colegion/goal/internal/action"
+	"github.com/colegion/goal/internal/log"
 	m "github.com/colegion/goal/internal/method"
 	"github.com/colegion/goal/internal/reflect"
-	"github.com/colegion/goal/utils/log"
 	"github.com/colegion/goal/utils/path"
 )
 
@@ -88,7 +88,9 @@ func (c controller) IgnoredArgs(f *reflect.Func) (s string) {
 func (ps packages) processPackage(importPath string) {
 	log.Trace.Printf(`Parsing "%s"...`, importPath)
 	dir, err := path.ImportToAbsolute(importPath)
-	log.AssertNil(err)
+	if err != nil {
+		log.Error.Panic(err)
+	}
 	p := reflect.ParseDir(dir, false)
 	cs := ps.extractControllers(p)
 	if len(cs.data) > 0 {

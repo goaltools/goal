@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/colegion/goal/utils/log"
+	"github.com/colegion/goal/internal/log"
 )
 
 // Imports is a map of import paths in the following format:

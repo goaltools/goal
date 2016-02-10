@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/colegion/goal/utils/log"
+	"github.com/colegion/goal/internal/log"
 	"github.com/colegion/goal/utils/path"
 	"github.com/colegion/goal/utils/tool"
 )
@@ -46,11 +46,17 @@ func main(hs []tool.Handler, i int, args tool.Data) {
 
 	// Prepare source and destination directory paths.
 	src, err := path.ImportToAbsolute("github.com/colegion/goal/internal/skeleton")
-	log.AssertNil(err)
+	if err != nil {
+		log.Error.Panic(err)
+	}
 	destImp, err := path.CleanImport(p)
-	log.AssertNil(err)
+	if err != nil {
+		log.Error.Panic(err)
+	}
 	dest, err := path.ImportToAbsolute(destImp)
-	log.AssertNil(err)
+	if err != nil {
+		log.Error.Panic(err)
+	}
 
 	// Make sure the requested import path (dest) does not exist yet.
 	if _, err := os.Stat(dest); !os.IsNotExist(err) {
@@ -60,12 +66,16 @@ func main(hs []tool.Handler, i int, args tool.Data) {
 	// Scan the skeleton directory and get a list of directories / files
 	// to be copied / processed.
 	res, err := walk(src)
-	log.AssertNil(err)
+	if err != nil {
+		log.Error.Panic(err)
+	}
 
 	// Create the directories in destination path.
 	for i := 0; i < len(res.dirs); i++ {
 		err = os.MkdirAll(filepath.Join(dest, res.dirs[i]), 0755)
-		log.AssertNil(err)
+		if err != nil {
+			log.Error.Panic(err)
+		}
 	}
 
 	// Copy static files to the destination directories.
