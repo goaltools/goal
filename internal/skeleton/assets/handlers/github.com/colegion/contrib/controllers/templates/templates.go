@@ -31,12 +31,22 @@ type tTemplates struct {
 // New allocates (github.com/colegion/contrib/controllers/templates).Templates controller,
 // then returns it.
 func (t tTemplates) New(w http.ResponseWriter, r *http.Request, ctr, act string) *contr.Templates {
-	c := &contr.Templates{}
+	c := &contr.Templates{
+
+		Action: act,
+
+		Controller: ctr,
+	}
 	return c
 }
 
-// Before is a dump method that always returns nil.
+// Before calls (github.com/colegion/contrib/controllers/templates).Templates.Before.
 func (t tTemplates) Before(c *contr.Templates, w http.ResponseWriter, r *http.Request) http.Handler {
+
+	// Call magic Before action of (github.com/colegion/contrib/controllers/templates).Templates.
+	if res := c.Before(); res != nil {
+		return res
+	}
 
 	return nil
 }
@@ -51,8 +61,7 @@ func (t tTemplates) After(c *contr.Templates, w http.ResponseWriter, r *http.Req
 // of their execution phase.
 func (t tTemplates) Initially(c *contr.Templates, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
 
-	// Call magic Initially method of (github.com/colegion/contrib/controllers/templates).Templates.
-	return c.Initially(w, r, a)
+	return
 
 }
 

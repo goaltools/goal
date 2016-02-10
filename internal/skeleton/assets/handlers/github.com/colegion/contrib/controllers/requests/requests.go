@@ -30,12 +30,20 @@ type tRequests struct {
 // New allocates (github.com/colegion/contrib/controllers/requests).Requests controller,
 // then returns it.
 func (t tRequests) New(w http.ResponseWriter, r *http.Request, ctr, act string) *contr.Requests {
-	c := &contr.Requests{}
+	c := &contr.Requests{
+
+		Request: r,
+	}
 	return c
 }
 
-// Before is a dump method that always returns nil.
+// Before calls (github.com/colegion/contrib/controllers/requests).Requests.Before.
 func (t tRequests) Before(c *contr.Requests, w http.ResponseWriter, r *http.Request) http.Handler {
+
+	// Call magic Before action of (github.com/colegion/contrib/controllers/requests).Requests.
+	if res := c.Before(); res != nil {
+		return res
+	}
 
 	return nil
 }
@@ -50,8 +58,7 @@ func (t tRequests) After(c *contr.Requests, w http.ResponseWriter, r *http.Reque
 // of their execution phase.
 func (t tRequests) Initially(c *contr.Requests, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
 
-	// Call magic Initially method of (github.com/colegion/contrib/controllers/requests).Requests.
-	return c.Initially(w, r, a)
+	return
 
 }
 
