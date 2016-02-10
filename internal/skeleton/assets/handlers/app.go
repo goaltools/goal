@@ -4,7 +4,6 @@ package handlers
 
 import (
 	"net/http"
-	"net/url"
 
 	contr "github.com/colegion/goal/internal/skeleton/controllers"
 
@@ -17,9 +16,6 @@ import (
 //
 // App is a sample controller.
 var App tApp
-
-// context stores names of all controllers and packages of the app.
-var context = url.Values{}
 
 // tApp is a type with handler methods of App controller.
 type tApp struct {
@@ -40,11 +36,12 @@ func (t tApp) Before(c *contr.App, w http.ResponseWriter, r *http.Request) http.
 	if res := Controllers.Before(c.Controllers, w, r); res != nil {
 		return res
 	}
+
 	// Call magic Before action of (github.com/colegion/goal/internal/skeleton/controllers).App.
-	if res := c.Before( // "Binding" parameters.
-	); res != nil {
+	if res := c.Before(); res != nil {
 		return res
 	}
+
 	return nil
 }
 
@@ -54,26 +51,34 @@ func (t tApp) After(c *contr.App, w http.ResponseWriter, r *http.Request) http.H
 	if res := Controllers.After(c.Controllers, w, r); res != nil {
 		return res
 	}
+
 	return nil
 }
 
 // Initially is a method that is started by every handler function at the very beginning
 // of their execution phase.
 func (t tApp) Initially(c *contr.App, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
+
 	// Execute magic Initially methods of embedded controllers.
+
 	if finish = Controllers.Initially(c.Controllers, w, r, a); finish {
 		return finish
 	}
+
 	return
+
 }
 
 // Finally is a method that is started by every handler function at the very end
 // of their execution phase no matter what.
 func (t tApp) Finally(c *contr.App, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
+
 	// Execute magic Finally methods of embedded controllers.
+
 	if finish = Controllers.Finally(c.Controllers, w, r, a); finish {
 		return finish
 	}
+
 	return
 }
 
@@ -100,8 +105,7 @@ func (t tApp) Index(w http.ResponseWriter, r *http.Request) {
 		h = res
 		return
 	}
-	if res := c.Index( // "Binding" parameters.
-	); res != nil {
+	if res := c.Index(); res != nil {
 		h = res
 		return
 	}
@@ -110,16 +114,10 @@ func (t tApp) Index(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Init is used to initialize controllers of "github.com/colegion/goal/internal/skeleton/controllers"
-// and its parents.
-func Init() {
-	initApp()
-	initControllers()
-	initErrors()
-}
-
 func initApp() {
+
 	context.Add("App", "Index")
+
 }
 
 func init() {
