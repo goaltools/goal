@@ -4,10 +4,10 @@ package generation
 
 import (
 	"bytes"
+	"go/format"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 	"text/template"
 
 	"github.com/colegion/goal/internal/log"
@@ -51,15 +51,11 @@ func NewType(pkg, templatePath string) Type {
 	if err != nil {
 		log.Error.Panicf(`Cannot open template file "%s". Error: %v.`, templatePath, err)
 	}
-	s := strings.Replace(string(f), "\\\r\n", "", -1)
-	s = strings.Replace(s, "\\\n", "", -1)
-	s = strings.Replace(s, "\\\r", "", -1)
-	s = strings.Replace(s, ":\t", "", -1)
 
 	// Allocate a new type, initialize template, then return.
 	// Use <@ and > as delimiters, add template helper functions.
 	n := filepath.Base(templatePath)
-	t, err := template.New(n).Delims("<@", ">").Funcs(funcs).Parse(s)
+	t, err := template.New(n).Delims("<@", ">").Funcs(funcs).Parse(string(f))
 	if err != nil {
 		log.Error.Panicf(`Cannot parse template "%s". Error: %v.`, templatePath, err)
 	}
@@ -109,8 +105,14 @@ func (t *Type) Generate() {
 	path := filepath.Join(t.Path, t.Package+t.Extension)
 	log.Info.Printf("Saving generated '%s' file to '%s'.", t.Package, path)
 
+	// Go format the result.
+	fmtBuf, err := format.Source(buffer.Bytes())
+	if err != nil {
+		log.Error.Panicf(`Cannot go format generated code. Error: %v.`, err)
+	}
+
 	// Write result to the file.
-	err = ioutil.WriteFile(path, buffer.Bytes(), 0644)
+	err = ioutil.WriteFile(path, fmtBuf, 0644)
 	if err != nil {
 		log.Error.Panicf("Failed to save generated file, error: '%s'.", err)
 	}

@@ -4,15 +4,10 @@ package <@.ctx.package>
 
 import (
 	"net/http"
-:	<@if not .ctx.num>\
-	"net/url"
-:	<@end>\
+	<@if not .ctx.num>"net/url"<@end>
 
-:	<@range $i, $v := .ctx.parents>\
-:	:	<@if $v.Import>\
-:	:		<@$v.Package> "<@joinImp $.ctx.outputImport $v.Import>"
-:	:	<@end>\
-:	<@end>\
+	<@range $i, $v := .ctx.parents>
+	<@if $v.Import><@$v.Package> "<@joinImp $.ctx.outputImport $v.Import>"<@end><@end>
 	contr "<@.ctx.import>"
 
 	"github.com/colegion/goal/strconv"
@@ -20,203 +15,177 @@ import (
 
 // <@.ctx.name> is an insance of t<@.ctx.name> that is automatically generated from <@.ctx.name> controller
 // being found at "<@.ctx.import>/<@base .ctx.controller.File>",
-// and contains methods to be used as handler functions.
-<@template "printComments" dict (set "comments" .ctx.controller.Comments)>\
+// and contains methods to be used as handler functions.<@template "printComments" dict (set "comments" .ctx.controller.Comments)>
 var <@.ctx.name> t<@.ctx.name>
 
-<@if not .ctx.num>\
-:	// context stores names of all controllers and packages of the app.
-:	var context = url.Values{}
+<@if not .ctx.num>
+	// context stores names of all controllers and packages of the app.
+	var context = url.Values{}
+<@end>
 
-<@end>\
-\
 // t<@.ctx.name> is a type with handler methods of <@.ctx.name> controller.
 type t<@.ctx.name> struct {
 }
 
-// New allocates (<@.ctx.import>).<@.ctx.name> controller,
-<@if .ctx.parents>\
-:	// initializes its parents; then returns the controller.
-<@else>\
-:	// then returns it.
-<@end>\
+// New allocates (<@.ctx.import>).<@.ctx.name> controller,<@if .ctx.parents>
+// initializes its parents; then returns the controller.<@else>
+// then returns it.<@end>
 func (t t<@.ctx.name>) New() *contr.<@.ctx.name> {
-	c := &contr.<@.ctx.name>{}
-:	<@range $i, $v := .ctx.parents>\
-:		c.<@$v.Name> = <@$v.Package "."><@$v.Name>.New()
-:	<@end>\
+	c := &contr.<@.ctx.name>{}<@range $i, $v := .ctx.parents>
+	c.<@$v.Name> = <@$v.Package "."><@$v.Name>.New()<@end>
 	return c
 }
 
-<@template "magicActionComments" dict (set "dot" .) (set "name" .ctx.before) (set "self" .ctx.controller.Before)>\
+<@template "magicActionComments" dict (set "dot" .) (set "name" .ctx.before) (set "self" .ctx.controller.Before)>
 func (t t<@.ctx.name>) <@.ctx.before>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request) http.<@.ctx.actionInterface> {
-:	<@template "callParents" dict (set "dot" .) (set "name" .ctx.before)>\
-:	<@template "callSelf" dict (set "dot" .) (set "name" .ctx.before) (set "self" .ctx.controller.Before)>\
+	<@template "callParents" dict (set "dot" .) (set "name" .ctx.before)>
+	<@template "callSelf" dict (set "dot" .) (set "name" .ctx.before) (set "self" .ctx.controller.Before)>
 	return nil
 }
 
-<@template "magicActionComments" dict (set "dot" .) (set "name" .ctx.after) (set "self" .ctx.controller.After)>\
+<@template "magicActionComments" dict (set "dot" .) (set "name" .ctx.after) (set "self" .ctx.controller.After)>
 func (t t<@.ctx.name>) <@.ctx.after>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request) http.<@.ctx.actionInterface> {
-:	<@template "callParents" dict (set "dot" .) (set "name" .ctx.after)>\
-:	<@template "callSelf" dict (set "dot" .) (set "name" .ctx.after) (set "self" .ctx.controller.After)>\
+	<@template "callParents" dict (set "dot" .) (set "name" .ctx.after)>
+	<@template "callSelf" dict (set "dot" .) (set "name" .ctx.after) (set "self" .ctx.controller.After)>
 	return nil
 }
 
 // <@.ctx.initially> is a method that is started by every handler function at the very beginning
 // of their execution phase.
 func (t t<@.ctx.name>) <@.ctx.initially>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
-:	<@if .ctx.parents>\
-:		// Execute magic <@.ctx.initially> methods of embedded controllers.
-:	:	<@range $i, $v := .ctx.parents>\
-:	:		if finish = <@$v.Package "."><@$v.Name>.<@$.ctx.initially>(c.<@$v.Name>, w, r, a); finish {
-:	:			return finish
-:	:		}
-:	:	<@end>\
-:	<@end>\
-:	<@if .ctx.controller.Initially>\
-:		// Call magic <@.ctx.initially> method of (<@.ctx.import>).<@.ctx.name>.
-:		return c.<@.ctx.initially>(w, r, a)
-:	<@else>\
-:		return
-:	<@end>\
+	<@if .ctx.parents>
+		// Execute magic <@.ctx.initially> methods of embedded controllers.
+		<@range $i, $v := .ctx.parents>
+			if finish = <@$v.Package "."><@$v.Name>.<@$.ctx.initially>(c.<@$v.Name>, w, r, a); finish {
+				return finish
+			}
+		<@end>
+	<@end>
+	<@if .ctx.controller.Initially>
+		// Call magic <@.ctx.initially> method of (<@.ctx.import>).<@.ctx.name>.
+		return c.<@.ctx.initially>(w, r, a)
+	<@else>
+		return
+	<@end>
 }
 
 // <@.ctx.finally> is a method that is started by every handler function at the very end
 // of their execution phase no matter what.
 func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
-:	<@if .ctx.controller.Finally>\
-:		// Call magic <@.ctx.finally> method of (<@.ctx.import>).<@.ctx.name>.
-:		defer func() {
-:			if !finish {
-:				finish = c.<@.ctx.finally>(w, r, a)
-:			}
-:		}()
-:	<@end>\
-:	<@if .ctx.parents>\
-:		// Execute magic <@.ctx.finally> methods of embedded controllers.
-:	:	<@range $i, $v := .ctx.parents>\
-:	:		if finish = <@$v.Package "."><@$v.Name>.<@$.ctx.finally>(c.<@$v.Name>, w, r, a); finish {
-:	:			return finish
-:	:		}
-:	:	<@end>\
-:	<@end>\
+	<@if .ctx.controller.Finally>
+		// Call magic <@.ctx.finally> method of (<@.ctx.import>).<@.ctx.name>.
+		defer func() {
+			if !finish {
+				finish = c.<@.ctx.finally>(w, r, a)
+			}
+		}()
+	<@end>
+	<@if .ctx.parents>
+		// Execute magic <@.ctx.finally> methods of embedded controllers.
+		<@range $i, $v := .ctx.parents>
+			if finish = <@$v.Package "."><@$v.Name>.<@$.ctx.finally>(c.<@$v.Name>, w, r, a); finish {
+				return finish
+			}
+		<@end>
+	<@end>
 	return
 }
 
-<@range $i, $f := .ctx.controller.Actions>\
-:	// <@$f.Name> is a handler that was generated automatically.
-:	// It calls <@$.ctx.before>, <@$.ctx.after>, <@$.ctx.finally> methods, and <@$f.Name> action found at
-:	// <@join $.ctx.import (base $f.File)>
-:	// in appropriate order.
-:	<@template "printComments" dict (set "comments" $f.Comments)>\
-:	func (t t<@$.ctx.name>) <@$f.Name>(w http.ResponseWriter, r *http.Request) {
-:		var h http.Handler
-:		c := <@$.ctx.name>.New()
-:		defer func() {
-:			if h != nil {
-:				h.ServeHTTP(w, r)
-:			}
-:		}()
-:		a := []string{"<@$.ctx.name>", "<@$f.Name>"}
-:		defer <@$.ctx.name>.Finally(c, w, r, a)
-:		if finish := <@$.ctx.name>.Initially(c, w, r, a); finish {
-:			return
-:		}
-:		if res := <@$.ctx.name>.Before(c, w, r); res != nil {
-:			h = res
-:			return
-:		}
-:		if res<@$.ctx.controller.IgnoredArgs $f> := c.<@$f.Name>( // "Binding" parameters.
-:	:	:	<@range $i, $v := $f.Params>\
-:	:			<@$.ctx.strconv.Render "strconv" "r.Form" $v>,
-:	:	:	<@end>\
-:		); res != nil {
-:			h = res
-:			return
-:		}
-:		if res := <@$.ctx.name>.After(c, w, r); res != nil {
-:			h = res
-:		}
-:	}
+<@range $i, $f := .ctx.controller.Actions>
+	// <@$f.Name> is a handler that was generated automatically.
+	// It calls <@$.ctx.before>, <@$.ctx.after>, <@$.ctx.finally> methods, and <@$f.Name> action found at
+	// <@join $.ctx.import (base $f.File)>
+	// in appropriate order.<@template "printComments" dict (set "comments" $f.Comments)>
+	func (t t<@$.ctx.name>) <@$f.Name>(w http.ResponseWriter, r *http.Request) {
+		var h http.Handler
+		c := <@$.ctx.name>.New()
+		defer func() {
+			if h != nil {
+				h.ServeHTTP(w, r)
+			}
+		}()
+		a := []string{"<@$.ctx.name>", "<@$f.Name>"}
+		defer <@$.ctx.name>.Finally(c, w, r, a)
+		if finish := <@$.ctx.name>.Initially(c, w, r, a); finish {
+			return
+		}
+		if res := <@$.ctx.name>.Before(c, w, r); res != nil {
+			h = res
+			return
+		}
+		if res<@$.ctx.controller.IgnoredArgs $f> := c.<@$f.Name>(
+			<@range $i, $v := $f.Params>
+				<@$.ctx.strconv.Render "strconv" "r.Form" $v>,
+			<@end>
+		); res != nil {
+			h = res
+			return
+		}
+		if res := <@$.ctx.name>.After(c, w, r); res != nil {
+			h = res
+		}
+	}
 
-<@end>\
-\
-<@if not .ctx.num>\
-:	// Init is used to initialize controllers of "<@.ctx.import>"
-:	// and its parents.
-:	func Init() {
-:	:	<@range $name, $v := .ctx.controllers>\
-:	:		init<@$name>()
-:	:	<@end>\
-:	:	<@if .ctx.initFunc>\
-:	:		contr.Init(context)
-:	:	<@end>\
-:	}
+<@end>
 
-<@end>\
-\
+<@if not .ctx.num>
+	// Init is used to initialize controllers of "<@.ctx.import>"
+	// and its parents.
+	func Init() {
+		<@range $name, $v := .ctx.controllers>
+			init<@$name>()
+		<@end>
+		<@if .ctx.initFunc>
+			contr.Init(context)
+		<@end>
+	}
+<@end>
+
 func init<@.ctx.name>() {
-:	<@range $i, $v := .ctx.parents>\
-:	:	<@if $v.Import>\
-:	:		<@$v.Package ".">Init()
-:	:	<@end>\
-:	<@end>\
-:	<@range $i, $f := .ctx.controller.Actions>\
-:		context.Add("<@$.ctx.name>", "<@$f.Name>")
-:	<@end>\
+	<@range $i, $v := .ctx.parents>
+		<@if $v.Import>
+			<@$v.Package ".">Init()
+		<@end>
+	<@end>
+	<@range $i, $f := .ctx.controller.Actions>
+		context.Add("<@$.ctx.name>", "<@$f.Name>")
+	<@end>
 }
 
 func init() {
 	_ = strconv.MeaningOfLife
 }
-\
-<@/*\
-	Below are subtemplates that are used by handlers.go.template.\
-*/>\
-\
-<@/*Print description of a magic method (before, after, finally).*/>\
-<@define "magicActionComments">\
-:	<@if not (or .dot.ctx.parents .self)>\
-:	:	// <@.name> is a dump method that <@if .defer>does nothing<@else>always returns nil<@end>.
-:	<@end>\
-:	<@if .dot.ctx.parents>\
-:	:	// <@.name> executes magic actions of embedded controllers<@if .self>, and<@else>.<@end>
-:	<@end>\
-:	<@if .self>\
-:	:	// <@if not .dot.ctx.parents><@.name> <@end>calls (<@.dot.ctx.import>).<@.dot.ctx.name>.<@.name><@if .self.Params> with arguments
-:	:	// that are extracted from r.Form and converted to appropriate types<@end>.
-:	<@end>\
-<@end>\
-<@/*First part of before or after magic action`s body.*/>\
-<@define "callParents">\
-:	<@if .dot.ctx.parents>\
-:		// Execute magic <@.name> actions of embedded controllers.
-:	:	<@range $i, $v := .dot.ctx.parents>\
-:	:		if res := <@$v.Package "."><@$v.Name>.<@$.name>(c.<@$v.Name>, w, r); res != nil {
-:	:			return res
-:	:		}
-:	:	<@end>\
-:	<@end>\
-<@end>\
-<@/*Second part of before or after magic action`s body.*/>\
-<@define "callSelf">\
-:	<@if .self>\
-:		// Call magic <@.name> action of (<@.dot.ctx.import>).<@.dot.ctx.name>.
-:		if res<@.dot.ctx.controller.IgnoredArgs .self> := c.<@.name>( // "Binding" parameters.
-:	:	:	<@range $i, $v := .self.Params>\
-:	:			<@$.dot.ctx.strconv.Render "strconv" "r.Form" $v>,
-:	:	:	<@end>\
-:		); res != nil {
-:			return res
-:		}
-:	<@end>\
-<@end>\
-\
-<@/*Get a slice of strings and print it (every one on a new line).*/>\
-<@define "printComments">\
-:	<@if .comments>//
-:	:	<@range $i, $v := .comments>\
-:	:	:	<@$v>
-:	:	<@end>\
-:	<@end>\
-<@end>\
+
+<@/*Below are subtemplates that are used by handlers.go.template.*/>
+
+<@/*Print description of a magic method (before, after, finally).*/>
+<@define "magicActionComments"><@if not (or .dot.ctx.parents .self)>
+// <@.name> is a dump method that <@if .defer>does nothing<@else>always returns nil<@end>.<@end><@if .dot.ctx.parents>
+// <@.name> executes magic actions of embedded controllers<@if .self>, and<@else>.<@end><@end><@if .self>
+// <@if not .dot.ctx.parents><@.name> <@end>calls (<@.dot.ctx.import>).<@.dot.ctx.name>.<@.name><@if .self.Params> with arguments
+// that are extracted from r.Form and converted to appropriate types<@end>.<@end><@end>
+
+<@/*First part of before or after magic action`s body.*/>
+<@define "callParents"><@if .dot.ctx.parents>// Execute magic <@.name> actions of embedded controllers.<@range $i, $v := .dot.ctx.parents>
+			if res := <@$v.Package "."><@$v.Name>.<@$.name>(c.<@$v.Name>, w, r); res != nil {
+				return res
+			}
+		<@end>
+	<@end>
+<@end>
+<@/*Second part of before or after magic action`s body.*/>
+<@define "callSelf"><@if .self>// Call magic <@.name> action of (<@.dot.ctx.import>).<@.dot.ctx.name>.
+		if res<@.dot.ctx.controller.IgnoredArgs .self> := c.<@.name>(
+			<@range $i, $v := .self.Params>
+				<@$.dot.ctx.strconv.Render "strconv" "r.Form" $v>,
+			<@end>
+		); res != nil {
+			return res
+		}
+	<@end>
+<@end>
+
+<@/*Get a slice of strings and print it (every one on a new line).*/>
+<@define "printComments"><@if .comments>
+	//<@range $i, $v := .comments>
+<@$v><@end><@end><@end>

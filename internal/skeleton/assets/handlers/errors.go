@@ -4,6 +4,7 @@ package handlers
 
 import (
 	"net/http"
+	"net/url"
 
 	contr "github.com/colegion/goal/internal/skeleton/controllers"
 
@@ -16,6 +17,9 @@ import (
 //
 // Errors is a controller with actions displaying error pages.
 var Errors tErrors
+
+// context stores names of all controllers and packages of the app.
+var context = url.Values{}
 
 // tErrors is a type with handler methods of Errors controller.
 type tErrors struct {
@@ -35,6 +39,7 @@ func (t tErrors) Before(c *contr.Errors, w http.ResponseWriter, r *http.Request)
 	if res := Controllers.Before(c.Controllers, w, r); res != nil {
 		return res
 	}
+
 	return nil
 }
 
@@ -44,26 +49,34 @@ func (t tErrors) After(c *contr.Errors, w http.ResponseWriter, r *http.Request) 
 	if res := Controllers.After(c.Controllers, w, r); res != nil {
 		return res
 	}
+
 	return nil
 }
 
 // Initially is a method that is started by every handler function at the very beginning
 // of their execution phase.
 func (t tErrors) Initially(c *contr.Errors, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
+
 	// Execute magic Initially methods of embedded controllers.
+
 	if finish = Controllers.Initially(c.Controllers, w, r, a); finish {
 		return finish
 	}
+
 	return
+
 }
 
 // Finally is a method that is started by every handler function at the very end
 // of their execution phase no matter what.
 func (t tErrors) Finally(c *contr.Errors, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
+
 	// Execute magic Finally methods of embedded controllers.
+
 	if finish = Controllers.Finally(c.Controllers, w, r, a); finish {
 		return finish
 	}
+
 	return
 }
 
@@ -90,8 +103,7 @@ func (t tErrors) NotFound(w http.ResponseWriter, r *http.Request) {
 		h = res
 		return
 	}
-	if res := c.NotFound( // "Binding" parameters.
-	); res != nil {
+	if res := c.NotFound(); res != nil {
 		h = res
 		return
 	}
@@ -123,8 +135,7 @@ func (t tErrors) InternalError(w http.ResponseWriter, r *http.Request) {
 		h = res
 		return
 	}
-	if res := c.InternalError( // "Binding" parameters.
-	); res != nil {
+	if res := c.InternalError(); res != nil {
 		h = res
 		return
 	}
@@ -133,9 +144,24 @@ func (t tErrors) InternalError(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Init is used to initialize controllers of "github.com/colegion/goal/internal/skeleton/controllers"
+// and its parents.
+func Init() {
+
+	initApp()
+
+	initControllers()
+
+	initErrors()
+
+}
+
 func initErrors() {
+
 	context.Add("Errors", "NotFound")
+
 	context.Add("Errors", "InternalError")
+
 }
 
 func init() {

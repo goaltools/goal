@@ -37,24 +37,29 @@ func (t tTemplates) New() *contr.Templates {
 
 // Before is a dump method that always returns nil.
 func (t tTemplates) Before(c *contr.Templates, w http.ResponseWriter, r *http.Request) http.Handler {
+
 	return nil
 }
 
 // After is a dump method that always returns nil.
 func (t tTemplates) After(c *contr.Templates, w http.ResponseWriter, r *http.Request) http.Handler {
+
 	return nil
 }
 
 // Initially is a method that is started by every handler function at the very beginning
 // of their execution phase.
 func (t tTemplates) Initially(c *contr.Templates, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
+
 	// Call magic Initially method of (github.com/colegion/contrib/controllers/templates).Templates.
 	return c.Initially(w, r, a)
+
 }
 
 // Finally is a method that is started by every handler function at the very end
 // of their execution phase no matter what.
 func (t tTemplates) Finally(c *contr.Templates, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
+
 	return
 }
 
@@ -82,7 +87,8 @@ func (t tTemplates) RenderTemplate(w http.ResponseWriter, r *http.Request) {
 		h = res
 		return
 	}
-	if res := c.RenderTemplate( // "Binding" parameters.
+	if res := c.RenderTemplate(
+
 		strconv.String(r.Form, "templatePath"),
 	); res != nil {
 		h = res
@@ -121,8 +127,7 @@ func (t tTemplates) Render(w http.ResponseWriter, r *http.Request) {
 		h = res
 		return
 	}
-	if res := c.Render( // "Binding" parameters.
-	); res != nil {
+	if res := c.Render(); res != nil {
 		h = res
 		return
 	}
@@ -155,7 +160,8 @@ func (t tTemplates) Redirect(w http.ResponseWriter, r *http.Request) {
 		h = res
 		return
 	}
-	if res := c.Redirect( // "Binding" parameters.
+	if res := c.Redirect(
+
 		strconv.String(r.Form, "urn"),
 	); res != nil {
 		h = res
@@ -169,14 +175,21 @@ func (t tTemplates) Redirect(w http.ResponseWriter, r *http.Request) {
 // Init is used to initialize controllers of "github.com/colegion/contrib/controllers/templates"
 // and its parents.
 func Init() {
+
 	initTemplates()
+
 	contr.Init(context)
+
 }
 
 func initTemplates() {
+
 	context.Add("Templates", "RenderTemplate")
+
 	context.Add("Templates", "Render")
+
 	context.Add("Templates", "Redirect")
+
 }
 
 func init() {
