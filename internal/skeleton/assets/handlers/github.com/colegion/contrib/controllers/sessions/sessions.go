@@ -29,7 +29,7 @@ type tSessions struct {
 
 // New allocates (github.com/colegion/contrib/controllers/sessions).Sessions controller,
 // then returns it.
-func (t tSessions) New() *contr.Sessions {
+func (t tSessions) New(w http.ResponseWriter, r *http.Request, ctr, act string) *contr.Sessions {
 	c := &contr.Sessions{}
 	return c
 }

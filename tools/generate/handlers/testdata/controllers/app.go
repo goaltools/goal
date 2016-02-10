@@ -10,6 +10,12 @@ type App struct {
 	*Controller
 	*NotController
 	*NotController1
+
+	// Fields with incorrect types.
+	a http.ResponseWriter `bind:"request"`
+	b string              `bind:"response"`
+	c int                 `bind:"action"`
+	d int                 `bind:"controller"`
 }
 
 // NotController is not a controller as it doesn't have methods.

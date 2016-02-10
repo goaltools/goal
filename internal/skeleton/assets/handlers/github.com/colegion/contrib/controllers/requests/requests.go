@@ -29,7 +29,7 @@ type tRequests struct {
 
 // New allocates (github.com/colegion/contrib/controllers/requests).Requests controller,
 // then returns it.
-func (t tRequests) New() *contr.Requests {
+func (t tRequests) New(w http.ResponseWriter, r *http.Request, ctr, act string) *contr.Requests {
 	c := &contr.Requests{}
 	return c
 }
