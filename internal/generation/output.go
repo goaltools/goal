@@ -10,7 +10,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/colegion/goal/utils/log"
+	"github.com/colegion/goal/internal/log"
 )
 
 // Type is a context that stores information that is used for generation
@@ -48,7 +48,9 @@ type Type struct {
 func NewType(pkg, templatePath string) Type {
 	// Read the template file, cut all "\" + line break.
 	f, err := ioutil.ReadFile(templatePath)
-	log.AssertNil(err)
+	if err != nil {
+		log.Error.Panicf(`Cannot open template file "%s". Error: %v.`, templatePath, err)
+	}
 	s := strings.Replace(string(f), "\\\r\n", "", -1)
 	s = strings.Replace(s, "\\\n", "", -1)
 	s = strings.Replace(s, "\\\r", "", -1)
@@ -58,7 +60,9 @@ func NewType(pkg, templatePath string) Type {
 	// Use <@ and > as delimiters, add template helper functions.
 	n := filepath.Base(templatePath)
 	t, err := template.New(n).Delims("<@", ">").Funcs(funcs).Parse(s)
-	log.AssertNil(err)
+	if err != nil {
+		log.Error.Panicf(`Cannot parse template "%s". Error: %v.`, templatePath, err)
+	}
 	return Type{
 		Package:      pkg,
 		TemplateName: n,

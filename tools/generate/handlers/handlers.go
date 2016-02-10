@@ -9,8 +9,8 @@ import (
 
 	"github.com/colegion/goal/internal/action"
 	"github.com/colegion/goal/internal/generation"
+	"github.com/colegion/goal/internal/log"
 	"github.com/colegion/goal/internal/method"
-	"github.com/colegion/goal/utils/log"
 	"github.com/colegion/goal/utils/path"
 )
 
@@ -19,24 +19,36 @@ func start() {
 	// Clean the out directory.
 	log.Trace.Printf(`Removing "%s" directory if already exists...`, *output)
 	err := os.RemoveAll(*output)
-	log.AssertNil(err)
+	if err != nil {
+		log.Error.Panic(err)
+	}
 
 	// Start processing of controllers.
 	ps := packages{}
 	absInput, err := path.ImportToAbsolute(*input)
-	log.AssertNil(err)
+	if err != nil {
+		log.Error.Panic(err)
+	}
 	absImport, err := path.AbsoluteToImport(absInput)
-	log.AssertNil(err)
+	if err != nil {
+		log.Error.Panic(err)
+	}
 	absOutput, err := path.ImportToAbsolute(*output)
-	log.AssertNil(err)
+	if err != nil {
+		log.Error.Panic(err)
+	}
 	absImportOut, err := path.AbsoluteToImport(absOutput)
-	log.AssertNil(err)
+	if err != nil {
+		log.Error.Panic(err)
+	}
 	log.Trace.Printf(`Processing "%s" package...`, absImport)
 	ps.processPackage(absImport)
 
 	// Start generation of handler packages.
 	tpl, err := path.ImportToAbsolute("github.com/colegion/goal/tools/generate/handlers/handlers.go.template")
-	log.AssertNil(err)
+	if err != nil {
+		log.Error.Panic(err)
+	}
 	t := generation.NewType("", tpl)
 	t.Extension = ".go" // Save generated files as a .go source.
 

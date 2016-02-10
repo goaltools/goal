@@ -12,8 +12,8 @@ import (
 	"path/filepath"
 	"syscall"
 
+	"github.com/colegion/goal/internal/log"
 	"github.com/colegion/goal/internal/watcher"
-	"github.com/colegion/goal/utils/log"
 	"github.com/colegion/goal/utils/path"
 	"github.com/colegion/goal/utils/tool"
 
@@ -54,9 +54,13 @@ func main(hs []tool.Handler, i int, args tool.Data) {
 
 	// Determine import path and absolute path of the project to run.
 	imp, err := path.CleanImport(p)
-	log.AssertNil(err)
+	if err != nil {
+		log.Error.Panic(err)
+	}
 	dir, err := path.ImportToAbsolute(imp)
-	log.AssertNil(err)
+	if err != nil {
+		log.Error.Panic(err)
+	}
 
 	// Prepare a path of configuration file.
 	cf := filepath.Join(dir, ConfigFile)

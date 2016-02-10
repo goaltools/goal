@@ -8,10 +8,10 @@ import (
 	"go/ast"
 	"strings"
 
+	"github.com/colegion/goal/internal/log"
 	"github.com/colegion/goal/internal/method"
 	"github.com/colegion/goal/internal/reflect"
 	"github.com/colegion/goal/internal/strconv"
-	"github.com/colegion/goal/utils/log"
 )
 
 const (

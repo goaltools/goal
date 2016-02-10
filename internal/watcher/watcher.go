@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/colegion/goal/utils/log"
+	"github.com/colegion/goal/internal/log"
 
 	"gopkg.in/fsnotify.v1"
 )
@@ -32,7 +32,9 @@ func NewType() *Type {
 func (t *Type) Listen(pattern string, fn func()) *fsnotify.Watcher {
 	// Create a new watcher.
 	w, err := fsnotify.NewWatcher()
-	log.AssertNil(err)
+	if err != nil {
+		log.Error.Panicf(`Failed to create a new watcher for "%s". Error: %v.`, pattern, err)
+	}
 
 	// Find directories matching the pattern.
 	ds := glob(pattern)
@@ -64,7 +66,9 @@ func (t *Type) Listen(pattern string, fn func()) *fsnotify.Watcher {
 func (t *Type) ListenFile(path string, fn func()) *fsnotify.Watcher {
 	// Create a new watcher.
 	w, err := fsnotify.NewWatcher()
-	log.AssertNil(err)
+	if err != nil {
+		log.Error.Printf(`Failed to allocate a watcher for "%s". Error: %v.`, path, err)
+	}
 
 	// Watch a directory instead of file.
 	// See issue #17 of fsnotify to find out more
