@@ -30,9 +30,14 @@ type t<@.ctx.name> struct {
 // New allocates (<@.ctx.import>).<@.ctx.name> controller,<@if .ctx.parents>
 // initializes its parents; then returns the controller.<@else>
 // then returns it.<@end>
-func (t t<@.ctx.name>) New() *contr.<@.ctx.name> {
-	c := &contr.<@.ctx.name>{}<@range $i, $v := .ctx.parents>
-	c.<@$v.Name> = <@$v.Package "."><@$v.Name>.New()<@end>
+func (t t<@.ctx.name>) New(w http.ResponseWriter, r *http.Request, ctr, act string) *contr.<@.ctx.name> {
+	c := &contr.<@.ctx.name>{<@range $i, $v := .ctx.controller.Fields>
+		<@if eq $v.Type "response"><@$v.Name>: w,<@end>
+		<@if eq $v.Type "request"><@$v.Name>: r,<@end>
+		<@if eq $v.Type "controller"><@$v.Name>: ctr,<@end>
+		<@if eq $v.Type "action"><@$v.Name>: act,<@end>
+	<@end>}<@range $i, $v := .ctx.parents>
+	c.<@$v.Name> = <@$v.Package "."><@$v.Name>.New(w, r, ctr, act)<@end>
 	return c
 }
 
@@ -98,7 +103,7 @@ func (t t<@.ctx.name>) <@.ctx.finally>(c *contr.<@.ctx.name>, w http.ResponseWri
 	// in appropriate order.<@template "printComments" dict (set "comments" $f.Comments)>
 	func (t t<@$.ctx.name>) <@$f.Name>(w http.ResponseWriter, r *http.Request) {
 		var h http.Handler
-		c := <@$.ctx.name>.New()
+		c := <@$.ctx.name>.New(w, r, "<@$.ctx.name>", "<@$f.Name>")
 		defer func() {
 			if h != nil {
 				h.ServeHTTP(w, r)

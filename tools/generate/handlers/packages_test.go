@@ -84,6 +84,10 @@ func assertDeepEqualController(c1, c2 *controller) {
 	if err := reflect.AssertEqualFunc(c1.Finally, c2.Finally); err != nil {
 		log.Error.Panic(err)
 	}
+	log.Trace.Println("Fields...")
+	if !r.DeepEqual(c1.Fields, c2.Fields) {
+		log.Error.Panicf(`Fields %v and %v are not equal.`, c1.Fields, c2.Fields)
+	}
 }
 
 func assertDeepEqualControllers(cs1, cs2 controllers) {
@@ -342,6 +346,24 @@ var ps = packages{
 								Name: "bool",
 							},
 						},
+					},
+				},
+				Fields: []field{
+					{
+						Name: "R",
+						Type: "request",
+					},
+					{
+						Name: "W",
+						Type: "response",
+					},
+					{
+						Name: "A",
+						Type: "action",
+					},
+					{
+						Name: "C",
+						Type: "controller",
 					},
 				},
 

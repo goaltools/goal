@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"go/ast"
 	"strings"
 
 	a "github.com/colegion/goal/internal/action"
@@ -37,6 +38,12 @@ type parent struct {
 	Name   string // Name of the structure, e.g. "Template".
 }
 
+// field represents a field of a structure that must be automatically binded.
+type field struct {
+	Name string // Name of the field, e.g. "Request".
+	Type string // Type of the binding, e.g. "request" or "action".
+}
+
 // controller is a type that represents application controller,
 // a structure that has actions.
 type controller struct {
@@ -49,6 +56,7 @@ type controller struct {
 	Comments reflect.Comments // A group of comments right above the controller declaration.
 	File     string           // Name of the file where this controller is located.
 	Parents  parents          // A list of embedded structs that should be parsed.
+	Fields   []field          // A list of fields that require binding.
 }
 
 // Package returns a unique package name that may be used in templates
@@ -101,13 +109,85 @@ func (ps packages) processPackage(importPath string) {
 	}
 }
 
-// scanAnonEmbStructs expects a package and an index of structure in that package.
-// It scans the structure looking for fields that are anonymously embedded types.
-// If those types are from other packages, they are processed as well.
-// As a result a list of all found types in a form of []parent is returned.
-func (ps packages) scanAnonEmbStructs(pkg *reflect.Package, i int) (prs []parent) {
+// needBindingField gets a package, an index of struct and index of field
+// in the struct. The field is checked whether it has a reserved tag
+// and it is of correct type.
+func (ps packages) needBindingField(pkg *reflect.Package, i, j int) *field {
+	f := &field{}
+	switch t := pkg.Structs[i].Fields[j]; t.Tag {
+	case `bind:"response"`:
+		// Make sure "http" package is imported.
+		n, ok := pkg.Imports.Name(pkg.Structs[i].File, "net/http")
+		if !ok || t.Type.String() != fmt.Sprintf("%s.ResponseWriter", n) {
+			log.Warn.Printf(
+				`Field "%s" in controller "%s" cannot be binded. Response must be of type "(net/http).ResponseWriter".`,
+				t.Name, pkg.Structs[i].Name,
+			)
+			return nil
+		}
+		f.Name = t.Name
+		f.Type = "response"
+	case `bind:"request"`:
+		// Make sure "http" package is imported.
+		n, ok := pkg.Imports.Name(pkg.Structs[i].File, "net/http")
+		if !ok || t.Type.String() != fmt.Sprintf("*%s.Request", n) {
+			log.Warn.Printf(
+				`Field "%s" in controller "%s" cannot be binded. Request must be of type "*(net/http).Request".`,
+				t.Name, pkg.Structs[i].Name,
+			)
+			return nil
+		}
+		f.Name = t.Name
+		f.Type = "request"
+	case `bind:"controller"`:
+		if t.Type.String() != "string" {
+			log.Warn.Printf(
+				`Field "%s" in controller "%s" cannot be binded. Controller name must be of type "string".`,
+				t.Name, pkg.Structs[i].Name,
+			)
+			return nil
+		}
+		f.Name = t.Name
+		f.Type = "controller"
+	case `bind:"action"`:
+		if t.Type.String() != "string" {
+			log.Warn.Printf(
+				`Field "%s" in controller "%s" cannot be binded. Action name must be of type "string".`,
+				t.Name, pkg.Structs[i].Name,
+			)
+			return nil
+		}
+		f.Name = t.Name
+		f.Type = "action"
+	default:
+		return nil
+	}
+	if !ast.IsExported(f.Name) {
+		log.Warn.Printf(
+			`Field "%s" in controller "%s" must be public in order to be binded.`,
+			f.Name, pkg.Structs[i].Name,
+		)
+		return nil
+	}
+	log.Trace.Printf(`Field %s will be binded to "%s".`, f.Name, f.Type)
+	return f
+}
+
+// scanFields expects a package and an index of structure in that package.
+// It scans the structure looking for two kinds of fields:
+// anonymously embedded types and named fields with special tags.
+// Every anonymously embedded type is checked recursively regarding being a controller.
+// As a result a list of all found fields with the tags and
+// types in a form of []parent are returned.
+func (ps packages) scanFields(pkg *reflect.Package, i int) (fs []field, prs []parent) {
 	// Iterating over fields of the structure.
 	for j := range pkg.Structs[i].Fields {
+		// Check whether the field requires binding.
+		if f := ps.needBindingField(pkg, i, j); f != nil {
+			fs = append(fs, *f)
+			continue
+		}
+
 		// Make sure current field is embedded anonymously,
 		// i.e. there is no arg name.
 		if pkg.Structs[i].Fields[j].Name != "" {
@@ -194,6 +274,9 @@ func (ps packages) extractControllers(pkg *reflect.Package) controllers {
 			continue
 		}
 
+		// Parse parent controllers and fields that require binding.
+		fs, prs := ps.scanFields(pkg, i)
+
 		// Add a new controller to the list of results.
 		cs.data[pkg.Structs[i].Name] = controller{
 			Actions:   as[0],
@@ -204,7 +287,8 @@ func (ps packages) extractControllers(pkg *reflect.Package) controllers {
 
 			Comments: pkg.Structs[i].Comments,
 			File:     pkg.Structs[i].File,
-			Parents:  ps.scanAnonEmbStructs(pkg, i),
+			Parents:  prs,
+			Fields:   fs,
 		}
 	}
 	return cs

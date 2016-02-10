@@ -27,9 +27,9 @@ type tErrors struct {
 
 // New allocates (github.com/colegion/goal/internal/skeleton/controllers).Errors controller,
 // initializes its parents; then returns the controller.
-func (t tErrors) New() *contr.Errors {
+func (t tErrors) New(w http.ResponseWriter, r *http.Request, ctr, act string) *contr.Errors {
 	c := &contr.Errors{}
-	c.Controllers = Controllers.New()
+	c.Controllers = Controllers.New(w, r, ctr, act)
 	return c
 }
 
@@ -88,7 +88,7 @@ func (t tErrors) Finally(c *contr.Errors, w http.ResponseWriter, r *http.Request
 // NotFound prints an error 404 "Page Not Found" message.
 func (t tErrors) NotFound(w http.ResponseWriter, r *http.Request) {
 	var h http.Handler
-	c := Errors.New()
+	c := Errors.New(w, r, "Errors", "NotFound")
 	defer func() {
 		if h != nil {
 			h.ServeHTTP(w, r)
@@ -120,7 +120,7 @@ func (t tErrors) NotFound(w http.ResponseWriter, r *http.Request) {
 // InternalError displays an error 500 "Internal Server Error" message.
 func (t tErrors) InternalError(w http.ResponseWriter, r *http.Request) {
 	var h http.Handler
-	c := Errors.New()
+	c := Errors.New(w, r, "Errors", "InternalError")
 	defer func() {
 		if h != nil {
 			h.ServeHTTP(w, r)

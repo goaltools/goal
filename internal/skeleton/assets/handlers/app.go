@@ -23,9 +23,9 @@ type tApp struct {
 
 // New allocates (github.com/colegion/goal/internal/skeleton/controllers).App controller,
 // initializes its parents; then returns the controller.
-func (t tApp) New() *contr.App {
+func (t tApp) New(w http.ResponseWriter, r *http.Request, ctr, act string) *contr.App {
 	c := &contr.App{}
-	c.Controllers = Controllers.New()
+	c.Controllers = Controllers.New(w, r, ctr, act)
 	return c
 }
 
@@ -90,7 +90,7 @@ func (t tApp) Finally(c *contr.App, w http.ResponseWriter, r *http.Request, a []
 // Index is an action that renders a home page.
 func (t tApp) Index(w http.ResponseWriter, r *http.Request) {
 	var h http.Handler
-	c := App.New()
+	c := App.New(w, r, "App", "Index")
 	defer func() {
 		if h != nil {
 			h.ServeHTTP(w, r)

@@ -17,6 +17,14 @@ type Controller struct {
 
 	testing.M
 	Test testing.M
+
+	R *h.Request       `bind:"request"`
+	W h.ResponseWriter `bind:"response"`
+	A string           `bind:"action"`
+	C string           `bind:"controller"`
+
+	// r is not exported and thus must be ignored.
+	r *h.Request `bind:"request"`
 }
 
 // Before is a magic method that is executed before every request.

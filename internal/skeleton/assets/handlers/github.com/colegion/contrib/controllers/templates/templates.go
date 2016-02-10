@@ -30,7 +30,7 @@ type tTemplates struct {
 
 // New allocates (github.com/colegion/contrib/controllers/templates).Templates controller,
 // then returns it.
-func (t tTemplates) New() *contr.Templates {
+func (t tTemplates) New(w http.ResponseWriter, r *http.Request, ctr, act string) *contr.Templates {
 	c := &contr.Templates{}
 	return c
 }
@@ -72,7 +72,7 @@ func (t tTemplates) Finally(c *contr.Templates, w http.ResponseWriter, r *http.R
 // and renders it using data from Context.
 func (t tTemplates) RenderTemplate(w http.ResponseWriter, r *http.Request) {
 	var h http.Handler
-	c := Templates.New()
+	c := Templates.New(w, r, "Templates", "RenderTemplate")
 	defer func() {
 		if h != nil {
 			h.ServeHTTP(w, r)
@@ -112,7 +112,7 @@ func (t tTemplates) RenderTemplate(w http.ResponseWriter, r *http.Request) {
 //	default.pattern = %s/%s.tpl
 func (t tTemplates) Render(w http.ResponseWriter, r *http.Request) {
 	var h http.Handler
-	c := Templates.New()
+	c := Templates.New(w, r, "Templates", "Render")
 	defer func() {
 		if h != nil {
 			h.ServeHTTP(w, r)
@@ -145,7 +145,7 @@ func (t tTemplates) Render(w http.ResponseWriter, r *http.Request) {
 // and returns a handler for user's redirect using 303 status code.
 func (t tTemplates) Redirect(w http.ResponseWriter, r *http.Request) {
 	var h http.Handler
-	c := Templates.New()
+	c := Templates.New(w, r, "Templates", "Redirect")
 	defer func() {
 		if h != nil {
 			h.ServeHTTP(w, r)

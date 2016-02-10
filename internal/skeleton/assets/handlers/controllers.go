@@ -27,11 +27,11 @@ type tControllers struct {
 
 // New allocates (github.com/colegion/goal/internal/skeleton/controllers).Controllers controller,
 // initializes its parents; then returns the controller.
-func (t tControllers) New() *contr.Controllers {
+func (t tControllers) New(w http.ResponseWriter, r *http.Request, ctr, act string) *contr.Controllers {
 	c := &contr.Controllers{}
-	c.Requests = c0.Requests.New()
-	c.Templates = c1.Templates.New()
-	c.Sessions = c2.Sessions.New()
+	c.Requests = c0.Requests.New(w, r, ctr, act)
+	c.Templates = c1.Templates.New(w, r, ctr, act)
+	c.Sessions = c2.Sessions.New(w, r, ctr, act)
 	return c
 }
 
