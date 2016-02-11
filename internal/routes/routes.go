@@ -27,18 +27,23 @@ type Prefixes []Route
 // pattern and an associated method.
 type Route struct {
 	Pattern, Method string
-	Default         bool
 }
 
-// ParseRoutes gets an action function and returns all the
-// routes that are presented in its comments
-// concatenated with the specified prefixes.
-func (ps Prefixes) ParseRoutes(f *r.Func) (rs []Route) {
+// ParseRoutes gets a controller name and an action function and returns all the
+// routes that are presented in its comments concatenated with the specified prefixes.
+// If method is specified however pattern isn't, controller/action combination
+// is used as a pattern.
+func (ps Prefixes) ParseRoutes(controller string, f *r.Func) (rs []Route) {
 	for i := range f.Comments {
 		// Skip comments that do not contain routes.
 		m, p, d, ok := parseComment(f.Comments[i])
 		if !ok {
 			continue
+		}
+
+		// If no pattern specified, use controller's and action's names.
+		if d {
+			p = path.Join(controller, f.Name)
 		}
 
 		// Concatenate route with every of the prefix
@@ -50,11 +55,9 @@ func (ps Prefixes) ParseRoutes(f *r.Func) (rs []Route) {
 			}
 
 			// Concatenate all other prefixes and add to the list.
-			println(m)
 			rs = append(rs, Route{
 				Method:  m,
 				Pattern: path.Join(ps[j].Pattern, p),
-				Default: d,
 			})
 		}
 	}
@@ -105,7 +108,7 @@ func parseComment(c string) (method, pattern string, def, ok bool) {
 	ok = true
 
 	// Check whether pattern is empty.
-	if len(cs) <= 1 {
+	if len(cs) <= 1 || strings.TrimSpace(cs[1]) == "" {
 		def = true
 		return
 	}
