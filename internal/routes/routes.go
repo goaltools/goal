@@ -26,7 +26,7 @@ type Prefixes []Route
 // Route represents a single route, i.e.
 // pattern and an associated method.
 type Route struct {
-	Pattern, Method string
+	Pattern, Method, HandlerName string
 }
 
 // ParseRoutes gets a controller name and an action function and returns all the
@@ -56,8 +56,9 @@ func (ps Prefixes) ParseRoutes(controller string, f *r.Func) (rs []Route) {
 
 			// Concatenate all other prefixes and add to the list.
 			rs = append(rs, Route{
-				Method:  m,
-				Pattern: path.Join(ps[j].Pattern, p),
+				Method:      m,
+				Pattern:     path.Join(ps[j].Pattern, p),
+				HandlerName: controller + "." + f.Name,
 			})
 		}
 	}
