@@ -48,12 +48,6 @@ func TestFunc(t *testing.T) {
 		t.Errorf("Incorrect result: file without action import cannot contain actions.")
 	}
 
-	f.Name = "Initially"
-	res = fn(f)
-	if res {
-		t.Errorf("Use of reserved words for actions should not be allowed. False expected, got true.")
-	}
-
 	f1 := actionFn
 	f1.Name = "Something"
 	f1.Results[0].Type.Name = "NotActionInterface"

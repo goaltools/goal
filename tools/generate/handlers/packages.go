@@ -7,7 +7,6 @@ import (
 
 	a "github.com/colegion/goal/internal/action"
 	"github.com/colegion/goal/internal/log"
-	m "github.com/colegion/goal/internal/method"
 	"github.com/colegion/goal/internal/reflect"
 	"github.com/colegion/goal/utils/path"
 )
@@ -47,11 +46,9 @@ type field struct {
 // controller is a type that represents application controller,
 // a structure that has actions.
 type controller struct {
-	Actions   reflect.Funcs // Actions are methods that implement action.Result interface.
-	After     *reflect.Func // Magic method that is executed after actions if they return nil.
-	Before    *reflect.Func // Magic method that is executed before every action.
-	Finally   *reflect.Func // Finally is executed at the end of every request no matter what.
-	Initially *reflect.Func // Initially is executed at the beginning of every request.
+	Actions reflect.Funcs // Actions are methods that implement action.Result interface.
+	After   *reflect.Func // Magic method that is executed after actions if they return nil.
+	Before  *reflect.Func // Magic method that is executed before every action.
 
 	Comments reflect.Comments // A group of comments right above the controller declaration.
 	File     string           // Name of the file where this controller is located.
@@ -248,10 +245,8 @@ func (ps packages) extractInitFunc(pkg *reflect.Package) *reflect.Func {
 // extractControllers gets a reflect.Package type and returns
 // a slice of controllers that are found there.
 func (ps packages) extractControllers(pkg *reflect.Package) controllers {
-	// Initialize functions that will be used for detection of actions
-	// and magic methods.
+	// Initialize function that will be used for detection of actions.
 	action := a.Func(pkg)
-	method := m.Func(pkg)
 
 	// Iterating through all available structures and checking
 	// whether those structures are controllers (i.e. whether they have actions).
@@ -265,12 +260,11 @@ func (ps packages) extractControllers(pkg *reflect.Package) controllers {
 			continue
 		}
 
-		// Check whether there are actions and/or magic method among those methods.
-		as, count1 := ms.FilterGroups(action, a.Regular, a.After, a.Before)
-		mms, count2 := ms.FilterGroups(method, m.Initially, m.Finally)
+		// Check whether there are actions among those methods.
+		as, count := ms.FilterGroups(action, a.Regular, a.After, a.Before)
 
 		// If there are no any, this is not a controller; ignore it.
-		if count1 == 0 && count2 == 0 {
+		if count == 0 {
 			continue
 		}
 
@@ -279,11 +273,9 @@ func (ps packages) extractControllers(pkg *reflect.Package) controllers {
 
 		// Add a new controller to the list of results.
 		cs.data[pkg.Structs[i].Name] = controller{
-			Actions:   as[0],
-			After:     firstFunc(as[1]),
-			Before:    firstFunc(as[2]),
-			Initially: firstFunc(mms[0]),
-			Finally:   firstFunc(mms[1]),
+			Actions: as[0],
+			After:   firstFunc(as[1]),
+			Before:  firstFunc(as[2]),
 
 			Comments: pkg.Structs[i].Comments,
 			File:     pkg.Structs[i].File,

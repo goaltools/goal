@@ -10,7 +10,6 @@ import (
 	"github.com/colegion/goal/internal/action"
 	"github.com/colegion/goal/internal/generation"
 	"github.com/colegion/goal/internal/log"
-	"github.com/colegion/goal/internal/method"
 	"github.com/colegion/goal/utils/path"
 )
 
@@ -97,10 +96,8 @@ func start() {
 			// Initialize parameters and generate a package.
 			t.Package = strings.ToLower(name)
 			t.Context = map[string]interface{}{
-				"after":     action.MethodAfter,
-				"before":    action.MethodBefore,
-				"initially": method.InitiallyName,
-				"finally":   method.FinallyName,
+				"after":  action.MethodAfter,
+				"before": action.MethodBefore,
 
 				"controller":   ps[imp].data[name],
 				"controllers":  ps[imp].data,
