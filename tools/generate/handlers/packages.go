@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"go/ast"
+	r "reflect"
 	"strings"
 
 	a "github.com/colegion/goal/internal/action"
@@ -111,8 +112,9 @@ func (ps packages) processPackage(importPath string) {
 // and it is of correct type.
 func (ps packages) needBindingField(pkg *reflect.Package, i, j int) *field {
 	f := &field{}
-	switch t := pkg.Structs[i].Fields[j]; t.Tag {
-	case `bind:"response"`:
+	t := pkg.Structs[i].Fields[j]
+	switch st := r.StructTag(t.Tag).Get("bind"); st {
+	case "response":
 		// Make sure "http" package is imported.
 		n, ok := pkg.Imports.Name(pkg.Structs[i].File, "net/http")
 		if !ok || t.Type.String() != fmt.Sprintf("%s.ResponseWriter", n) {
@@ -122,9 +124,8 @@ func (ps packages) needBindingField(pkg *reflect.Package, i, j int) *field {
 			)
 			return nil
 		}
-		f.Name = t.Name
-		f.Type = "response"
-	case `bind:"request"`:
+		f.Type = st
+	case "request":
 		// Make sure "http" package is imported.
 		n, ok := pkg.Imports.Name(pkg.Structs[i].File, "net/http")
 		if !ok || t.Type.String() != fmt.Sprintf("*%s.Request", n) {
@@ -134,9 +135,8 @@ func (ps packages) needBindingField(pkg *reflect.Package, i, j int) *field {
 			)
 			return nil
 		}
-		f.Name = t.Name
-		f.Type = "request"
-	case `bind:"controller"`:
+		f.Type = st
+	case "controller":
 		if t.Type.String() != "string" {
 			log.Warn.Printf(
 				`Field "%s" in controller "%s" cannot be binded. Controller name must be of type "string".`,
@@ -144,9 +144,8 @@ func (ps packages) needBindingField(pkg *reflect.Package, i, j int) *field {
 			)
 			return nil
 		}
-		f.Name = t.Name
 		f.Type = "controller"
-	case `bind:"action"`:
+	case "action":
 		if t.Type.String() != "string" {
 			log.Warn.Printf(
 				`Field "%s" in controller "%s" cannot be binded. Action name must be of type "string".`,
@@ -154,11 +153,11 @@ func (ps packages) needBindingField(pkg *reflect.Package, i, j int) *field {
 			)
 			return nil
 		}
-		f.Name = t.Name
-		f.Type = "action"
+		f.Type = st
 	default:
 		return nil
 	}
+	f.Name = t.Name
 	if !ast.IsExported(f.Name) {
 		log.Warn.Printf(
 			`Field "%s" in controller "%s" must be public in order to be binded.`,
