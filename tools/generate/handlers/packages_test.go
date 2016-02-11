@@ -207,7 +207,7 @@ var ps = packages{
 
 				Routes: [][]routes.Route{
 					{
-						{Method: "GET", Pattern: "App/HelloWorld"},
+						{Method: "GET", Pattern: "App/HelloWorld", HandlerName: "App.HelloWorld"},
 					},
 				},
 				Comments: []string{
@@ -415,7 +415,7 @@ var ps = packages{
 
 				Routes: [][]routes.Route{
 					{
-						{Method: "POST", Pattern: "/subpackage/index"},
+						{Method: "POST", Pattern: "/subpackage/index", HandlerName: "Controller.Index"},
 					},
 				},
 				Comments: []string{
