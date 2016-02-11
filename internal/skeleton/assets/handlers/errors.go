@@ -33,55 +33,32 @@ func (t tErrors) New(w http.ResponseWriter, r *http.Request, ctr, act string) *c
 	return c
 }
 
-// Before executes magic actions of embedded controllers.
+// Before is a method that is started by every handler function at the very beginning
+// of their execution phase no matter what.
 func (t tErrors) Before(c *contr.Errors, w http.ResponseWriter, r *http.Request) http.Handler {
 	// Execute magic Before actions of embedded controllers.
-	if res := Controllers.Before(c.Controllers, w, r); res != nil {
-		return res
+	if h := Controllers.Before(c.Controllers, w, r); h != nil {
+		return h
 	}
 
 	return nil
 }
 
-// After executes magic actions of embedded controllers.
-func (t tErrors) After(c *contr.Errors, w http.ResponseWriter, r *http.Request) http.Handler {
-	// Execute magic After actions of embedded controllers.
-	if res := Controllers.After(c.Controllers, w, r); res != nil {
-		return res
-	}
-
-	return nil
-}
-
-// Initially is a method that is started by every handler function at the very beginning
-// of their execution phase.
-func (t tErrors) Initially(c *contr.Errors, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
-
-	// Execute magic Initially methods of embedded controllers.
-
-	if finish = Controllers.Initially(c.Controllers, w, r, a); finish {
-		return finish
-	}
-
-	return
-
-}
-
-// Finally is a method that is started by every handler function at the very end
+// After is a method that is started by every handler function at the very end
 // of their execution phase no matter what.
-func (t tErrors) Finally(c *contr.Errors, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
+func (t tErrors) After(c *contr.Errors, w http.ResponseWriter, r *http.Request) (h http.Handler) {
 
-	// Execute magic Finally methods of embedded controllers.
+	// Execute magic After methods of embedded controllers.
 
-	if finish = Controllers.Finally(c.Controllers, w, r, a); finish {
-		return finish
+	if h = Controllers.After(c.Controllers, w, r); h != nil {
+		return h
 	}
 
 	return
 }
 
 // NotFound is a handler that was generated automatically.
-// It calls Before, After, Finally methods, and NotFound action found at
+// It calls Before, After methods, and NotFound action found at
 // github.com/colegion/goal/internal/skeleton/controllers/errors.go
 // in appropriate order.
 //
@@ -94,11 +71,7 @@ func (t tErrors) NotFound(w http.ResponseWriter, r *http.Request) {
 			h.ServeHTTP(w, r)
 		}
 	}()
-	a := []string{"Errors", "NotFound"}
-	defer Errors.Finally(c, w, r, a)
-	if finish := Errors.Initially(c, w, r, a); finish {
-		return
-	}
+	defer Errors.After(c, w, r)
 	if res := Errors.Before(c, w, r); res != nil {
 		h = res
 		return
@@ -107,13 +80,10 @@ func (t tErrors) NotFound(w http.ResponseWriter, r *http.Request) {
 		h = res
 		return
 	}
-	if res := Errors.After(c, w, r); res != nil {
-		h = res
-	}
 }
 
 // InternalError is a handler that was generated automatically.
-// It calls Before, After, Finally methods, and InternalError action found at
+// It calls Before, After methods, and InternalError action found at
 // github.com/colegion/goal/internal/skeleton/controllers/errors.go
 // in appropriate order.
 //
@@ -126,11 +96,7 @@ func (t tErrors) InternalError(w http.ResponseWriter, r *http.Request) {
 			h.ServeHTTP(w, r)
 		}
 	}()
-	a := []string{"Errors", "InternalError"}
-	defer Errors.Finally(c, w, r, a)
-	if finish := Errors.Initially(c, w, r, a); finish {
-		return
-	}
+	defer Errors.After(c, w, r)
 	if res := Errors.Before(c, w, r); res != nil {
 		h = res
 		return
@@ -138,9 +104,6 @@ func (t tErrors) InternalError(w http.ResponseWriter, r *http.Request) {
 	if res := c.InternalError(); res != nil {
 		h = res
 		return
-	}
-	if res := Errors.After(c, w, r); res != nil {
-		h = res
 	}
 }
 

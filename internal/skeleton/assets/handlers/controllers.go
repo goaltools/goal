@@ -35,86 +35,46 @@ func (t tControllers) New(w http.ResponseWriter, r *http.Request, ctr, act strin
 	return c
 }
 
-// Before executes magic actions of embedded controllers, and
-// calls (github.com/colegion/goal/internal/skeleton/controllers).Controllers.Before.
+// Before is a method that is started by every handler function at the very beginning
+// of their execution phase no matter what.
 func (t tControllers) Before(c *contr.Controllers, w http.ResponseWriter, r *http.Request) http.Handler {
 	// Execute magic Before actions of embedded controllers.
-	if res := c0.Requests.Before(c.Requests, w, r); res != nil {
-		return res
+	if h := c0.Requests.Before(c.Requests, w, r); h != nil {
+		return h
 	}
 
-	if res := c1.Templates.Before(c.Templates, w, r); res != nil {
-		return res
+	if h := c1.Templates.Before(c.Templates, w, r); h != nil {
+		return h
 	}
 
-	if res := c2.Sessions.Before(c.Sessions, w, r); res != nil {
-		return res
+	if h := c2.Sessions.Before(c.Sessions, w, r); h != nil {
+		return h
 	}
 
-	// Call magic Before action of (github.com/colegion/goal/internal/skeleton/controllers).Controllers.
-	if res := c.Before(); res != nil {
-		return res
-	}
-
-	return nil
-}
-
-// After executes magic actions of embedded controllers.
-func (t tControllers) After(c *contr.Controllers, w http.ResponseWriter, r *http.Request) http.Handler {
-	// Execute magic After actions of embedded controllers.
-	if res := c0.Requests.After(c.Requests, w, r); res != nil {
-		return res
-	}
-
-	if res := c1.Templates.After(c.Templates, w, r); res != nil {
-		return res
-	}
-
-	if res := c2.Sessions.After(c.Sessions, w, r); res != nil {
-		return res
+	// Call magic Before action of (github.com/colegion/goal/internal/skeleton/controllers).Before.
+	if h := c.Before(); h != nil {
+		return h
 	}
 
 	return nil
 }
 
-// Initially is a method that is started by every handler function at the very beginning
-// of their execution phase.
-func (t tControllers) Initially(c *contr.Controllers, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
-
-	// Execute magic Initially methods of embedded controllers.
-
-	if finish = c0.Requests.Initially(c.Requests, w, r, a); finish {
-		return finish
-	}
-
-	if finish = c1.Templates.Initially(c.Templates, w, r, a); finish {
-		return finish
-	}
-
-	if finish = c2.Sessions.Initially(c.Sessions, w, r, a); finish {
-		return finish
-	}
-
-	return
-
-}
-
-// Finally is a method that is started by every handler function at the very end
+// After is a method that is started by every handler function at the very end
 // of their execution phase no matter what.
-func (t tControllers) Finally(c *contr.Controllers, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
+func (t tControllers) After(c *contr.Controllers, w http.ResponseWriter, r *http.Request) (h http.Handler) {
 
-	// Execute magic Finally methods of embedded controllers.
+	// Execute magic After methods of embedded controllers.
 
-	if finish = c0.Requests.Finally(c.Requests, w, r, a); finish {
-		return finish
+	if h = c0.Requests.After(c.Requests, w, r); h != nil {
+		return h
 	}
 
-	if finish = c1.Templates.Finally(c.Templates, w, r, a); finish {
-		return finish
+	if h = c1.Templates.After(c.Templates, w, r); h != nil {
+		return h
 	}
 
-	if finish = c2.Sessions.Finally(c.Sessions, w, r, a); finish {
-		return finish
+	if h = c2.Sessions.After(c.Sessions, w, r); h != nil {
+		return h
 	}
 
 	return

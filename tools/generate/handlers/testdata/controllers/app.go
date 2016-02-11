@@ -55,12 +55,5 @@ func (c Controller) UnsupportedAction(t *testing.T) http.Handler {
 func (c App) Smth() {
 }
 
-// Finally should be ignored as it is using a reserved word for its name.
-// The method signature is expected to be
-// (c App) Finally(http.ResponseWriter, *http.Request) bool.
-func (c App) Finally(smth string) http.Handler {
-	return nil
-}
-
 func init() {
 }

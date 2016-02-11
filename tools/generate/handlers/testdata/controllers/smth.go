@@ -13,5 +13,9 @@ func (c App) SmthElse() {
 func (c *App) SmthElse1() {
 }
 
+// Init should be ignored as the number of arguments is incorrect.
+func Init() {
+}
+
 func init() {
 }

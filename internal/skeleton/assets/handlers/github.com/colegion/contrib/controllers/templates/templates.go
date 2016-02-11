@@ -40,40 +40,27 @@ func (t tTemplates) New(w http.ResponseWriter, r *http.Request, ctr, act string)
 	return c
 }
 
-// Before calls (github.com/colegion/contrib/controllers/templates).Templates.Before.
+// Before is a method that is started by every handler function at the very beginning
+// of their execution phase no matter what.
 func (t tTemplates) Before(c *contr.Templates, w http.ResponseWriter, r *http.Request) http.Handler {
 
-	// Call magic Before action of (github.com/colegion/contrib/controllers/templates).Templates.
-	if res := c.Before(); res != nil {
-		return res
+	// Call magic Before action of (github.com/colegion/contrib/controllers/templates).Before.
+	if h := c.Before(); h != nil {
+		return h
 	}
 
 	return nil
 }
 
-// After is a dump method that always returns nil.
-func (t tTemplates) After(c *contr.Templates, w http.ResponseWriter, r *http.Request) http.Handler {
-
-	return nil
-}
-
-// Initially is a method that is started by every handler function at the very beginning
-// of their execution phase.
-func (t tTemplates) Initially(c *contr.Templates, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
-
-	return
-
-}
-
-// Finally is a method that is started by every handler function at the very end
+// After is a method that is started by every handler function at the very end
 // of their execution phase no matter what.
-func (t tTemplates) Finally(c *contr.Templates, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
+func (t tTemplates) After(c *contr.Templates, w http.ResponseWriter, r *http.Request) (h http.Handler) {
 
 	return
 }
 
 // RenderTemplate is a handler that was generated automatically.
-// It calls Before, After, Finally methods, and RenderTemplate action found at
+// It calls Before, After methods, and RenderTemplate action found at
 // github.com/colegion/contrib/controllers/templates/templates.go
 // in appropriate order.
 //
@@ -87,29 +74,21 @@ func (t tTemplates) RenderTemplate(w http.ResponseWriter, r *http.Request) {
 			h.ServeHTTP(w, r)
 		}
 	}()
-	a := []string{"Templates", "RenderTemplate"}
-	defer Templates.Finally(c, w, r, a)
-	if finish := Templates.Initially(c, w, r, a); finish {
-		return
-	}
+	defer Templates.After(c, w, r)
 	if res := Templates.Before(c, w, r); res != nil {
 		h = res
 		return
 	}
 	if res := c.RenderTemplate(
-
 		strconv.String(r.Form, "templatePath"),
 	); res != nil {
 		h = res
 		return
 	}
-	if res := Templates.After(c, w, r); res != nil {
-		h = res
-	}
 }
 
 // Render is a handler that was generated automatically.
-// It calls Before, After, Finally methods, and Render action found at
+// It calls Before, After methods, and Render action found at
 // github.com/colegion/contrib/controllers/templates/templates.go
 // in appropriate order.
 //
@@ -127,11 +106,7 @@ func (t tTemplates) Render(w http.ResponseWriter, r *http.Request) {
 			h.ServeHTTP(w, r)
 		}
 	}()
-	a := []string{"Templates", "Render"}
-	defer Templates.Finally(c, w, r, a)
-	if finish := Templates.Initially(c, w, r, a); finish {
-		return
-	}
+	defer Templates.After(c, w, r)
 	if res := Templates.Before(c, w, r); res != nil {
 		h = res
 		return
@@ -140,13 +115,10 @@ func (t tTemplates) Render(w http.ResponseWriter, r *http.Request) {
 		h = res
 		return
 	}
-	if res := Templates.After(c, w, r); res != nil {
-		h = res
-	}
 }
 
 // Redirect is a handler that was generated automatically.
-// It calls Before, After, Finally methods, and Redirect action found at
+// It calls Before, After methods, and Redirect action found at
 // github.com/colegion/contrib/controllers/templates/templates.go
 // in appropriate order.
 //
@@ -160,24 +132,16 @@ func (t tTemplates) Redirect(w http.ResponseWriter, r *http.Request) {
 			h.ServeHTTP(w, r)
 		}
 	}()
-	a := []string{"Templates", "Redirect"}
-	defer Templates.Finally(c, w, r, a)
-	if finish := Templates.Initially(c, w, r, a); finish {
-		return
-	}
+	defer Templates.After(c, w, r)
 	if res := Templates.Before(c, w, r); res != nil {
 		h = res
 		return
 	}
 	if res := c.Redirect(
-
 		strconv.String(r.Form, "urn"),
 	); res != nil {
 		h = res
 		return
-	}
-	if res := Templates.After(c, w, r); res != nil {
-		h = res
 	}
 }
 

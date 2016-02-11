@@ -76,14 +76,6 @@ func assertDeepEqualController(c1, c2 *controller) {
 	if err := reflect.AssertEqualFunc(c1.After, c2.After); err != nil {
 		log.Error.Panic(err)
 	}
-	log.Trace.Println("Initially...")
-	if err := reflect.AssertEqualFunc(c1.Initially, c2.Initially); err != nil {
-		log.Error.Panic(err)
-	}
-	log.Trace.Println("Finally...")
-	if err := reflect.AssertEqualFunc(c1.Finally, c2.Finally); err != nil {
-		log.Error.Panic(err)
-	}
 	log.Trace.Println("Fields...")
 	if !r.DeepEqual(c1.Fields, c2.Fields) {
 		log.Error.Panicf(`Fields %v and %v are not equal.`, c1.Fields, c2.Fields)
@@ -264,90 +256,6 @@ var ps = packages{
 						},
 					},
 				},
-				Finally: &reflect.Func{
-					Comments: []string{"// Finally is a magic method that is executed after every request."},
-					File:     "app.go",
-					Name:     "Finally",
-					Params: []reflect.Arg{
-						{
-							Name: "w",
-							Type: &reflect.Type{
-								Package: "http",
-								Name:    "ResponseWriter",
-							},
-						},
-						{
-							Name: "r",
-							Type: &reflect.Type{
-								Package: "http",
-								Name:    "Request",
-								Star:    true,
-							},
-						},
-						{
-							Name: "a",
-							Type: &reflect.Type{
-								Name: "[]string",
-							},
-						},
-					},
-					Recv: &reflect.Arg{
-						Name: "c",
-						Type: &reflect.Type{
-							Name: "Controller",
-							Star: true,
-						},
-					},
-					Results: []reflect.Arg{
-						{
-							Type: &reflect.Type{
-								Name: "bool",
-							},
-						},
-					},
-				},
-				Initially: &reflect.Func{
-					Comments: []string{"// Initially is a magic method that is executed before every request."},
-					File:     "app.go",
-					Name:     "Initially",
-					Params: []reflect.Arg{
-						{
-							Name: "w",
-							Type: &reflect.Type{
-								Package: "http",
-								Name:    "ResponseWriter",
-							},
-						},
-						{
-							Name: "r",
-							Type: &reflect.Type{
-								Package: "http",
-								Name:    "Request",
-								Star:    true,
-							},
-						},
-						{
-							Name: "a",
-							Type: &reflect.Type{
-								Name: "[]string",
-							},
-						},
-					},
-					Recv: &reflect.Arg{
-						Name: "c",
-						Type: &reflect.Type{
-							Name: "Controller",
-							Star: true,
-						},
-					},
-					Results: []reflect.Arg{
-						{
-							Type: &reflect.Type{
-								Name: "bool",
-							},
-						},
-					},
-				},
 				Fields: []field{
 					{
 						Name: "R",
@@ -473,51 +381,6 @@ var ps = packages{
 							Type: &reflect.Type{
 								Name:    "Handler",
 								Package: "http",
-							},
-						},
-					},
-				},
-				Finally: &reflect.Func{
-					Comments: []string{
-						"// Finally is a magic function that is executed after any request",
-						"// no matter what.",
-					},
-					File: "app.go",
-					Name: "Finally",
-					Params: []reflect.Arg{
-						{
-							Name: "w",
-							Type: &reflect.Type{
-								Package: "http",
-								Name:    "ResponseWriter",
-							},
-						},
-						{
-							Name: "r",
-							Type: &reflect.Type{
-								Package: "http",
-								Name:    "Request",
-								Star:    true,
-							},
-						},
-						{
-							Name: "a",
-							Type: &reflect.Type{
-								Name: "[]string",
-							},
-						},
-					},
-					Recv: &reflect.Arg{
-						Name: "c",
-						Type: &reflect.Type{
-							Name: "Controller",
-							Star: true,
-						},
-					},
-					Results: []reflect.Arg{
-						{
-							Type: &reflect.Type{
-								Name: "bool",
 							},
 						},
 					},

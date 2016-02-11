@@ -37,34 +37,21 @@ func (t tRequests) New(w http.ResponseWriter, r *http.Request, ctr, act string) 
 	return c
 }
 
-// Before calls (github.com/colegion/contrib/controllers/requests).Requests.Before.
+// Before is a method that is started by every handler function at the very beginning
+// of their execution phase no matter what.
 func (t tRequests) Before(c *contr.Requests, w http.ResponseWriter, r *http.Request) http.Handler {
 
-	// Call magic Before action of (github.com/colegion/contrib/controllers/requests).Requests.
-	if res := c.Before(); res != nil {
-		return res
+	// Call magic Before action of (github.com/colegion/contrib/controllers/requests).Before.
+	if h := c.Before(); h != nil {
+		return h
 	}
 
 	return nil
 }
 
-// After is a dump method that always returns nil.
-func (t tRequests) After(c *contr.Requests, w http.ResponseWriter, r *http.Request) http.Handler {
-
-	return nil
-}
-
-// Initially is a method that is started by every handler function at the very beginning
-// of their execution phase.
-func (t tRequests) Initially(c *contr.Requests, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
-
-	return
-
-}
-
-// Finally is a method that is started by every handler function at the very end
+// After is a method that is started by every handler function at the very end
 // of their execution phase no matter what.
-func (t tRequests) Finally(c *contr.Requests, w http.ResponseWriter, r *http.Request, a []string) (finish bool) {
+func (t tRequests) After(c *contr.Requests, w http.ResponseWriter, r *http.Request) (h http.Handler) {
 
 	return
 }
