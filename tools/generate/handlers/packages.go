@@ -9,6 +9,7 @@ import (
 	a "github.com/colegion/goal/internal/action"
 	"github.com/colegion/goal/internal/log"
 	"github.com/colegion/goal/internal/reflect"
+	"github.com/colegion/goal/internal/routes"
 	"github.com/colegion/goal/utils/path"
 )
 
@@ -54,7 +55,9 @@ type controller struct {
 	Comments reflect.Comments // A group of comments right above the controller declaration.
 	File     string           // Name of the file where this controller is located.
 	Parents  parents          // A list of embedded structs that should be parsed.
-	Fields   []field          // A list of fields that require binding.
+
+	Fields []field          // A list of fields that require binding.
+	Routes [][]routes.Route // Routes concatenated with prefixes. len(Routes) = len(Actions)
 }
 
 // Package returns a unique package name that may be used in templates
@@ -89,16 +92,17 @@ func (c controller) IgnoredArgs(f *reflect.Func) (s string) {
 	return
 }
 
-// processPackage gets an import path of a package, processes it, and
+// processPackage gets an import path of a package and its
+// route prefixes, processes this data, and
 // extracts controllers + actions.
-func (ps packages) processPackage(importPath string) {
+func (ps packages) processPackage(importPath string, prefs routes.Prefixes) {
 	log.Trace.Printf(`Parsing "%s"...`, importPath)
 	dir, err := path.ImportToAbsolute(importPath)
 	if err != nil {
 		log.Error.Panic(err)
 	}
 	p := reflect.ParseDir(dir, false)
-	cs := ps.extractControllers(p)
+	cs := ps.extractControllers(p, prefs)
 	if len(cs.data) > 0 {
 		ps[importPath] = controllers{
 			data: cs.data,
@@ -206,7 +210,7 @@ func (ps packages) scanFields(pkg *reflect.Package, i int) (fs []field, prs []pa
 		// Check whether this import has already been processed.
 		// If not, do it now.
 		if _, ok := ps[imp]; imp != "" && !ok {
-			ps.processPackage(p)
+			ps.processPackage(p, routes.ParseTag(pkg.Structs[i].Fields[j].Tag))
 		}
 	}
 	return
@@ -243,7 +247,7 @@ func (ps packages) extractInitFunc(pkg *reflect.Package) *reflect.Func {
 
 // extractControllers gets a reflect.Package type and returns
 // a slice of controllers that are found there.
-func (ps packages) extractControllers(pkg *reflect.Package) controllers {
+func (ps packages) extractControllers(pkg *reflect.Package, prefs routes.Prefixes) controllers {
 	// Initialize function that will be used for detection of actions.
 	action := a.Func(pkg)
 
@@ -260,7 +264,25 @@ func (ps packages) extractControllers(pkg *reflect.Package) controllers {
 		}
 
 		// Check whether there are actions among those methods.
-		as, count := ms.FilterGroups(action, a.Regular, a.After, a.Before)
+		rs := [][]routes.Route{}
+		as, count := ms.FilterGroups(func(f *reflect.Func) bool {
+			// Ignore non-actions.
+			res := action(f)
+			if !res {
+				return false
+			}
+
+			// Skip non-regular actions.
+			if !a.Regular(f) {
+				return true
+			}
+
+			// Parse action's routes.
+			if r := prefs.ParseRoutes(pkg.Structs[i].Name, f); len(r) > 0 {
+				rs = append(rs, r)
+			}
+			return true
+		}, a.Regular, a.After, a.Before)
 
 		// If there are no any, this is not a controller; ignore it.
 		if count == 0 {
@@ -279,7 +301,9 @@ func (ps packages) extractControllers(pkg *reflect.Package) controllers {
 			Comments: pkg.Structs[i].Comments,
 			File:     pkg.Structs[i].File,
 			Parents:  prs,
-			Fields:   fs,
+
+			Fields: fs,
+			Routes: rs,
 		}
 	}
 	return cs

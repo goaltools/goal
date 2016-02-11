@@ -12,7 +12,7 @@ import (
 // Controller is a struct that should be embedded into every controller
 // of your app to make methods provided by middleware controllers available.
 type Controller struct {
-	*subpackage.Controller
+	*subpackage.Controller `@route:"/subpackage"`
 	*denco.Param
 
 	testing.M

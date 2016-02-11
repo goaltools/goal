@@ -15,6 +15,7 @@ func (c *Controller) Before() http.Handler {
 }
 
 // Index is a sample action.
+//@post index
 func (c Controller) Index(page int) http.Handler {
 	return nil
 }
