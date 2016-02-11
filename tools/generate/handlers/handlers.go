@@ -10,6 +10,7 @@ import (
 	"github.com/colegion/goal/internal/action"
 	"github.com/colegion/goal/internal/generation"
 	"github.com/colegion/goal/internal/log"
+	"github.com/colegion/goal/internal/routes"
 	"github.com/colegion/goal/utils/path"
 )
 
@@ -41,7 +42,7 @@ func start() {
 		log.Error.Panic(err)
 	}
 	log.Trace.Printf(`Processing "%s" package...`, absImport)
-	ps.processPackage(absImport)
+	ps.processPackage(absImport, routes.Prefixes{}) // Use empty prefixes for routes.
 
 	// Start generation of handler packages.
 	tpl, err := path.ImportToAbsolute("github.com/colegion/goal/tools/generate/handlers/handlers.go.template")

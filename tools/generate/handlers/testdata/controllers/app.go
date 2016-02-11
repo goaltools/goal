@@ -31,6 +31,9 @@ func (c NotController1) test() {
 }
 
 // HelloWorld is a sample action.
+//@get
+// Below is an unsupported method.
+//@someMethodThatDoesntExist /hello/world
 func (c App) HelloWorld(page int) (http.Handler, bool, error) {
 	return nil, false, nil
 }
@@ -41,6 +44,8 @@ func (c *Controller) Initially(w http.ResponseWriter, r *http.Request, a []strin
 }
 
 // Finally is a magic method that is executed after every request.
+// The route below must be ignored as this is a special kind of action.
+//@delete /finally
 func (c *Controller) Finally(w http.ResponseWriter, r *http.Request, a []string) bool {
 	return false
 }

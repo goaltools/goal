@@ -7,11 +7,17 @@ import (
 
 	"github.com/colegion/goal/internal/log"
 	"github.com/colegion/goal/internal/reflect"
+	"github.com/colegion/goal/internal/routes"
 )
 
 func TestProcessPackage(t *testing.T) {
 	psR := packages{}
-	psR.processPackage("github.com/colegion/goal/tools/generate/handlers/testdata/controllers")
+	psR.processPackage("github.com/colegion/goal/tools/generate/handlers/testdata/controllers", routes.Prefixes{
+		{
+			Method:  "ROUTE",
+			Pattern: "",
+		},
+	})
 	assertDeepEqualPkgs(ps, psR)
 }
 
@@ -80,6 +86,19 @@ func assertDeepEqualController(c1, c2 *controller) {
 	if !r.DeepEqual(c1.Fields, c2.Fields) {
 		log.Error.Panicf(`Fields %v and %v are not equal.`, c1.Fields, c2.Fields)
 	}
+	log.Trace.Println("Routes...")
+	assertDeepEqualRoutes(c1.Routes, c2.Routes)
+}
+
+func assertDeepEqualRoutes(r1, r2 [][]routes.Route) {
+	if len(r1) != len(r2) {
+		log.Error.Panicf(`Routes %v and %v are of different lengths: %d != %d.`, r1, r2, len(r1), len(r2))
+	}
+	for i := range r1 {
+		if !r.DeepEqual(r1[i], r2[i]) {
+			log.Error.Panicf(`Routes of %dth action are different: %v and %v.`, i, r1, r2)
+		}
+	}
 }
 
 func assertDeepEqualControllers(cs1, cs2 controllers) {
@@ -117,9 +136,12 @@ var ps = packages{
 			"App": {
 				Actions: []reflect.Func{
 					{
-						Comments: []string{"// HelloWorld is a sample action."},
-						File:     "app.go",
-						Name:     "HelloWorld",
+						Comments: []string{
+							"// HelloWorld is a sample action.", "//@get",
+							"// Below is an unsupported method.", "//@someMethodThatDoesntExist /hello/world",
+						},
+						File: "app.go",
+						Name: "HelloWorld",
 						Params: []reflect.Arg{
 							{
 								Name: "page",
@@ -183,6 +205,11 @@ var ps = packages{
 					},
 				},
 
+				Routes: [][]routes.Route{
+					{
+						{Method: "GET", Pattern: "App/HelloWorld"},
+					},
+				},
 				Comments: []string{
 					"// App is a sample controller.",
 				},
@@ -312,7 +339,7 @@ var ps = packages{
 			"Controller": {
 				Actions: []reflect.Func{
 					{
-						Comments: []string{"// Index is a sample action."},
+						Comments: []string{"// Index is a sample action.", "//@post index"},
 						File:     "app.go",
 						Name:     "Index",
 						Params: []reflect.Arg{
@@ -386,6 +413,11 @@ var ps = packages{
 					},
 				},
 
+				Routes: [][]routes.Route{
+					{
+						{Method: "POST", Pattern: "/subpackage/index"},
+					},
+				},
 				Comments: []string{
 					"// Controller is some controller.",
 				},
