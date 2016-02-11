@@ -23,7 +23,7 @@ func TestParseRoutes(t *testing.T) {
 			Pattern: "/method/post",
 		},
 	}
-	res := ps.ParseRoutes(&r.Func{
+	res := ps.ParseRoutes("Default", &r.Func{
 		Comments: []string{
 			"// Index is a simple action.",
 			"// It automatically bind your action //@post nothing.",
@@ -34,6 +34,7 @@ func TestParseRoutes(t *testing.T) {
 			"//@xxx /hey",
 			"//Some stuff is here...",
 		},
+		Name: "Index",
 	})
 	exp := []Route{
 		{
@@ -42,13 +43,11 @@ func TestParseRoutes(t *testing.T) {
 		},
 		{
 			Method:  "GET",
-			Pattern: "/",
-			Default: true,
+			Pattern: "/Default/Index",
 		},
 		{
 			Method:  "GET",
-			Pattern: "method/get",
-			Default: true,
+			Pattern: "method/get/Default/Index",
 		},
 		{
 			Method:  "POST",
