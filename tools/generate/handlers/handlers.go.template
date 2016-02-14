@@ -21,31 +21,7 @@ var <@.ctx.name> t<@.ctx.name>
 <@if not .ctx.num>
 	// context stores names of all controllers and packages of the app.
 	var context = url.Values{}
-
-	// Routes is a list of handler functions and associated routes that
-	// were extracted from comments of controllers and struct tags.
-	var Routes = []struct{
-		Method, Pattern string
-		Handler         http.HandlerFunc
-	}{}
 <@end>
-
-// <@.ctx.name>Routes returns routes of the <@.ctx.name> controller.
-func <@.ctx.name>Routes() []struct{
-	Method, Pattern string
-	Handler         http.HandlerFunc
-} {
-	return []struct{
-			Method, Pattern string
-			Handler         http.HandlerFunc
-	}{<@range $i, $v := .ctx.controller.Routes><@range $j, $sv := $v>
-		{
-			Method: "<@$sv.Method>",
-			Pattern: "<@$sv.Pattern>",
-			Handler: <@$sv.HandlerName>,
-		},<@end><@end>
-	}
-}
 
 // t<@.ctx.name> is a type with handler methods of <@.ctx.name> controller.
 type t<@.ctx.name> struct {
@@ -139,28 +115,44 @@ func (t t<@.ctx.name>) <@.ctx.after>(c *contr.<@.ctx.name>, w http.ResponseWrite
 <@end>
 
 <@if not .ctx.num>
-	// Init is used to initialize controllers of "<@.ctx.import>"
-	// and its parents.
-	func Init() {
+	// Init initializes controllers of "<@.ctx.import>",
+	// its parents, and returns a list of routes along
+	// with handler functions associated with them.
+	func Init() (routes []struct{
+		Method, Pattern string
+		Handler         http.HandlerFunc
+	}){
 		<@range $name, $v := .ctx.controllers>
-			init<@$name>()
+			routes = append(routes, init<@$name>()...)
 		<@end>
 		<@if .ctx.initFunc>
 			contr.Init(context)
 		<@end>
+		return
 	}
 <@end>
 
-func init<@.ctx.name>() {<@range $i, $v := .ctx.parents><@if $v.Import>
-			<@$v.Package ".">Init()
+func init<@.ctx.name>() (rs []struct{
+		Method, Pattern string
+		Handler         http.HandlerFunc
+	}){<@range $i, $v := .ctx.parents><@if $v.Import>
+		rs = append(rs, <@$v.Package ".">Init()...)
 	<@end><@end><@range $i, $f := .ctx.controller.Actions>
 		context.Add("<@$.ctx.name>", "<@$f.Name>")
-	<@end>
+	<@end><@if .ctx.controller.Routes>rs = append(rs, []struct{
+		Method, Pattern string
+		Handler         http.HandlerFunc
+	}{<@range $i, $v := .ctx.controller.Routes><@range $j, $sv := $v>
+		{
+			Method: "<@$sv.Method>",
+			Pattern: "<@$sv.Pattern>",
+			Handler: <@$sv.HandlerName>,
+		},
+	<@end><@end>}...)<@end>
+	return
 }
 
 func init() {
-	Routes = append(Routes, <@.ctx.name>Routes()...)<@range $i, $v := .ctx.parents>
-	Routes = append(Routes, <@$v.Package "."><@$v.Name>Routes()...)<@end>
 	_ = strconv.MeaningOfLife
 }
 
