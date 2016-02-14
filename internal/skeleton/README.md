@@ -1,7 +1,7 @@
 ## github.com/colegion/goal/internal/skeleton
 
 ### Install and run
-After installation and start the app will available on [localhost:8080](http://localhost:8080/).
+After installation and start, the app will be available on [localhost:9000](http://localhost:9000/).
 
 #### Quick start for evaluation
 ```bash
