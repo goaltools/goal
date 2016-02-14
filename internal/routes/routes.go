@@ -23,6 +23,13 @@ var methods = map[string]bool{
 // of a controller.
 type Prefixes []Route
 
+// NewPrefixes allocates and returns a new Prefixes object.
+func NewPrefixes() Prefixes {
+	return Prefixes{
+		{Method: wildcardRoute},
+	}
+}
+
 // Route represents a single route, i.e.
 // pattern and an associated method.
 type Route struct {
@@ -43,7 +50,7 @@ func (ps Prefixes) ParseRoutes(controller string, f *r.Func) (rs []Route) {
 
 		// If no pattern specified, use controller's and action's names.
 		if d {
-			p = path.Join(controller, f.Name)
+			p = path.Join("/", controller, f.Name)
 		}
 
 		// Concatenate route with every of the prefix
@@ -55,11 +62,15 @@ func (ps Prefixes) ParseRoutes(controller string, f *r.Func) (rs []Route) {
 			}
 
 			// Concatenate all other prefixes and add to the list.
-			rs = append(rs, Route{
+			r := Route{
 				Method:      m,
 				Pattern:     path.Join(ps[j].Pattern, p),
 				HandlerName: controller + "." + f.Name,
-			})
+			}
+			log.Trace.Printf(
+				`Detected route "%s" "%s" "%s"`, r.Method, r.Pattern, r.HandlerName,
+			)
+			rs = append(rs, r)
 		}
 	}
 	return
