@@ -175,3 +175,10 @@ func TestParseComment(t *testing.T) {
 		}
 	}
 }
+
+func TestNewPrefixes(t *testing.T) {
+	ps := NewPrefixes()
+	if len(ps) != 1 || ps[0].Method != wildcardRoute {
+		t.Fail()
+	}
+}
