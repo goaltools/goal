@@ -207,7 +207,7 @@ var ps = packages{
 
 				Routes: [][]routes.Route{
 					{
-						{Method: "GET", Pattern: "App/HelloWorld", HandlerName: "App.HelloWorld"},
+						{Method: "GET", Pattern: "/App/HelloWorld", HandlerName: "App.HelloWorld"},
 					},
 				},
 				Comments: []string{
