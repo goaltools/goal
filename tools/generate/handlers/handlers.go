@@ -42,7 +42,7 @@ func start() {
 		log.Error.Panic(err)
 	}
 	log.Trace.Printf(`Processing "%s" package...`, absImport)
-	ps.processPackage(absImport, routes.Prefixes{}) // Use empty prefixes for routes.
+	ps.processPackage(absImport, routes.NewPrefixes())
 
 	// Start generation of handler packages.
 	tpl, err := path.ImportToAbsolute("github.com/colegion/goal/tools/generate/handlers/handlers.go.template")
