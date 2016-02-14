@@ -13,7 +13,7 @@ import (
 	"github.com/goaltools/iniflag"
 )
 
-var addr = flag.String("http.addr", ":8080", "HTTP address the app must listen on")
+var addr = flag.String("http.addr", ":9000", "HTTP address the app must listen on")
 
 // main parses configuration files making the values available
 // to flags of the app, builds a handler using routes and handlers
