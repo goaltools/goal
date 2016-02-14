@@ -18,6 +18,7 @@ func (c *App) Before() http.Handler {
 }
 
 // Index is an action that renders a home page.
+//@get /
 func (c *App) Index() http.Handler {
 	return c.Render()
 }
