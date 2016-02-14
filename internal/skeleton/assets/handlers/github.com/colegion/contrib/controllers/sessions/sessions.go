@@ -65,18 +65,26 @@ func (t tSessions) After(c *contr.Sessions, w http.ResponseWriter, r *http.Reque
 	return
 }
 
-// Init is used to initialize controllers of "github.com/colegion/contrib/controllers/sessions"
-// and its parents.
-func Init() {
+// Init initializes controllers of "github.com/colegion/contrib/controllers/sessions",
+// its parents, and returns a list of routes along
+// with handler functions associated with them.
+func Init() (routes []struct {
+	Method, Pattern string
+	Handler         http.HandlerFunc
+}) {
 
-	initSessions()
+	routes = append(routes, initSessions()...)
 
 	contr.Init(context)
 
+	return
 }
 
-func initSessions() {
-
+func initSessions() (rs []struct {
+	Method, Pattern string
+	Handler         http.HandlerFunc
+}) {
+	return
 }
 
 func init() {

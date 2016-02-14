@@ -145,24 +145,32 @@ func (t tTemplates) Redirect(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Init is used to initialize controllers of "github.com/colegion/contrib/controllers/templates"
-// and its parents.
-func Init() {
+// Init initializes controllers of "github.com/colegion/contrib/controllers/templates",
+// its parents, and returns a list of routes along
+// with handler functions associated with them.
+func Init() (routes []struct {
+	Method, Pattern string
+	Handler         http.HandlerFunc
+}) {
 
-	initTemplates()
+	routes = append(routes, initTemplates()...)
 
 	contr.Init(context)
 
+	return
 }
 
-func initTemplates() {
-
+func initTemplates() (rs []struct {
+	Method, Pattern string
+	Handler         http.HandlerFunc
+}) {
 	context.Add("Templates", "RenderTemplate")
 
 	context.Add("Templates", "Render")
 
 	context.Add("Templates", "Redirect")
 
+	return
 }
 
 func init() {
