@@ -7,6 +7,7 @@ import (
 
 	c0 "github.com/colegion/goal/internal/skeleton/assets/handlers/github.com/colegion/contrib/controllers/requests"
 	c2 "github.com/colegion/goal/internal/skeleton/assets/handlers/github.com/colegion/contrib/controllers/sessions"
+	c3 "github.com/colegion/goal/internal/skeleton/assets/handlers/github.com/colegion/contrib/controllers/static"
 	c1 "github.com/colegion/goal/internal/skeleton/assets/handlers/github.com/colegion/contrib/controllers/templates"
 	contr "github.com/colegion/goal/internal/skeleton/controllers"
 
@@ -32,6 +33,7 @@ func (t tControllers) New(w http.ResponseWriter, r *http.Request, ctr, act strin
 	c.Requests = c0.Requests.New(w, r, ctr, act)
 	c.Templates = c1.Templates.New(w, r, ctr, act)
 	c.Sessions = c2.Sessions.New(w, r, ctr, act)
+	c.Static = c3.Static.New(w, r, ctr, act)
 	return c
 }
 
@@ -48,6 +50,10 @@ func (t tControllers) Before(c *contr.Controllers, w http.ResponseWriter, r *htt
 	}
 
 	if h := c2.Sessions.Before(c.Sessions, w, r); h != nil {
+		return h
+	}
+
+	if h := c3.Static.Before(c.Static, w, r); h != nil {
 		return h
 	}
 
@@ -77,17 +83,26 @@ func (t tControllers) After(c *contr.Controllers, w http.ResponseWriter, r *http
 		return h
 	}
 
+	if h = c3.Static.After(c.Static, w, r); h != nil {
+		return h
+	}
+
 	return
 }
 
-func initControllers() {
+func initControllers() (rs []struct {
+	Method, Pattern string
+	Handler         http.HandlerFunc
+}) {
+	rs = append(rs, c0.Init()...)
 
-	c0.Init()
+	rs = append(rs, c1.Init()...)
 
-	c1.Init()
+	rs = append(rs, c2.Init()...)
 
-	c2.Init()
+	rs = append(rs, c3.Init()...)
 
+	return
 }
 
 func init() {

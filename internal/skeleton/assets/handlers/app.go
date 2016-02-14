@@ -4,6 +4,7 @@ package handlers
 
 import (
 	"net/http"
+	"net/url"
 
 	contr "github.com/colegion/goal/internal/skeleton/controllers"
 
@@ -16,6 +17,9 @@ import (
 //
 // App is a sample controller.
 var App tApp
+
+// context stores names of all controllers and packages of the app.
+var context = url.Values{}
 
 // tApp is a type with handler methods of App controller.
 type tApp struct {
@@ -64,6 +68,7 @@ func (t tApp) After(c *contr.App, w http.ResponseWriter, r *http.Request) (h htt
 // in appropriate order.
 //
 // Index is an action that renders a home page.
+//@get /
 func (t tApp) Index(w http.ResponseWriter, r *http.Request) {
 	var h http.Handler
 	c := App.New(w, r, "App", "Index")
@@ -83,10 +88,37 @@ func (t tApp) Index(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func initApp() {
+// Init initializes controllers of "github.com/colegion/goal/internal/skeleton/controllers",
+// its parents, and returns a list of routes along
+// with handler functions associated with them.
+func Init() (routes []struct {
+	Method, Pattern string
+	Handler         http.HandlerFunc
+}) {
 
+	routes = append(routes, initApp()...)
+
+	routes = append(routes, initControllers()...)
+
+	return
+}
+
+func initApp() (rs []struct {
+	Method, Pattern string
+	Handler         http.HandlerFunc
+}) {
 	context.Add("App", "Index")
-
+	rs = append(rs, []struct {
+		Method, Pattern string
+		Handler         http.HandlerFunc
+	}{
+		{
+			Method:  "GET",
+			Pattern: "/",
+			Handler: App.Index,
+		},
+	}...)
+	return
 }
 
 func init() {

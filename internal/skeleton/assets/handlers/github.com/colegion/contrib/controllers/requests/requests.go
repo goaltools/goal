@@ -56,16 +56,24 @@ func (t tRequests) After(c *contr.Requests, w http.ResponseWriter, r *http.Reque
 	return
 }
 
-// Init is used to initialize controllers of "github.com/colegion/contrib/controllers/requests"
-// and its parents.
-func Init() {
+// Init initializes controllers of "github.com/colegion/contrib/controllers/requests",
+// its parents, and returns a list of routes along
+// with handler functions associated with them.
+func Init() (routes []struct {
+	Method, Pattern string
+	Handler         http.HandlerFunc
+}) {
 
-	initRequests()
+	routes = append(routes, initRequests()...)
 
+	return
 }
 
-func initRequests() {
-
+func initRequests() (rs []struct {
+	Method, Pattern string
+	Handler         http.HandlerFunc
+}) {
+	return
 }
 
 func init() {
