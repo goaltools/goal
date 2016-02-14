@@ -5,6 +5,7 @@ import (
 
 	"github.com/colegion/contrib/controllers/requests"
 	"github.com/colegion/contrib/controllers/sessions"
+	"github.com/colegion/contrib/controllers/static"
 	"github.com/colegion/contrib/controllers/templates"
 )
 
@@ -14,6 +15,7 @@ type Controllers struct {
 	*requests.Requests
 	*templates.Templates
 	*sessions.Sessions
+	*static.Static `@get:"/"`
 }
 
 // Before is a magic action that is executed on every request
