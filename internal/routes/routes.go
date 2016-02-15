@@ -22,6 +22,9 @@ var (
 	realMethodsList = []string{
 		"GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "OPTIONS", "CONNECT", "PATCH",
 	}
+	routePartsSep = map[byte]bool{
+		' ': true, '\t': true,
+	}
 )
 
 // Prefixes stores information about route prefixes
@@ -38,7 +41,7 @@ func NewPrefixes() Prefixes {
 // Route represents a single route, i.e.
 // pattern and an associated method.
 type Route struct {
-	Pattern, Method, HandlerName string
+	Pattern, Method, HandlerName, Label string
 }
 
 // ParseRoutes gets a controller name and an action function and returns all the
@@ -48,13 +51,13 @@ type Route struct {
 func (ps Prefixes) ParseRoutes(controller string, f *r.Func) (rs []Route) {
 	for i := range f.Comments {
 		// Skip comments that do not contain routes.
-		m, p, d, ok := parseComment(f.Comments[i])
+		m, p, l, ok := parseComment(f.Comments[i])
 		if !ok {
 			continue
 		}
 
 		// If no pattern specified, use controller's and action's names.
-		if d {
+		if p == "" {
 			p = path.Join("/", controller, f.Name)
 		}
 
@@ -73,9 +76,10 @@ func (ps Prefixes) ParseRoutes(controller string, f *r.Func) (rs []Route) {
 					Method:      ms[k],
 					Pattern:     path.Join(ps[j].Pattern, p),
 					HandlerName: controller + "." + f.Name,
+					Label:       l,
 				}
 				log.Trace.Printf(
-					`Detected route "%s" "%s" "%s"`, r.Method, r.Pattern, r.HandlerName,
+					`Detected route "%s" "%s" "%s" ("%s")`, r.Method, r.Pattern, r.HandlerName, r.Label,
 				)
 				rs = append(rs, r)
 			}
@@ -116,8 +120,8 @@ func ParseTag(t string) (ps Prefixes) {
 
 // parseComment gets a line comment, parses it, and returns
 // route method, pattern, and true.
-// If comment doesn't contain a route, "", "", false will be returned.
-func parseComment(c string) (method, pattern string, def, ok bool) {
+// If comment doesn't contain a route, "", "", "", false, false will be returned.
+func parseComment(c string) (method, pattern, label string, ok bool) {
 	// Route comments must start with "//@".
 	if !strings.HasPrefix(c, "//@") {
 		return
@@ -125,7 +129,7 @@ func parseComment(c string) (method, pattern string, def, ok bool) {
 
 	// Make sure the comment contains a correct method.
 	// NB: They must be lowecased.
-	cs := strings.SplitN(c[3:], " ", 2)
+	cs := splitN(c[3:], 3)
 	if _, ok = supportedMethods[cs[0]]; !ok {
 		log.Warn.Printf(
 			`Comment "%s contains incorrect method "%s". Supported ones are %v.`,
@@ -136,13 +140,43 @@ func parseComment(c string) (method, pattern string, def, ok bool) {
 	method = strings.ToUpper(cs[0]) // Result will be uppercased.
 	ok = true
 
-	// Check whether pattern is empty.
-	if len(cs) <= 1 || strings.TrimSpace(cs[1]) == "" {
-		def = true
-		return
-	}
-	pattern = strings.TrimSpace(cs[1])
+	// Set pattern and label of the route.
+	pattern = cs[1]
+	label = cs[2]
 	return
+}
+
+// splitN gets a string and splits it into multiple groups.
+func splitN(s string, n int) []string {
+	res := make([]string, n)
+	sep := true
+	j := -1
+
+	// Iterate over characters of the input string.
+	for i := 0; i < len(s); i++ {
+		// If the current character is a separator,
+		// mark it and ignore.
+		if routePartsSep[s[i]] {
+			sep = true
+			continue
+		}
+
+		// Current character is not a separator.
+		// If the previous one was a separator, increment elements index.
+		if sep {
+			sep = false
+			j++
+		}
+
+		// Check whether the limit of results has been reached.
+		if j >= len(res) {
+			break
+		}
+
+		// Add the current symbol to the result.
+		res[j] += string(s[i])
+	}
+	return res
 }
 
 // keys returns keys of the map[string]bool as a slice.

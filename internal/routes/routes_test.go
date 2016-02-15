@@ -2,6 +2,7 @@ package routes
 
 import (
 	"fmt"
+	"reflect"
 	"sort"
 	"testing"
 
@@ -163,8 +164,8 @@ func (p byMethodAndPattern) Less(i, j int) bool {
 
 func TestParseComment(t *testing.T) {
 	for _, v := range []struct {
-		comment, method, pattern string
-		def, ok                  bool
+		comment, method, pattern, label string
+		ok                              bool
 	}{
 		{
 			comment: "// @route",
@@ -181,7 +182,6 @@ func TestParseComment(t *testing.T) {
 		{
 			comment: "//@get",
 			method:  "GET",
-			def:     true,
 			ok:      true,
 		},
 		{
@@ -197,12 +197,12 @@ func TestParseComment(t *testing.T) {
 			ok:      true,
 		},
 	} {
-		if m, p, d, ok := parseComment(v.comment); m != v.method || p != v.pattern || ok != v.ok {
+		if m, p, l, ok := parseComment(v.comment); m != v.method || p != v.pattern || ok != v.ok {
 			t.Errorf(
-				`"%s": Expected "%v", "%v" method "%s" "%s", got "%v", "%v" method "%s" "%s".`,
+				`"%s": Expected "%v" method "%s" "%s" ("%s"), got "%v" method "%s" "%s" ("%s").`,
 				v.comment,
-				v.ok, v.def, v.method, v.pattern,
-				ok, d, m, p,
+				v.ok, v.method, v.pattern, v.label,
+				ok, m, p, l,
 			)
 		}
 	}
@@ -212,5 +212,24 @@ func TestNewPrefixes(t *testing.T) {
 	ps := NewPrefixes()
 	if len(ps) != 1 || ps[0].Method != wildcardRoute {
 		t.Fail()
+	}
+}
+
+func TestSplitN(t *testing.T) {
+	for _, v := range []struct {
+		s   string
+		n   int
+		exp []string
+	}{
+		{"", 0, []string{}},
+		{"", 1, []string{""}},
+		{"one two", 1, []string{"one"}},
+		{"  one   \t  two    \t  ", 2, []string{"one", "two"}},
+		{"one   \t  two    \t  three", 2, []string{"one", "two"}},
+		{"     one     ", 5, []string{"one", "", "", "", ""}},
+	} {
+		if res := splitN(v.s, v.n); !reflect.DeepEqual(res, v.exp) {
+			t.Errorf(`"%s" (%d): Expected %#v, got %#v.`, v.s, v.n, v.exp, res)
+		}
 	}
 }

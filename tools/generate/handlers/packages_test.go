@@ -339,7 +339,7 @@ var ps = packages{
 			"Controller": {
 				Actions: []reflect.Func{
 					{
-						Comments: []string{"// Index is a sample action.", "//@post index"},
+						Comments: []string{"// Index is a sample action.", "//@post index someindexlabel"},
 						File:     "app.go",
 						Name:     "Index",
 						Params: []reflect.Arg{
@@ -415,7 +415,12 @@ var ps = packages{
 
 				Routes: [][]routes.Route{
 					{
-						{Method: "POST", Pattern: "/subpackage/index", HandlerName: "Controller.Index"},
+						{
+							Method:      "POST",
+							Pattern:     "/subpackage/index",
+							Label:       "someindexlabel",
+							HandlerName: "Controller.Index",
+						},
 					},
 				},
 				Comments: []string{

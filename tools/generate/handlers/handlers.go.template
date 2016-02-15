@@ -119,8 +119,8 @@ func (t t<@.ctx.name>) <@.ctx.after>(c *contr.<@.ctx.name>, w http.ResponseWrite
 	// its parents, and returns a list of routes along
 	// with handler functions associated with them.
 	func Init() (routes []struct{
-		Method, Pattern string
-		Handler         http.HandlerFunc
+		Method, Pattern, Label string
+		Handler                http.HandlerFunc
 	}){
 		<@range $name, $v := .ctx.controllers>
 			routes = append(routes, init<@$name>()...)
@@ -133,19 +133,20 @@ func (t t<@.ctx.name>) <@.ctx.after>(c *contr.<@.ctx.name>, w http.ResponseWrite
 <@end>
 
 func init<@.ctx.name>() (rs []struct{
-		Method, Pattern string
-		Handler         http.HandlerFunc
+		Method, Pattern, Label string
+		Handler                http.HandlerFunc
 	}){<@range $i, $v := .ctx.parents><@if $v.Import>
 		rs = append(rs, <@$v.Package ".">Init()...)
 	<@end><@end><@range $i, $f := .ctx.controller.Actions>
 		context.Add("<@$.ctx.name>", "<@$f.Name>")
 	<@end><@if .ctx.controller.Routes>rs = append(rs, []struct{
-		Method, Pattern string
-		Handler         http.HandlerFunc
+		Method, Pattern, Label string
+		Handler                http.HandlerFunc
 	}{<@range $i, $v := .ctx.controller.Routes><@range $j, $sv := $v>
 		{
-			Method: "<@$sv.Method>",
+			Method:  "<@$sv.Method>",
 			Pattern: "<@$sv.Pattern>",
+			Label:   "<@$sv.Label>",
 			Handler: <@$sv.HandlerName>,
 		},
 	<@end><@end>}...)<@end>
