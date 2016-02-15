@@ -37,10 +37,42 @@ func TestParseRoutes(t *testing.T) {
 		Name: "Index",
 	})
 	exp := []Route{
-		{
-			Method:  wildcardRoute,
+		{ // Begin of method wildcardRoute.
+			Method:  "GET",
 			Pattern: "/stuff",
 		},
+		{
+			Method:  "HEAD",
+			Pattern: "/stuff",
+		},
+		{
+			Method:  "POST",
+			Pattern: "/stuff",
+		},
+		{
+			Method:  "PUT",
+			Pattern: "/stuff",
+		},
+		{
+			Method:  "DELETE",
+			Pattern: "/stuff",
+		},
+		{
+			Method:  "TRACE",
+			Pattern: "/stuff",
+		},
+		{
+			Method:  "OPTIONS",
+			Pattern: "/stuff",
+		},
+		{
+			Method:  "CONNECT",
+			Pattern: "/stuff",
+		},
+		{
+			Method:  "PATCH",
+			Pattern: "/stuff",
+		}, // End of method wildcardRoute.
 		{
 			Method:  "GET",
 			Pattern: "/Default/Index",

@@ -13,11 +13,16 @@ import (
 
 const wildcardRoute = "ROUTE"
 
-var methods = map[string]bool{
-	"get": true, "head": true, "post": true, "put": true, "delete": true,
-	"trace": true, "options": true, "connect": true, "patch": true,
-	strings.ToLower(wildcardRoute): true,
-}
+var (
+	supportedMethods = map[string]bool{
+		"get": true, "head": true, "post": true, "put": true, "delete": true,
+		"trace": true, "options": true, "connect": true, "patch": true,
+		strings.ToLower(wildcardRoute): true,
+	}
+	realMethodsList = []string{
+		"GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "OPTIONS", "CONNECT", "PATCH",
+	}
+)
 
 // Prefixes stores information about route prefixes
 // of a controller.
@@ -53,27 +58,39 @@ func (ps Prefixes) ParseRoutes(controller string, f *r.Func) (rs []Route) {
 			p = path.Join("/", controller, f.Name)
 		}
 
-		// Concatenate route with every of the prefix
+		// Concatenate route with every of the prefixes
 		// if their methods match.
 		for j := range ps {
-			// Ignore prefixes which's methods do not match and are not wildcard.
+			// Ignore prefixes which's methods do not match and they are not wildcard.
 			if ps[j].Method != m && ps[j].Method != wildcardRoute {
 				continue
 			}
 
 			// Concatenate all other prefixes and add to the list.
-			r := Route{
-				Method:      m,
-				Pattern:     path.Join(ps[j].Pattern, p),
-				HandlerName: controller + "." + f.Name,
+			ms := realMethods(m)
+			for k := range ms {
+				r := Route{
+					Method:      ms[k],
+					Pattern:     path.Join(ps[j].Pattern, p),
+					HandlerName: controller + "." + f.Name,
+				}
+				log.Trace.Printf(
+					`Detected route "%s" "%s" "%s"`, r.Method, r.Pattern, r.HandlerName,
+				)
+				rs = append(rs, r)
 			}
-			log.Trace.Printf(
-				`Detected route "%s" "%s" "%s"`, r.Method, r.Pattern, r.HandlerName,
-			)
-			rs = append(rs, r)
 		}
 	}
 	return
+}
+
+// realMethods gets an HTTP method and returns it as is if the method is real.
+// If it is a wildcard pseudo method, all available methods are returned.
+func realMethods(m string) []string {
+	if m == wildcardRoute {
+		return realMethodsList
+	}
+	return []string{m}
 }
 
 // ParseTag gets a tag string and extracts route prefixes out of it.
@@ -81,7 +98,7 @@ func (ps Prefixes) ParseRoutes(controller string, f *r.Func) (rs []Route) {
 func ParseTag(t string) (ps Prefixes) {
 	// Parse prefix for every of the methods.
 	st := reflect.StructTag(t)
-	for m := range methods {
+	for m := range supportedMethods {
 		// Make sure the prefix is presented.
 		v := st.Get("@" + m)
 		if v == "" {
@@ -109,10 +126,10 @@ func parseComment(c string) (method, pattern string, def, ok bool) {
 	// Make sure the comment contains a correct method.
 	// NB: They must be lowecased.
 	cs := strings.SplitN(c[3:], " ", 2)
-	if _, ok = methods[cs[0]]; !ok {
+	if _, ok = supportedMethods[cs[0]]; !ok {
 		log.Warn.Printf(
 			`Comment "%s contains incorrect method "%s". Supported ones are %v.`,
-			c, cs[0], keys(methods),
+			c, cs[0], keys(supportedMethods),
 		)
 		return
 	}
