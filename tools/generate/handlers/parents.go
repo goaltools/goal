@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"fmt"
+
+	"github.com/colegion/goal/internal/reflect"
 )
 
 // parents represents a set of relative controllers.
@@ -49,7 +51,8 @@ func (p parent) Package(impPath string, suffixes ...string) string {
 // The result is in the order the controllers must be initialized
 // and their special actions must be called.
 // I.e. grandparents first, then parents, then children.
-func (ps parents) All(pkgs packages) (cs controllers) {
+// First result is a list of controllers, the second one their init functions.
+func (ps parents) All(pkgs packages) (cs []*controller, ifs []*reflect.Func) {
 	for i := range ps.list {
 		// Make sure current parent is a controller rather than
 		// some embedded struct.
@@ -61,6 +64,15 @@ func (ps parents) All(pkgs packages) (cs controllers) {
 		if c == nil {
 			continue // This parent is from a package with controllers but not a controller, skip it.
 		}
+
+		// Add parents' parents and their "Init" functions to the
+		// top of results ("grandparents first" rule).
+		pcs, pifs := c.Parents.All(pkgs)
+		cs = append(pcs, cs...)
+		ifs = append(pifs, pkg.init) // Only one "Init" function per package is possible.
+
+		// Add current controller to the bottom.
+		cs = append(cs, c)
 	}
 	return
 }
