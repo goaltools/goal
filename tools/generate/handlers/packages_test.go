@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"path/filepath"
 	r "reflect"
 	"testing"
 
@@ -21,53 +20,6 @@ func TestProcessPackage(t *testing.T) {
 	assertDeepEqualPkgs(ps, psR)
 }
 
-func TestControllerIgnoredArgs(t *testing.T) {
-	c := controller{}
-	a := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"].data["App"].Actions[0]
-	exp := ", _, _"
-	if r := c.IgnoredArgs(&a); r != exp {
-		t.Errorf(`Incorrect IgnoreArgs result. Expected "%s", got "%s".`, exp, r)
-	}
-}
-
-func assertDeepEqualController(c1, c2 *controller) {
-	if c1 == nil || c2 == nil {
-		if c1 != c2 {
-			log.Error.Panicf(
-				"One of the controllers is equal to nil while another is not: %#v != %#v.", c1, c2,
-			)
-		}
-		return
-	}
-	if filepath.Base(c1.File) != filepath.Base(c2.File) {
-		log.Error.Panicf("Controllers are from different files: %s != %s.", c1.File, c2.File)
-	}
-	if !r.DeepEqual(c1.Comments, c2.Comments) {
-		log.Error.Panicf("Controllers have different comments: %#v != %#v.", c1.Comments, c2.Comments)
-	}
-	if !r.DeepEqual(c1.Parents, c2.Parents) {
-		log.Error.Panicf("Controllers have different parent controllers: %#v != %#v.", c1.Parents, c2.Parents)
-	}
-	log.Trace.Println("Actions...")
-	if err := reflect.AssertEqualFuncs(c1.Actions, c2.Actions); err != nil {
-		log.Error.Panic(err)
-	}
-	log.Trace.Println("Before...")
-	if err := reflect.AssertEqualFunc(c1.Before, c2.Before); err != nil {
-		log.Error.Panic(err)
-	}
-	log.Trace.Println("After...")
-	if err := reflect.AssertEqualFunc(c1.After, c2.After); err != nil {
-		log.Error.Panic(err)
-	}
-	log.Trace.Println("Fields...")
-	if !r.DeepEqual(c1.Fields, c2.Fields) {
-		log.Error.Panicf(`Fields %v and %v are not equal.`, c1.Fields, c2.Fields)
-	}
-	log.Trace.Println("Routes...")
-	assertDeepEqualRoutes(c1.Routes, c2.Routes)
-}
-
 func assertDeepEqualRoutes(r1, r2 [][]routes.Route) {
 	if len(r1) != len(r2) {
 		log.Error.Panicf(`Routes %v and %v are of different lengths: %d != %d.`, r1, r2, len(r1), len(r2))
@@ -76,23 +28,6 @@ func assertDeepEqualRoutes(r1, r2 [][]routes.Route) {
 		if !r.DeepEqual(r1[i], r2[i]) {
 			log.Error.Panicf(`Routes of %dth action are different: %v and %v.`, i, r1, r2)
 		}
-	}
-}
-
-func assertDeepEqualControllers(cs1, cs2 controllers) {
-	if len(cs1.data) != len(cs2.data) {
-		log.Error.Panicf(
-			"controllers maps %#v and %#v have different length: %d != %d",
-			cs1.data, cs2.data, len(cs1.data), len(cs2.data),
-		)
-	}
-	if err := reflect.AssertEqualFunc(cs1.init, cs2.init); err != nil {
-		log.Error.Panic(err)
-	}
-	for k := range cs1.data {
-		c1 := cs1.data[k]
-		c2 := cs2.data[k]
-		assertDeepEqualController(&c1, &c2)
 	}
 }
 
@@ -110,8 +45,9 @@ func assertDeepEqualPkgs(ps1, ps2 packages) {
 
 var ps = packages{
 	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers": controllers{
-		data: map[string]controller{
-			"App": {
+		list: []*controller{
+			{
+				Name: "App",
 				Actions: []reflect.Func{
 					{
 						Comments: []string{
@@ -193,18 +129,16 @@ var ps = packages{
 				},
 				File: "app.go",
 				Parents: parents{
-					{
-						Name: "Controller",
-					},
-					{
-						Name: "NotController",
-					},
-					{
-						Name: "NotController1",
+					"github.com/colegion/goal/tools/generate/handlers/testdata/controllers",
+					[]parent{
+						{0, "github.com/colegion/goal/tools/generate/handlers/testdata/controllers", "Controller"},
+						{0, "github.com/colegion/goal/tools/generate/handlers/testdata/controllers", "NotController"},
+						{0, "github.com/colegion/goal/tools/generate/handlers/testdata/controllers", "NotController1"},
 					},
 				},
 			},
-			"Controller": {
+			{
+				Name: "Controller",
 				After: &reflect.Func{
 					Comments: []string{"// After is a magic method that is executed after every request."},
 					File:     "init.go",
@@ -286,17 +220,20 @@ var ps = packages{
 				},
 				File: "init.go",
 				Parents: parents{
-					{
-						Import: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage",
-						Name:   "Controller",
-					},
-					{
-						Import: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage",
-						Name:   "SubSubPackage",
-					},
-					{
-						Import: "github.com/naoina/denco",
-						Name:   "Param",
+					"github.com/colegion/goal/tools/generate/handlers/testdata/controllers",
+					[]parent{
+						{
+							Import: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage",
+							Name:   "Controller",
+						},
+						{
+							Import: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage",
+							Name:   "SubSubPackage",
+						},
+						{
+							Import: "github.com/naoina/denco",
+							Name:   "Param",
+						},
 					},
 				},
 			},
@@ -317,8 +254,9 @@ var ps = packages{
 				},
 			},
 		},
-		data: map[string]controller{
-			"Controller": {
+		list: []*controller{
+			{
+				Name: "Controller",
 				Actions: []reflect.Func{
 					{
 						Comments: []string{"// Index is a sample action.", "//@post index someindexlabel"},
@@ -406,9 +344,12 @@ var ps = packages{
 					},
 				},
 				Parents: parents{
-					{
-						Import: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage",
-						Name:   "SubSubPackage",
+					"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage",
+					[]parent{
+						{
+							Import: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage",
+							Name:   "SubSubPackage",
+						},
 					},
 				},
 				Comments: []string{
@@ -419,8 +360,9 @@ var ps = packages{
 		},
 	},
 	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage": controllers{
-		data: map[string]controller{
-			"SubSubPackage": {
+		list: []*controller{
+			{
+				Name: "SubSubPackage",
 				Before: &reflect.Func{
 					Comments: []string{
 						"// Before does nothing.",
@@ -443,6 +385,9 @@ var ps = packages{
 							},
 						},
 					},
+				},
+				Parents: parents{
+					childImport: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage",
 				},
 				Comments: []string{
 					"// SubSubPackage is a controller.",
