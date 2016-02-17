@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage"
+	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage"
 
 	"github.com/naoina/denco"
 )
@@ -13,6 +14,7 @@ import (
 // of your app to make methods provided by middleware controllers available.
 type Controller struct {
 	*subpackage.Controller `@route:"/subpackage"`
+	*subsubpackage.SubSubPackage
 	*denco.Param
 
 	testing.M
