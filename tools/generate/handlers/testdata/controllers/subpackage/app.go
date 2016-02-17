@@ -3,10 +3,13 @@ package subpackage
 import (
 	"net/http"
 	"net/url"
+
+	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage"
 )
 
 // Controller is some controller.
 type Controller struct {
+	*subsubpackage.SubSubPackage
 }
 
 // Before is a magic function that is executed before any request.

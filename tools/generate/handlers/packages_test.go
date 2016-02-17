@@ -21,28 +21,6 @@ func TestProcessPackage(t *testing.T) {
 	assertDeepEqualPkgs(ps, psR)
 }
 
-func TestParentPackage(t *testing.T) {
-	p := parent{}
-	s := p.Package()
-	if s != "" {
-		// E.g. if we are using it for generation of:
-		//	uniquePkgName.Application.Index.
-		// In case the Application is local (i.e. its import is empty) we need:
-		//	Application.Index.
-		// I.e. the method must return empty string.
-		t.Errorf("Packages with empty imports must have no names.")
-	}
-	p = parent{
-		ID:     1,
-		Import: "net/http",
-		Name:   "Request",
-	}
-	s = p.Package(".XXX")
-	if s != "c1.XXX" {
-		t.Errorf(`Incorrect package name. Expected "c1.XXX", got "%s".`, s)
-	}
-}
-
 func TestControllerIgnoredArgs(t *testing.T) {
 	c := controller{}
 	a := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"].data["App"].Actions[0]
@@ -214,7 +192,7 @@ var ps = packages{
 					"// App is a sample controller.",
 				},
 				File: "app.go",
-				Parents: []parent{
+				Parents: parents{
 					{
 						Name: "Controller",
 					},
@@ -307,10 +285,14 @@ var ps = packages{
 					"// of your app to make methods provided by middleware controllers available.",
 				},
 				File: "init.go",
-				Parents: []parent{
+				Parents: parents{
 					{
 						Import: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage",
 						Name:   "Controller",
+					},
+					{
+						Import: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage",
+						Name:   "SubSubPackage",
 					},
 					{
 						Import: "github.com/naoina/denco",
@@ -423,10 +405,49 @@ var ps = packages{
 						},
 					},
 				},
+				Parents: parents{
+					{
+						Import: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage",
+						Name:   "SubSubPackage",
+					},
+				},
 				Comments: []string{
 					"// Controller is some controller.",
 				},
 				File: "app.go",
+			},
+		},
+	},
+	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage": controllers{
+		data: map[string]controller{
+			"SubSubPackage": {
+				Before: &reflect.Func{
+					Comments: []string{
+						"// Before does nothing.",
+					},
+					File:   "subsubpackage.go",
+					Name:   "Before",
+					Params: []reflect.Arg{},
+					Recv: &reflect.Arg{
+						Name: "c",
+						Type: &reflect.Type{
+							Name: "SubSubPackage",
+							Star: true,
+						},
+					},
+					Results: []reflect.Arg{
+						{
+							Type: &reflect.Type{
+								Name:    "Handler",
+								Package: "http",
+							},
+						},
+					},
+				},
+				Comments: []string{
+					"// SubSubPackage is a controller.",
+				},
+				File: "subsubpackage.go",
 			},
 		},
 	},
