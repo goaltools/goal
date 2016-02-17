@@ -77,8 +77,8 @@ func (ps packages) scanFields(impPath string, pkg *reflect.Package, i int) ([]fi
 		})
 
 		// Check whether this import has already been processed.
-		// If not, do it now.
-		if _, ok := ps[imp]; !ok {
+		// If not and this is not the import we've got above, do it now.
+		if _, ok := ps[imp]; !ok && imp != impPath {
 			ps.processPackage(imp, routes.ParseTag(pkg.Structs[i].Fields[j].Tag))
 		}
 	}
@@ -94,7 +94,7 @@ func (ps packages) extractControllers(impPath string, pkg *reflect.Package, pref
 	// Iterating through all available structures and checking
 	// whether those structures are controllers (i.e. whether they have actions).
 	cs := controllers{
-		list: []controller{},
+		list: []*controller{},
 	}
 	for i := 0; i < len(pkg.Structs); i++ {
 		// Make sure the structure has methods.
@@ -133,7 +133,7 @@ func (ps packages) extractControllers(impPath string, pkg *reflect.Package, pref
 		fs, prs := ps.scanFields(impPath, pkg, i)
 
 		// Add a new controller to the list of results.
-		cs.list = append(cs.list, controller{
+		cs.list = append(cs.list, &controller{
 			Name: pkg.Structs[i].Name,
 
 			Actions: as[0],

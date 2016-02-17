@@ -10,7 +10,7 @@ import (
 // controllers stores information about application's controllers
 // and its "Init" function.
 type controllers struct {
-	list []controller
+	list []*controller
 	init *reflect.Func
 }
 
@@ -36,7 +36,7 @@ type controller struct {
 func (cs controllers) Controller(name string) *controller {
 	for i := 0; i < len(cs.list); i++ {
 		if cs.list[i].Name == name {
-			return &cs.list[i]
+			return cs.list[i]
 		}
 	}
 	return nil
