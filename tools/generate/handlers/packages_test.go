@@ -13,7 +13,9 @@ func TestPackagesAllInits(t *testing.T) {
 	ifs := ps.AllInits("github.com/colegion/goal/tools/generate/handlers/testdata/controllers")
 	p := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"]
 	p1 := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage"]
+	p2 := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/x"]
 	expIfs := reflect.Funcs{
+		*p2.init,
 		*p1.init,
 		*p.init,
 	}
@@ -376,6 +378,10 @@ var ps = packages{
 							Import: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage",
 							Name:   "SubSubPackage",
 						},
+						{
+							Import: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/x",
+							Name:   "X",
+						},
 					},
 				},
 				Comments: []string{
@@ -419,6 +425,56 @@ var ps = packages{
 					"// SubSubPackage is a controller.",
 				},
 				File: "subsubpackage.go",
+			},
+		},
+	},
+	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/x": controllers{
+		init: &reflect.Func{
+			Comments: []string{"// Init ..."},
+			File:     "x.go",
+			Name:     "Init",
+			Params: []reflect.Arg{
+				{
+					Type: &reflect.Type{
+						Name:    "Values",
+						Package: "url",
+					},
+				},
+			},
+		},
+		list: []*controller{
+			{
+				Name: "X",
+				Before: &reflect.Func{
+					Comments: []string{
+						"// Before ...",
+					},
+					File:   "x.go",
+					Name:   "Before",
+					Params: []reflect.Arg{},
+					Recv: &reflect.Arg{
+						Name: "c",
+						Type: &reflect.Type{
+							Name: "X",
+							Star: true,
+						},
+					},
+					Results: []reflect.Arg{
+						{
+							Type: &reflect.Type{
+								Name:    "Handler",
+								Package: "http",
+							},
+						},
+					},
+				},
+				Parents: parents{
+					childImport: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/x",
+				},
+				Comments: []string{
+					"// X ...",
+				},
+				File: "x.go",
 			},
 		},
 	},

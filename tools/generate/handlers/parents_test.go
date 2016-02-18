@@ -29,13 +29,25 @@ func TestParentAll(t *testing.T) {
 	p := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"]
 	p1 := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage"]
 	p2 := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage"]
+	p3 := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/x"]
 	c := p.list[0]
 	cs := c.Parents.All(ps)
-	expCs := []*controller{
-		p2.list[0],
-		p1.list[0],
-		p2.list[0],
-		p.list[1],
+	//	App {
+	//		*Controller {
+	//			*SubPackage {
+	//				*SubSubPackage
+	//				*X
+	//			}
+	//			*SubSubPackage
+	//		}
+	//	}
+	//	// Result (App): SubSubPackage, X, SubPackage, SubSubPackage, Controller
+	expCs := []*controller{ // Order matters.
+		p2.list[0], // SubSubPackage that embeds nothing.
+		p3.list[0], // X that embeds nothing.
+		p1.list[0], // SubPackage that embeds SubSubPackage and X.
+		p2.list[0], // SubSubPackage that embeds nothing.
+		p.list[1],  // Controller that embeds SubPackage and SubSubPackage.
 	}
 	assertDeepEqualControllerSlices(expCs, cs)
 }
