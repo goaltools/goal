@@ -12,3 +12,7 @@ type SubSubPackage struct {
 func (c *SubSubPackage) Before() http.Handler {
 	return nil
 }
+
+// Init should be ignored as the number of arguments is incorrect.
+func Init() {
+}
