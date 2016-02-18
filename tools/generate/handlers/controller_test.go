@@ -23,6 +23,8 @@ func assertDeepEqualControllers(cs1, cs2 controllers) {
 	if err := reflect.AssertEqualFunc(cs1.init, cs2.init); err != nil {
 		log.Error.Panic(err)
 	}
+	// Order of controller structs doesn't matter when comparing two controllers.
+	// So, sort them.
 	sort.Sort(ByName(cs1))
 	sort.Sort(ByName(cs2))
 	assertDeepEqualControllerSlices(cs1.list, cs2.list)

@@ -21,6 +21,19 @@ type parent struct {
 	Name   string // Name of the structure, e.g. "Template".
 }
 
+// parentControllers represents information necessary for generating a code
+// for controller's parents and (grand)parents allocation, their
+// special "Before", "After" methods, and "Init" functions calls.
+// All elements are in the order they must be allocated/initialized:
+// grandparents, parents, children, and so forth.
+type parentControllers struct {
+	list []*controller // A list of parent controllers.
+
+	// inits is a list of init functions, not including the one
+	// of main controllers package.
+	inits []reflect.Func
+}
+
 // Package returns a unique package name that may be used in templates
 // concatenated with some arbitarry suffix strings.
 // If a parent is from the same package, empty string will be returned.
@@ -51,8 +64,14 @@ func (p parent) Package(impPath string, suffixes ...string) string {
 // The result is in the order the controllers must be initialized
 // and their special actions must be called.
 // I.e. grandparents first, then parents, then children.
-// First result is a list of controllers, the second one their init functions.
-func (ps parents) All(pkgs packages) (cs []*controller, ifs []*reflect.Func) {
+func (ps parents) All(pkgs packages) *parentControllers {
+	// Allocate a new parent controllers structure.
+	pcs := &parentControllers{
+		list:  []*controller{},
+		inits: []reflect.Func{},
+	}
+
+	// Iterate over all available parents. Check parents of their parents recursively.
 	for i := range ps.list {
 		// Make sure current parent is a controller rather than
 		// some embedded struct.
@@ -67,12 +86,15 @@ func (ps parents) All(pkgs packages) (cs []*controller, ifs []*reflect.Func) {
 
 		// Add parents' parents and their "Init" functions to the
 		// top of results ("grandparents first" rule).
-		pcs, pifs := c.Parents.All(pkgs)
-		cs = append(pcs, cs...)
-		ifs = append(pifs, pkg.init) // Only one "Init" function per package is possible.
+		parents := c.Parents.All(pkgs)
+		pcs.list = append(parents.list, pcs.list...)
+		pcs.inits = append(parents.inits, pcs.inits...)
 
-		// Add current controller to the bottom.
-		cs = append(cs, c)
+		// Add current controller and init function, if presented, to the bottom.
+		pcs.list = append(pcs.list, c)
+		if pkg.init != nil {
+			pcs.inits = append(pcs.inits, *pkg.init)
+		}
 	}
-	return
+	return pcs
 }

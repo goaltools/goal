@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/colegion/goal/internal/log"
+	"github.com/colegion/goal/internal/reflect"
 )
 
 func TestParentPackage(t *testing.T) {
@@ -30,19 +31,20 @@ func TestParentAll(t *testing.T) {
 	p1 := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage"]
 	p2 := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage"]
 	c := p.list[0]
-	cs, _ := c.Parents.All(ps)
+	res := c.Parents.All(ps)
 	expCs := []*controller{
 		p2.list[0],
 		p1.list[0],
 		p2.list[0],
 		p.list[1],
 	}
-	if len(expCs) != len(cs) {
-		t.Errorf("%d != %d", len(expCs), len(cs))
-		t.Fail()
+	assertDeepEqualControllerSlices(expCs, res.list)
+	expInits := []reflect.Func{
+		*p1.init,
+		*p.init,
 	}
-	for i := range cs {
-		assertDeepEqualController(expCs[i], cs[i])
+	if err := reflect.AssertEqualFuncs(expInits, res.inits); err != nil {
+		t.Error(err)
 	}
 }
 

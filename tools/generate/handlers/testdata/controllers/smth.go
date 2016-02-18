@@ -1,5 +1,9 @@
 package controllers
 
+import (
+	"net/url"
+)
+
 // Smth is not an action as it doesn't return action.Result.
 func (c *Controller) Smth() bool {
 	return true
@@ -13,8 +17,8 @@ func (c App) SmthElse() {
 func (c *App) SmthElse1() {
 }
 
-// Init should be ignored as the number of arguments is incorrect.
-func Init() {
+// Init ...
+func Init(url.Values) {
 }
 
 func init() {

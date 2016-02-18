@@ -45,6 +45,19 @@ func assertDeepEqualPkgs(ps1, ps2 packages) {
 
 var ps = packages{
 	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers": controllers{
+		init: &reflect.Func{
+			Comments: []string{"// Init ..."},
+			File:     "smth.go",
+			Name:     "Init",
+			Params: []reflect.Arg{
+				{
+					Type: &reflect.Type{
+						Name:    "Values",
+						Package: "url",
+					},
+				},
+			},
+		},
 		list: []*controller{
 			{
 				Name: "App",
