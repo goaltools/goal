@@ -9,6 +9,19 @@ import (
 	"github.com/colegion/goal/internal/routes"
 )
 
+func TestPackagesAllInits(t *testing.T) {
+	ifs := ps.AllInits("github.com/colegion/goal/tools/generate/handlers/testdata/controllers")
+	p := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"]
+	p1 := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage"]
+	expIfs := reflect.Funcs{
+		*p1.init,
+		*p.init,
+	}
+	if err := reflect.AssertEqualFuncs(expIfs, ifs); err != nil {
+		t.Error(err)
+	}
+}
+
 func TestProcessPackage(t *testing.T) {
 	psR := packages{}
 	psR.processPackage("github.com/colegion/goal/tools/generate/handlers/testdata/controllers", routes.Prefixes{

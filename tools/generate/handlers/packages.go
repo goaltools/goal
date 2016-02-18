@@ -13,6 +13,46 @@ import (
 //		- Controllers
 type packages map[string]controllers
 
+// AllInits gets an import path of a main controllers package and
+// returns all init function in the order they must be called. I.e. grandparents
+// first, then parents, then children, and so forth.
+func (ps packages) AllInits(importPath string) (fs reflect.Funcs) {
+	// Make sure the input import path belongs to a controllers package.
+	cs, ok := ps[importPath]
+	if !ok {
+		return nil
+	}
+
+	// Generate a list of imports to check next by visiting parents
+	// of every's controller.
+	checked := map[string]bool{}
+	parents := []string{}
+	for i := range cs.list { // Visiting every controller of the package.
+		for j := range cs.list[i].Parents.list { // Checking every parent of every controller.
+			// Make sure current parent's import is not in the list yet.
+			imp := cs.list[i].Parents.list[j].Import
+			if checked[imp] || imp == importPath {
+				continue
+			}
+
+			// If not, add it and mark as checked.
+			checked[imp] = true
+			parents = append(parents, imp)
+		}
+	}
+
+	// Iterate over all extracted import paths and get their inits.
+	for i := range parents {
+		fs = append(fs, ps.AllInits(parents[i])...)
+	}
+
+	// Add current package's init, if presented, to the end of the result.
+	if cs.init != nil {
+		fs = append(fs, *cs.init)
+	}
+	return
+}
+
 // processPackage gets an import path of a package and its
 // route prefixes, processes this data, and
 // extracts controllers + actions.

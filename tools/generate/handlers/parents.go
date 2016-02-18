@@ -2,8 +2,6 @@ package handlers
 
 import (
 	"fmt"
-
-	"github.com/colegion/goal/internal/reflect"
 )
 
 // parents represents a set of relative controllers.
@@ -19,19 +17,6 @@ type parent struct {
 	ID     int    // Unique number that is used for generation of import names.
 	Import string // Import path of the structure, e.g. "github.com/colegion/goal/template".
 	Name   string // Name of the structure, e.g. "Template".
-}
-
-// parentControllers represents information necessary for generating a code
-// for controller's parents and (grand)parents allocation, their
-// special "Before", "After" methods, and "Init" functions calls.
-// All elements are in the order they must be allocated/initialized:
-// grandparents, parents, children, and so forth.
-type parentControllers struct {
-	list []*controller // A list of parent controllers.
-
-	// inits is a list of init functions, not including the one
-	// of main controllers package.
-	inits []reflect.Func
 }
 
 // Package returns a unique package name that may be used in templates
@@ -64,13 +49,7 @@ func (p parent) Package(impPath string, suffixes ...string) string {
 // The result is in the order the controllers must be initialized
 // and their special actions must be called.
 // I.e. grandparents first, then parents, then children.
-func (ps parents) All(pkgs packages) *parentControllers {
-	// Allocate a new parent controllers structure.
-	pcs := &parentControllers{
-		list:  []*controller{},
-		inits: []reflect.Func{},
-	}
-
+func (ps parents) All(pkgs packages) (pcs []*controller) {
 	// Iterate over all available parents. Check parents of their parents recursively.
 	for i := range ps.list {
 		// Make sure current parent is a controller rather than
@@ -84,17 +63,11 @@ func (ps parents) All(pkgs packages) *parentControllers {
 			continue // This parent is from a package with controllers but not a controller, skip it.
 		}
 
-		// Add parents' parents and their "Init" functions to the
-		// top of results ("grandparents first" rule).
-		parents := c.Parents.All(pkgs)
-		pcs.list = append(parents.list, pcs.list...)
-		pcs.inits = append(parents.inits, pcs.inits...)
+		// Add parents' parents to the top of results ("grandparents first" rule).
+		pcs = append(c.Parents.All(pkgs), pcs...)
 
-		// Add current controller and init function, if presented, to the bottom.
-		pcs.list = append(pcs.list, c)
-		if pkg.init != nil {
-			pcs.inits = append(pcs.inits, *pkg.init)
-		}
+		// Add current controller to the bottom.
+		pcs = append(pcs, c)
 	}
 	return pcs
 }
