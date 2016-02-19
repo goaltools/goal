@@ -6,6 +6,28 @@ import (
 	"github.com/colegion/goal/internal/log"
 )
 
+func TestParentControllerCalled(t *testing.T) {
+	p := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"]
+	c := p.list[0]
+	pcs := c.Parents.All(ps, "", newContext())
+	// Result (App): SubSubPackage, X, SubPackage, SubSubPackage, Controller
+	exp := []bool{
+		false,
+		false,
+		false,
+		true,
+		false,
+	}
+	if len(pcs) != len(exp) {
+		t.Fail()
+	}
+	for i := range exp {
+		if res := pcs[i].Called(); res != exp[i] {
+			t.Errorf(`Expected: "%v", got "%v".`, exp[i], res)
+		}
+	}
+}
+
 func TestParentControllerAllocate(t *testing.T) {
 	p := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"]
 	c := p.list[0]

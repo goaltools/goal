@@ -53,6 +53,12 @@ type parentController struct {
 // Before and/or After methods must be called. For allocation, reverse it.
 type parentControllers []parentController
 
+// Called returns true if special methods on the controller of the same type
+// were already called.
+func (pc parentController) Called() bool {
+	return pc.instance != ""
+}
+
 // Access generates code for accessing a parent controller.
 func (pc parentController) Access() string {
 	return pc.Prefix + pc.Controller.Name
