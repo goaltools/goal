@@ -10,6 +10,8 @@ import (
 // controllers stores information about application's controllers
 // and its "Init" function.
 type controllers struct {
+	accessor string
+
 	list []*controller
 	init *reflect.Func
 }
