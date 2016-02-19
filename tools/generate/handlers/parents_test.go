@@ -34,9 +34,9 @@ func TestParentControllerAllocate(t *testing.T) {
 	pcs := c.Parents.All(ps, "", newContext())
 	// Result (App): SubSubPackage, X, SubPackage, SubSubPackage, Controller
 	exp := []string{
-		"c2x0.SubSubPackage{}",
-		"c2x1.X{}",
-		"c1x0.Controller{}",
+		"c0.SubSubPackage{}",
+		"c1.X{}",
+		"c2.Controller{}",
 		"c.Controller.Controller.SubSubPackage",
 		"customPackageName.Controller{}",
 	}
@@ -76,9 +76,9 @@ func TestParentControllersImports(t *testing.T) {
 	p := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"]
 	c := p.list[0]
 	pcs := c.Parents.All(ps, "", newContext())
-	exp := `c2x0 "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage"
-c2x1 "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/x"
-c1x0 "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage"
+	exp := `c0 "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage"
+c1 "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/x"
+c2 "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage"
 `
 	if imp := pcs.Imports(); imp != exp {
 		t.Errorf("Incorrect imports. Expected: `%s`, got `%s`.", exp, imp)
@@ -104,25 +104,25 @@ func TestParentAll(t *testing.T) {
 	//	// Result (App): SubSubPackage, X, SubPackage, SubSubPackage, Controller
 	exp := parentControllers{
 		{ // subsubpackage.SubSubPackage that embeds nothing.
-			Accessor:   "c2x0",
+			Accessor:   "c0",
 			Prefix:     "Controller.Controller.", // The second Controller is of type subpackage.Controller.
 			instance:   "",
 			Controller: p2.list[0],
 		},
 		{ // x.X that embeds nothing.
-			Accessor:   "c2x1",
+			Accessor:   "c1",
 			Prefix:     "Controller.Controller.", // The second Controller is of type subpackage.Controller.
 			instance:   "",
 			Controller: p3.list[0],
 		},
 		{ // subpackage.Controller that embeds nothing.
-			Accessor:   "c1x0",
+			Accessor:   "c2",
 			Prefix:     "Controller.",
 			instance:   "",
 			Controller: p1.list[0],
 		},
 		{ // subsubpackage.SubSubPackage that embeds nothing.
-			Accessor:   "c2x0", // The same accessor as has the "subsubpackage" above.
+			Accessor:   "c0", // The same accessor as has the "subsubpackage" above.
 			Prefix:     "Controller.",
 			instance:   "Controller.Controller.SubSubPackage", // The second Controller is of type subpackage.Controller.
 			Controller: p2.list[0],

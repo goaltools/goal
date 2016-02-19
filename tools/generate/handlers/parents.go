@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"strings"
 )
 
 // parents represents a set of relative controllers.
@@ -117,10 +116,6 @@ func (pcs parentControllers) Imports() string {
 // and their special actions must be called.
 // I.e. grandparents first, then parents, then children.
 func (ps parents) All(pkgs packages, prefix string, ctx *context) (pcs parentControllers) {
-	// Calculate the current level of embedding
-	// That is equal to the number of dots in prefix (e.g. in "Child.Parent.").
-	level := strings.Count(prefix, ".")
-
 	// Iterate over all available parents. Check parents of their parents recursively.
 	for i := range ps.list {
 		// Make sure current parent is a controller rather than
@@ -143,7 +138,7 @@ func (ps parents) All(pkgs packages, prefix string, ctx *context) (pcs parentCon
 		// the same accessors.
 		accessor, ok := ctx.packages[c.Parents.childImport] // Getting accessor of the package.
 		if !ok {                                            // Accessor hasn't been registered for the package yet.
-			accessor = fmt.Sprintf("c%dx%d", level, i)
+			accessor = pkg.accessor
 			ctx.packages[c.Parents.childImport] = accessor
 		}
 		if prefix == "" && c.Parents.childImport == ps.childImport {
