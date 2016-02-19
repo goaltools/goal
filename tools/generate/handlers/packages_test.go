@@ -14,7 +14,7 @@ func TestPackagesAllInits(t *testing.T) {
 	p := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"]
 	p1 := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage"]
 	p2 := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/x"]
-	expIfs := reflect.Funcs{
+	expIfs := reflect.Funcs{ // Order matters.
 		*p2.init,
 		*p1.init,
 		*p.init,
@@ -159,9 +159,9 @@ var ps = packages{
 				Parents: parents{
 					"github.com/colegion/goal/tools/generate/handlers/testdata/controllers",
 					[]parent{
-						{0, "github.com/colegion/goal/tools/generate/handlers/testdata/controllers", "Controller"},
-						{0, "github.com/colegion/goal/tools/generate/handlers/testdata/controllers", "NotController"},
-						{0, "github.com/colegion/goal/tools/generate/handlers/testdata/controllers", "NotController1"},
+						{"github.com/colegion/goal/tools/generate/handlers/testdata/controllers", "Controller"},
+						{"github.com/colegion/goal/tools/generate/handlers/testdata/controllers", "NotController"},
+						{"github.com/colegion/goal/tools/generate/handlers/testdata/controllers", "NotController1"},
 					},
 				},
 			},
