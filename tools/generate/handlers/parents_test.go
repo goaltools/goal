@@ -6,6 +6,19 @@ import (
 	"github.com/colegion/goal/internal/log"
 )
 
+func TestParentControllersImports(t *testing.T) {
+	p := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"]
+	c := p.list[0]
+	pcs := c.Parents.All(ps, "", newContext())
+	exp := `c2x0 "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage"
+c2x1 "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/x"
+c1x0 "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage"
+`
+	if imp := pcs.Imports(); imp != exp {
+		t.Errorf("Incorrect imports. Expected: `%s`, got `%s`.", exp, imp)
+	}
+}
+
 func TestParentAll(t *testing.T) {
 	p := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"]
 	p1 := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage"]

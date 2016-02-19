@@ -53,6 +53,26 @@ type parentController struct {
 // Before and/or After methods must be called. For allocation, reverse it.
 type parentControllers []parentController
 
+// Imports returns all import paths of parent controllers. It may be
+// includes in the templates as follows:
+//	import (
+//		{{ .parentControllers.Imports }}
+//	)
+// The result is:
+//	uniqueName "some/import/path/1"
+//	uniqueName1 "some/import/path/2"
+//	...
+func (pcs parentControllers) Imports() string {
+	res := ""
+	for i := range pcs {
+		// Ignore repeated packages and the main one (with empty accessor).
+		if pcs[i].instance == "" && pcs[i].Accessor != "" {
+			res += fmt.Sprintf(`%s "%s"%s`, pcs[i].Accessor, pcs[i].Controller.Parents.childImport, "\n")
+		}
+	}
+	return res
+}
+
 // All returns all parent controllers of a controller including
 // grandparents, grandgrandparents, and so forth.
 // The result is in the order the controllers must be initialized
