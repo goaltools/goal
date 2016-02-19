@@ -6,6 +6,28 @@ import (
 	"github.com/colegion/goal/internal/log"
 )
 
+func TestParentControllerAllocate(t *testing.T) {
+	p := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"]
+	c := p.list[0]
+	pcs := c.Parents.All(ps, "", newContext())
+	// Result (App): SubSubPackage, X, SubPackage, SubSubPackage, Controller
+	exp := []string{
+		"c2x0.SubSubPackage",
+		"c2x1.X",
+		"c1x0.Controller",
+		"c.Controller.Controller.SubSubPackage",
+		"customPackageName.Controller",
+	}
+	if len(pcs) != len(exp) {
+		t.Fail()
+	}
+	for i := range exp {
+		if res := pcs[i].Allocate("c", "customPackageName"); res != exp[i] {
+			t.Errorf(`Incorrect allocation. Expected: "%s", got "%s".`, exp[i], res)
+		}
+	}
+}
+
 func TestParentControllersImports(t *testing.T) {
 	p := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"]
 	c := p.list[0]
