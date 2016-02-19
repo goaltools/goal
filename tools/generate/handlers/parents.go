@@ -85,9 +85,10 @@ func (ps parents) All(pkgs packages, prefix string, ctx *context) (pcs parentCon
 		// the same accessors.
 		accessor, ok := ctx.packages[c.Parents.childImport] // Getting accessor of the package.
 		if !ok {                                            // Accessor hasn't been registered for the package yet.
-			ctx.packages[c.Parents.childImport] = fmt.Sprintf("c%dx%d", level, i)
+			accessor = fmt.Sprintf("c%dx%d", level, i)
+			ctx.packages[c.Parents.childImport] = accessor
 		}
-		if level == 0 && c.Parents.childImport == ps.childImport {
+		if prefix == "" && c.Parents.childImport == ps.childImport {
 			accessor = ""
 		}
 
@@ -121,4 +122,12 @@ type context struct {
 	// packages are in the format:
 	//	packageImport => "uniqueAccessorX"
 	packages map[string]string
+}
+
+// newContext allocates and returns a new context.
+func newContext() *context {
+	return &context{
+		instances: map[string]string{},
+		packages:  map[string]string{},
+	}
 }

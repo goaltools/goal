@@ -6,32 +6,13 @@ import (
 	"github.com/colegion/goal/internal/log"
 )
 
-func TestParentPackage(t *testing.T) {
-	p := parent{
-		Import: "github.com/colegion/goal/controllers",
-	}
-	s := p.Package("github.com/colegion/goal/controllers")
-	if s != "" {
-		t.Errorf("No accessor is needed for accessing a type from the same package. Got: %v.", s)
-	}
-	p = parent{
-		ID:     1,
-		Import: "net/http",
-		Name:   "Request",
-	}
-	s = p.Package("github.com/colegion/goal/controllers", ".", "XXX")
-	if s != "c1.XXX" {
-		t.Errorf(`Incorrect package name. Expected "c1.XXX", got "%s".`, s)
-	}
-}
-
 func TestParentAll(t *testing.T) {
 	p := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"]
 	p1 := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage"]
 	p2 := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage"]
 	p3 := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/x"]
 	c := p.list[0]
-	cs := c.Parents.All(ps)
+	pcs := c.Parents.All(ps, "", newContext())
 	//	App {
 	//		*Controller {
 	//			*SubPackage {
@@ -42,14 +23,58 @@ func TestParentAll(t *testing.T) {
 	//		}
 	//	}
 	//	// Result (App): SubSubPackage, X, SubPackage, SubSubPackage, Controller
-	expCs := []*controller{ // Order matters.
-		p2.list[0], // SubSubPackage that embeds nothing.
-		p3.list[0], // X that embeds nothing.
-		p1.list[0], // SubPackage that embeds SubSubPackage and X.
-		p2.list[0], // SubSubPackage that embeds nothing.
-		p.list[1],  // Controller that embeds SubPackage and SubSubPackage.
+	exp := parentControllers{
+		{ // subsubpackage.SubSubPackage that embeds nothing.
+			Accessor:   "c2x0",
+			Prefix:     "Controller.Controller.", // The second Controller is of type subpackage.Controller.
+			instance:   "",
+			Controller: p2.list[0],
+		},
+		{ // x.X that embeds nothing.
+			Accessor:   "c2x1",
+			Prefix:     "Controller.Controller.", // The second Controller is of type subpackage.Controller.
+			instance:   "",
+			Controller: p3.list[0],
+		},
+		{ // subpackage.Controller that embeds nothing.
+			Accessor:   "c1x0",
+			Prefix:     "Controller.",
+			instance:   "",
+			Controller: p1.list[0],
+		},
+		{ // subsubpackage.SubSubPackage that embeds nothing.
+			Accessor:   "c2x0", // The same accessor as has the "subsubpackage" above.
+			Prefix:     "Controller.",
+			instance:   "Controller.Controller.SubSubPackage", // The second Controller is of type subpackage.Controller.
+			Controller: p2.list[0],
+		},
+		{ // Controller that embeds nothing.
+			Accessor:   "",
+			Prefix:     "",
+			instance:   "",
+			Controller: p.list[1],
+		},
 	}
-	assertDeepEqualControllerSlices(expCs, cs)
+	assertDeepEqualParentControllers(exp, pcs)
+}
+
+func assertDeepEqualParentControllers(pcs1, pcs2 parentControllers) {
+	if len(pcs1) != len(pcs2) {
+		log.Error.Panicf("Different number of parent controllers: %d != %d.", len(pcs1), len(pcs2))
+	}
+	for i := range pcs1 {
+		log.Trace.Printf(`Comparing "%s" and "%s".`, pcs1[i].Controller.Name, pcs2[i].Controller.Name)
+		assertDeepEqualController(pcs1[i].Controller, pcs2[i].Controller)
+		if pcs1[i].Accessor != pcs2[i].Accessor {
+			log.Error.Panicf(`Expected accessor: "%s". Got: "%s".`, pcs1[i].Accessor, pcs2[i].Accessor)
+		}
+		if pcs1[i].Prefix != pcs2[i].Prefix {
+			log.Error.Panicf(`Expected prefix: "%s". Got: "%s".`, pcs1[i].Prefix, pcs2[i].Prefix)
+		}
+		if pcs1[i].instance != pcs2[i].instance {
+			log.Error.Panicf(`Expected instance: "%s". Got: "%s".`, pcs1[i].instance, pcs2[i].instance)
+		}
+	}
 }
 
 func assertDeepEqualParents(p1, p2 parents) {
