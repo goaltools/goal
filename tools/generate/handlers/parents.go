@@ -53,6 +53,24 @@ type parentController struct {
 // Before and/or After methods must be called. For allocation, reverse it.
 type parentControllers []parentController
 
+// Allocate gets a variable name and return code for the parent
+// controller's allocation. E.g. "pkgName.Controller" or "Controller"
+// or "Child.Parent.Controller". The way to use it in template:
+//	c := App{}
+//	... = {{ parentController.Allocate "c" "ctrPackage" }}{}
+func (pc parentController) Allocate(varName, currContrPackage string) string {
+	// Check whether there is already and instance of this type.
+	if pc.instance != "" {
+		return varName + "." + pc.instance // E.g. "c.Child.Parent".
+	}
+	// Find out from what package the controller must be imported.
+	accessor := currContrPackage
+	if pc.Accessor != "" {
+		accessor = pc.Accessor
+	}
+	return accessor + "." + pc.Controller.Name // E.g. "pkgName.Parent".
+}
+
 // Imports returns all import paths of parent controllers. It may be
 // includes in the templates as follows:
 //	import (
