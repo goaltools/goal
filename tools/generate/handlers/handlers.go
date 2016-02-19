@@ -4,7 +4,6 @@ package handlers
 
 import (
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/colegion/goal/internal/action"
@@ -25,99 +24,51 @@ func start() {
 
 	// Start processing of controllers.
 	ps := packages{}
-	absInput, err := path.ImportToAbsolute(*input)
-	if err != nil {
-		log.Error.Panic(err)
-	}
-	absImport, err := path.AbsoluteToImport(absInput)
-	if err != nil {
-		log.Error.Panic(err)
-	}
-	absOutput, err := path.ImportToAbsolute(*output)
-	if err != nil {
-		log.Error.Panic(err)
-	}
-	absImportOut, err := path.AbsoluteToImport(absOutput)
-	if err != nil {
-		log.Error.Panic(err)
-	}
-	log.Trace.Printf(`Processing "%s" package...`, absImport)
-	ps.processPackage(absImport, routes.NewPrefixes())
+	controllersImport, err := path.CleanImport(*input)
+	assertNil(err)
+	handlersImport, err := path.CleanImport(*output)
+	assertNil(err)
+	handlersDir, err := path.ImportToAbsolute(handlersImport)
+	assertNil(err)
 
-	// Start generation of handler packages.
+	log.Trace.Printf(`Processing "%s" package...`, controllersImport)
+	ps.processPackage(controllersImport, routes.NewPrefixes())
+
+	// Start generation of the handlers package.
 	tpl, err := path.ImportToAbsolute("github.com/colegion/goal/tools/generate/handlers/handlers.go.template")
-	if err != nil {
-		log.Error.Panic(err)
-	}
+	assertNil(err)
 	t := generation.NewType("", tpl)
 	t.Extension = ".go" // Save generated files as a .go source.
 
-	// Iterate through all available packages and generate handlers for them.
+	// Create a new directory for the package (the old one should be removed).
 	log.Trace.Printf(`Starting generation of "%s" package...`, *pkg)
-	for imp := range ps {
-		// Check whether current package is the main one
-		// and should be stored at the root directory or it is a subpackage.
-		//
-		// I.e. if --input is "./controllers" and --output is "./assets/handlers",
-		// we are saving processed "./controllers" package to "./assets/handlers"
-		// and some "github.com/colegion/smth" to "./assets/handlers/github.com/colegion/smth".
-		out := *output
-		if imp != absImport {
-			out = filepath.Join(out, imp)
+	t.CreateDir(handlersDir)
+
+	// Iterate over all available controllers, generate a file for every of them.
+	for i := range ps[controllersImport].list {
+		// Set a name of the file. It is a lowercased controller name.
+		t.Package = strings.ToLower(ps[controllersImport].list[i].Name)
+
+		// Prepare parent controllers.
+		pcs := ps[controllersImport].list[i].Parents.All(ps, "", newContext())
+
+		// Set context variables.
+		t.Context = map[string]interface{}{
+			"package":    *pkg,
+			"controller": ps[controllersImport].list[i],
+
+			"parentControllers": pcs,
+
+			"index":   i,
+			"strconv": action.StrconvContext,
 		}
-		t.CreateDir(out)
+		t.Generate()
+	}
+}
 
-		// Iterate over all available controllers, generate handlers package on
-		// every of them.
-		n := 0
-		for name := range ps[imp].data {
-			// Find parent controllers of this controller.
-			cs := []parent{}
-			for i, p := range ps[imp].data[name].Parents {
-				// Make sure it is a controller rather than just some embedded struct.
-				check := p.Import
-				if check == "" { // Embedded parent is a local structure.
-					check = absImport
-				}
-				if _, ok := ps[check]; !ok { // Such package is not in the list of scanned ones.
-					continue
-				}
-				if _, ok := ps[check].data[p.Name]; !ok { // There is no such controller.
-					continue
-				}
-
-				// It is a valid parent controller, add it to the list.
-				cs = append(cs, parent{
-					ID:     i,
-					Import: p.Import,
-					Name:   p.Name,
-				})
-			}
-
-			// Initialize parameters and generate a package.
-			t.Package = strings.ToLower(name)
-			t.Context = map[string]interface{}{
-				"after":  action.MethodAfter,
-				"before": action.MethodBefore,
-
-				"controller":   ps[imp].data[name],
-				"controllers":  ps[imp].data,
-				"import":       imp,
-				"input":        input,
-				"name":         name,
-				"outputImport": absImportOut,
-				"output":       output,
-				"package":      pkg,
-				"parents":      cs,
-				"initFunc":     ps[imp].init,
-				"num":          n,
-
-				"actionImport":    action.InterfaceImport,
-				"actionInterface": action.Interface,
-				"strconv":         action.StrconvContext,
-			}
-			t.Generate()
-			n++
-		}
+// assertNil makes sure an error is nil. It panics otherwise.
+func assertNil(err error) {
+	if err != nil {
+		log.Error.Panic(err)
 	}
 }

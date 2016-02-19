@@ -12,11 +12,11 @@ func TestParentControllerAllocate(t *testing.T) {
 	pcs := c.Parents.All(ps, "", newContext())
 	// Result (App): SubSubPackage, X, SubPackage, SubSubPackage, Controller
 	exp := []string{
-		"c2x0.SubSubPackage",
-		"c2x1.X",
-		"c1x0.Controller",
+		"c2x0.SubSubPackage{}",
+		"c2x1.X{}",
+		"c1x0.Controller{}",
 		"c.Controller.Controller.SubSubPackage",
-		"customPackageName.Controller",
+		"customPackageName.Controller{}",
 	}
 	if len(pcs) != len(exp) {
 		t.Fail()
