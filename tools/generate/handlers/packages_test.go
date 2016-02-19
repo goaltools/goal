@@ -14,13 +14,21 @@ func TestPackagesAllInits(t *testing.T) {
 	p := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"]
 	p1 := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage"]
 	p2 := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/x"]
-	expIfs := reflect.Funcs{ // Order matters.
-		*p2.init,
-		*p1.init,
-		*p.init,
+	expIfs := []initFunc{ // Order matters.
+		{"c1", *p2.init},
+		{"c2", *p1.init},
+		{"c3", *p.init},
 	}
-	if err := reflect.AssertEqualFuncs(expIfs, ifs); err != nil {
-		t.Error(err)
+	if len(ifs) != len(expIfs) {
+		t.Fail()
+	}
+	for i := range ifs {
+		if expIfs[i].accessor != ifs[i].accessor {
+			t.Errorf(`Incorrect accessor of an init. Expected "%s", got "%s".`, expIfs[i].accessor, ifs[i].accessor)
+		}
+		if err := reflect.AssertEqualFunc(&expIfs[i].fn, &ifs[i].fn); err != nil {
+			t.Error(err)
+		}
 	}
 }
 

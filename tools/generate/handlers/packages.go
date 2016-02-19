@@ -15,10 +15,17 @@ import (
 //		- Controllers
 type packages map[string]controllers
 
+// initFunc contains everything that is needed for calling
+// and init function. I.e. a function itself and its packages' name.
+type initFunc struct {
+	accessor string
+	fn       reflect.Func
+}
+
 // AllInits gets an import path of a main controllers package and
 // returns all init function in the order they must be called. I.e. grandparents
 // first, then parents, then children, and so forth.
-func (ps packages) AllInits(importPath string) (fs reflect.Funcs) {
+func (ps packages) AllInits(importPath string) (fs []initFunc) {
 	// Make sure the input import path belongs to a controllers package.
 	cs, ok := ps[importPath]
 	if !ok {
@@ -50,7 +57,10 @@ func (ps packages) AllInits(importPath string) (fs reflect.Funcs) {
 
 	// Add current package's init, if presented, to the end of the result.
 	if cs.init != nil {
-		fs = append(fs, *cs.init)
+		fs = append(fs, initFunc{
+			accessor: cs.accessor,
+			fn:       *cs.init,
+		})
 	}
 	return
 }
