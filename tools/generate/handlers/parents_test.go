@@ -28,6 +28,28 @@ func TestParentControllerAllocate(t *testing.T) {
 	}
 }
 
+func TestParentControllersReverse(t *testing.T) {
+	p := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"]
+	c := p.list[0]
+	pcs := c.Parents.All(ps, "", newContext()).Reverse()
+	// Result (App): Controller, SubSubPackage, SubPackage, X, SubSubPackage
+	exp := []string{
+		"Controller",
+		"Controller.SubSubPackage",
+		"Controller.Controller",
+		"Controller.Controller.X",
+		"Controller.Controller.SubSubPackage",
+	}
+	if len(pcs) != len(exp) {
+		t.Fail()
+	}
+	for i := range exp {
+		if res := pcs[i].Access(); res != exp[i] {
+			t.Errorf(`Incorrect access. Expected: "%s", got "%s".`, exp[i], res)
+		}
+	}
+}
+
 func TestParentControllersImports(t *testing.T) {
 	p := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"]
 	c := p.list[0]

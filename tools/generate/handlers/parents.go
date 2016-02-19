@@ -53,6 +53,11 @@ type parentController struct {
 // Before and/or After methods must be called. For allocation, reverse it.
 type parentControllers []parentController
 
+// Access generates code for accessing a parent controller.
+func (pc parentController) Access() string {
+	return pc.Prefix + pc.Controller.Name
+}
+
 // Allocate gets a variable name and return code for the parent
 // controller's allocation. E.g. "pkgName.Controller" or "Controller"
 // or "Child.Parent.Controller". The way to use it in template:
@@ -69,6 +74,15 @@ func (pc parentController) Allocate(varName, currContrPackage string) string {
 		accessor = pc.Accessor
 	}
 	return accessor + "." + pc.Controller.Name // E.g. "pkgName.Parent".
+}
+
+// Reverse returns a reversed version of parent controllers.
+// They must be reversed in order to be allocated.
+func (pcs parentControllers) Reverse() (res parentControllers) {
+	for i := len(pcs) - 1; i >= 0; i-- {
+		res = append(res, pcs[i])
+	}
+	return
 }
 
 // Imports returns all import paths of parent controllers. It may be
