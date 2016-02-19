@@ -60,6 +60,7 @@ func assertDeepEqualPkgs(ps1, ps2 packages) {
 
 var ps = packages{
 	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers": controllers{
+		accessor: "c3",
 		init: &reflect.Func{
 			Comments: []string{"// Init ..."},
 			File:     "smth.go",
@@ -268,6 +269,7 @@ var ps = packages{
 		},
 	},
 	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage": controllers{
+		accessor: "c2",
 		init: &reflect.Func{
 			Comments: []string{"// Init ..."},
 			File:     "app.go",
@@ -392,6 +394,7 @@ var ps = packages{
 		},
 	},
 	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage": controllers{
+		accessor: "c0",
 		list: []*controller{
 			{
 				Name: "SubSubPackage",
@@ -429,6 +432,7 @@ var ps = packages{
 		},
 	},
 	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/x": controllers{
+		accessor: "c1",
 		init: &reflect.Func{
 			Comments: []string{"// Init ..."},
 			File:     "x.go",

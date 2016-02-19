@@ -23,6 +23,9 @@ func assertDeepEqualControllers(cs1, cs2 controllers) {
 	if err := reflect.AssertEqualFunc(cs1.init, cs2.init); err != nil {
 		log.Error.Panic(err)
 	}
+	if cs1.accessor != cs2.accessor {
+		log.Error.Panicf(`Accessors are different: "%s" != "%s".`, cs1.accessor, cs2.accessor)
+	}
 	// Order of controller structs doesn't matter when comparing two controllers.
 	// So, sort them.
 	sort.Sort(ByName(cs1))

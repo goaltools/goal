@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"fmt"
+
 	a "github.com/colegion/goal/internal/action"
 	"github.com/colegion/goal/internal/log"
 	"github.com/colegion/goal/internal/reflect"
@@ -66,8 +68,9 @@ func (ps packages) processPackage(importPath string, prefs routes.Prefixes) {
 	cs := ps.extractControllers(importPath, p, prefs)
 	if len(cs.list) > 0 {
 		ps[importPath] = controllers{
-			list: cs.list,
-			init: ps.extractInitFunc(p),
+			accessor: fmt.Sprintf("c%d", len(ps)),
+			list:     cs.list,
+			init:     ps.extractInitFunc(p),
 		}
 	}
 }
