@@ -29,8 +29,8 @@ type controller struct {
 	File     string           // Name of the file where this controller is located.
 	Parents  parents          // A list of embedded structs that should be parsed.
 
-	Fields []field          // A list of fields that require binding.
-	Routes [][]routes.Route // Routes concatenated with prefixes. len(Routes) = len(Actions)
+	Fields []field        // A list of fields that require binding.
+	Routes []routes.Route // Routes concatenated with prefixes.
 }
 
 // Controller gets a controller name and returns it if it
