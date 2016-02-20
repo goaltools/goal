@@ -22,6 +22,33 @@ type initFunc struct {
 	fn       reflect.Func
 }
 
+// AllRoutes returns a slice of all routes found in the scanned
+// controller and its parent controllers.
+func (ps packages) AllRoutes() (rs map[string]routes.Route) {
+	// Iterate over every package.
+	for k := range ps {
+		// Check every controller of every package.
+		for i := range ps[k].list {
+			for j := range ps[k].list[i].Routes {
+				n := fmt.Sprintf("%s %s", ps[k].list[i].Routes[j].Method, ps[k].list[i].Routes[j].Pattern)
+
+				// Check whether there is already such a route pattern with this method.
+				if _, ok := rs[n]; ok {
+					log.Warn.Printf(
+						`Route "%s" "%s": "%s" will override "%s".`,
+						ps[k].list[i].Routes[j].Method,
+						ps[k].list[i].Routes[j].Pattern,
+						ps[k].list[i].Routes[j].HandlerName,
+						rs[n].HandlerName,
+					)
+				}
+				rs[n] = ps[k].list[i].Routes[j]
+			}
+		}
+	}
+	return
+}
+
 // AllInits gets an import path of a main controllers package and
 // returns all init function in the order they must be called. I.e. grandparents
 // first, then parents, then children, and so forth.
@@ -157,7 +184,7 @@ func (ps packages) extractControllers(impPath string, pkg *reflect.Package, pref
 		}
 
 		// Check whether there are actions among those methods.
-		rs := [][]routes.Route{}
+		rs := []routes.Route{}
 		as, count := ms.FilterGroups(func(f *reflect.Func) bool {
 			// Ignore non-actions.
 			res := action(f)
@@ -172,7 +199,7 @@ func (ps packages) extractControllers(impPath string, pkg *reflect.Package, pref
 
 			// Parse action's routes.
 			if r := prefs.ParseRoutes(pkg.Structs[i].Name, f); len(r) > 0 {
-				rs = append(rs, r)
+				rs = append(rs, r...)
 			}
 			return true
 		}, a.Regular, a.After, a.Before)
