@@ -78,7 +78,7 @@ func (pc parentController) Allocate(varName, currContrPackage string) string {
 	if pc.Accessor != "" {
 		accessor = pc.Accessor
 	}
-	return accessor + "." + pc.Controller.Name + "{}" // E.g. "pkgName.Parent{}".
+	return "&" + accessor + "." + pc.Controller.Name // E.g. "pkgName.Parent".
 }
 
 // Reverse returns a reversed version of parent controllers.

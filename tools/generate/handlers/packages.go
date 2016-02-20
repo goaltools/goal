@@ -18,13 +18,14 @@ type packages map[string]controllers
 // initFunc contains everything that is needed for calling
 // and init function. I.e. a function itself and its packages' name.
 type initFunc struct {
-	accessor string
-	fn       reflect.Func
+	Accessor, Import string
+	Fn               reflect.Func
 }
 
 // AllRoutes returns a slice of all routes found in the scanned
 // controller and its parent controllers.
-func (ps packages) AllRoutes() (rs map[string]routes.Route) {
+func (ps packages) AllRoutes() map[string]routes.Route {
+	rs := map[string]routes.Route{}
 	// Iterate over every package.
 	for k := range ps {
 		// Check every controller of every package.
@@ -46,7 +47,7 @@ func (ps packages) AllRoutes() (rs map[string]routes.Route) {
 			}
 		}
 	}
-	return
+	return rs
 }
 
 // AllInits gets an import path of a main controllers package and
@@ -65,7 +66,8 @@ func (ps packages) AllInits(importPath string) (fs []initFunc) {
 	parents := []string{}
 	for i := range cs.list { // Visiting every controller of the package.
 		for j := range cs.list[i].Parents.list { // Checking every parent of every controller.
-			// Make sure current parent's import is not in the list yet.
+			// Make sure current parent's import is not in the list yet
+			// and it is not equal to the import we're checking right now.
 			imp := cs.list[i].Parents.list[j].Import
 			if checked[imp] || imp == importPath {
 				continue
@@ -85,8 +87,9 @@ func (ps packages) AllInits(importPath string) (fs []initFunc) {
 	// Add current package's init, if presented, to the end of the result.
 	if cs.init != nil {
 		fs = append(fs, initFunc{
-			accessor: cs.accessor,
-			fn:       *cs.init,
+			Accessor: cs.accessor,
+			Import:   importPath,
+			Fn:       *cs.init,
 		})
 	}
 	return

@@ -16,18 +16,18 @@ func TestPackagesAllInits(t *testing.T) {
 	p1 := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage"]
 	p2 := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/x"]
 	expIfs := []initFunc{ // Order matters.
-		{"c1", *p2.init},
-		{"c2", *p1.init},
-		{"c3", *p.init},
+		{"c1", "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/x", *p2.init},
+		{"c2", "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage", *p1.init},
+		{"c3", "github.com/colegion/goal/tools/generate/handlers/testdata/controllers", *p.init},
 	}
 	if len(ifs) != len(expIfs) {
 		t.Fail()
 	}
 	for i := range ifs {
-		if expIfs[i].accessor != ifs[i].accessor {
-			t.Errorf(`Incorrect accessor of an init. Expected "%s", got "%s".`, expIfs[i].accessor, ifs[i].accessor)
+		if expIfs[i].Accessor != ifs[i].Accessor {
+			t.Errorf(`Incorrect accessor of an init. Expected "%s", got "%s".`, expIfs[i].Accessor, ifs[i].Accessor)
 		}
-		if err := reflect.AssertEqualFunc(&expIfs[i].fn, &ifs[i].fn); err != nil {
+		if err := reflect.AssertEqualFunc(&expIfs[i].Fn, &ifs[i].Fn); err != nil {
 			t.Error(err)
 		}
 	}

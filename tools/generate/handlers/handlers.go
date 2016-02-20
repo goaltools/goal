@@ -3,7 +3,9 @@
 package handlers
 
 import (
+	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/colegion/goal/internal/action"
@@ -35,34 +37,72 @@ func start() {
 	ps.processPackage(controllersImport, routes.NewPrefixes())
 
 	// Start generation of the handlers package.
-	tpl, err := path.ImportToAbsolute("github.com/colegion/goal/tools/generate/handlers/handlers.go.template")
+	tplInit, err := path.ImportToAbsolute("github.com/colegion/goal/tools/generate/handlers/init.go.template")
 	assertNil(err)
-	t := generation.NewType("", tpl)
+	tplHandlers, err := path.ImportToAbsolute("github.com/colegion/goal/tools/generate/handlers/handlers.go.template")
+	assertNil(err)
+	t := generation.NewType("", tplInit)
 	t.Extension = ".go" // Save generated files as a .go source.
 
 	// Create a new directory for the package (the old one should be removed).
 	log.Trace.Printf(`Starting generation of "%s" package...`, *pkg)
 	t.CreateDir(handlersDir)
 
+	// Generate an init file.
+	n := "Init"
+	check := map[string]bool{
+		n: true,
+	}
+	t.Package = strings.ToLower(n)
+	t.Context = map[string]interface{}{
+		"package": *pkg,
+		"inits":   ps.AllInits(controllersImport),
+		"routes":  ps.AllRoutes(),
+	}
+	t.Generate()
+
 	// Iterate over all available controllers, generate a file for every of them.
-	for i := range ps[controllersImport].list {
-		// Set a name of the file. It is a lowercased controller name.
-		t.Package = strings.ToLower(ps[controllersImport].list[i].Name)
+	index := 0
+	t = generation.NewType("", tplHandlers)
+	t.Path = handlersDir
+	t.Extension = ".go" // Save generated files as a .go source.
+	for k := range ps {
+		for i := range ps[k].list {
+			// Use controller's name as a file name if it is unique.
+			// Add an integer suffix otherwise.
+			n = ps[k].list[i].Name
+			if _, ok := check[n]; ok {
+				n = fmt.Sprintf("%s%d", n, index)
+			}
+			check[n] = true
 
-		// Prepare parent controllers.
-		pcs := ps[controllersImport].list[i].Parents.All(ps, "", newContext())
+			// Set a name of the file. It is a lowercased controller name.
+			t.Package = strings.ToLower(n)
 
-		// Set context variables.
-		t.Context = map[string]interface{}{
-			"package":    *pkg,
-			"controller": ps[controllersImport].list[i],
+			// Prepare parent controllers.
+			pcs := ps[k].list[i].Parents.All(ps, "", newContext())
 
-			"parentControllers": pcs,
+			// Set context variables.
+			t.Context = map[string]interface{}{
+				"package": *pkg,
 
-			"index":   i,
-			"strconv": action.StrconvContext,
+				"controllers": ps[k].list,
+
+				"controller": ps[k].list[i],
+				"import":     k,
+
+				"name":               n,
+				"controllerFileName": filepath.Base(ps[k].list[i].File),
+
+				"inits":             ps.AllInits(controllersImport),
+				"parentControllers": pcs,
+
+				"index":   index,
+				"strconv": action.StrconvContext,
+			}
+			t.Generate()
+			index++
 		}
-		t.Generate()
 	}
 }
 

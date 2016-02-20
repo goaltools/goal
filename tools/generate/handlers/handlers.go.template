@@ -1,106 +1,114 @@
-// Package <@.ctx.package> is generated automatically by goal toolkit.
+// Package <@.ctx.package> is generated automatically by "goal generate handlers" tool.
 // Please, do not edit it manually.
 package <@.ctx.package>
 
 import (
 	"net/http"
-	<@if not .ctx.num>"net/url"<@end>
 
-	<@range $i, $v := .ctx.parents>
-	<@if $v.Import><@$v.Package> "<@joinImp $.ctx.outputImport $v.Import>"<@end><@end>
 	contr "<@.ctx.import>"
+	<@.ctx.parentControllers.Imports>
 
 	"github.com/colegion/goal/strconv"
 )
 
-// <@.ctx.name> is an insance of t<@.ctx.name> that is automatically generated from <@.ctx.name> controller
-// being found at "<@.ctx.import>/<@base .ctx.controller.File>",
+// <@.ctx.name> is an instance of t<@.ctx.name> that is automatically generated from
+// <@.ctx.name> controller being found at "<@.ctx.import>/<@.ctx.controllerFileName>",
 // and contains methods to be used as handler functions.<@template "printComments" dict (set "comments" .ctx.controller.Comments)>
 var <@.ctx.name> t<@.ctx.name>
-
-<@if not .ctx.num>
-	// context stores names of all controllers and packages of the app.
-	var context = url.Values{}
-<@end>
 
 // t<@.ctx.name> is a type with handler methods of <@.ctx.name> controller.
 type t<@.ctx.name> struct {
 }
 
-// New allocates (<@.ctx.import>).<@.ctx.name> controller,<@if .ctx.parents>
-// initializes its parents; then returns the controller.<@else>
-// then returns it.<@end>
-func (t t<@.ctx.name>) New(w http.ResponseWriter, r *http.Request, ctr, act string) *contr.<@.ctx.name> {
-	c := &contr.<@.ctx.name>{<@range $i, $v := .ctx.controller.Fields>
+// newC allocates (<@.ctx.import>).<@.ctx.name> controller,
+// initializes its parents and returns it.
+func (t t<@.ctx.name>) newC(w http.ResponseWriter, r *http.Request, ctr, act string) *contr.<@.ctx.controller.Name> {
+	// Allocate a new controller. Set values of special fields, if necessary.
+	c := &contr.<@.ctx.controller.Name>{<@range $i, $v := .ctx.controller.Fields>
 		<@if eq $v.Type "response"><@$v.Name>: w,<@end>
 		<@if eq $v.Type "request"><@$v.Name>: r,<@end>
 		<@if eq $v.Type "controller"><@$v.Name>: ctr,<@end>
 		<@if eq $v.Type "action"><@$v.Name>: act,<@end>
-	<@end>}<@range $i, $v := .ctx.parents>
-	c.<@$v.Name> = <@$v.Package "."><@$v.Name>.New(w, r, ctr, act)<@end>
+	<@end>}
+
+	<@if .ctx.parentControllers>
+		// Allocate its parents. Make sure controller of every type
+		// is allocated just once, then reused.<@range $i, $v := .ctx.parentControllers.Reverse>
+		c.<@$v.Access> = <@if $v.Called><@$v.Allocate "c" "contr"><@else><@$v.Allocate "c" "contr">{<@range $i, $p := $v.Controller.Fields>
+			<@if eq $p.Type "response"><@$p.Name>: w,<@end>
+			<@if eq $p.Type "request"><@$p.Name>: r,<@end>
+			<@if eq $p.Type "controller"><@$p.Name>: ctr,<@end>
+			<@if eq $p.Type "action"><@$p.Name>: act,<@end>
+		<@end>}<@end><@end>
+	<@end>
+
 	return c
 }
 
-// <@.ctx.before> is a method that is started by every handler function at the very beginning
-// of their execution phase no matter what.
-func (t t<@.ctx.name>) <@.ctx.before>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request) http.<@.ctx.actionInterface> {
-	<@if .ctx.parents>// Execute magic <@.ctx.before> actions of embedded controllers.<@range $i, $v := .ctx.parents>
-			if h := <@$v.Package "."><@$v.Name>.<@$.ctx.before>(c.<@$v.Name>, w, r); h != nil {
-				return h
-			}
-		<@end>
+// before is a method that is started by every handler function at the very beginning
+// of their execution phase no matter what. If before returns non-nil result,
+// no action methods will be started.
+func (t t<@.ctx.name>) before(c *contr.<@.ctx.controller.Name>, w http.ResponseWriter, r *http.Request) http.Handler {
+	<@if .ctx.parentControllers>// Call special Before actions of the parent controllers.<@range $i, $v := .ctx.parentControllers>
+		<@if and $v.Controller.Before (not $v.Called)>if res := c.<@$v.Access>.Before(<@range $i, $p := $v.Controller.Before.Params>
+			<@$.ctx.strconv.Render "strconv" "r.Form" $p>,
+		<@end>); res != nil {
+			return res
+		}<@end><@end>
 	<@end>
 
-	<@if .ctx.controller.Before>// Call magic <@.ctx.before> action of (<@.ctx.import>).<@.ctx.before>.
-		if h<@.ctx.controller.IgnoredArgs .ctx.controller.Before> := c.<@.ctx.before>(<@range $i, $v := .ctx.controller.Before.Params>
-				<@$.ctx.strconv.Render "strconv" "r.Form" $v>,
-		<@end>); h != nil {
-			return h
+	<@if .ctx.controller.Before>// Call special Before action of (<@.ctx.import>).<@.ctx.name>.
+		if res<@.ctx.controller.IgnoredArgs .ctx.controller.Before> := c.Before(<@range $i, $p := .ctx.controller.Before.Params>
+				<@$.ctx.strconv.Render "strconv" "r.Form" $p>,
+		<@end>); res != nil {
+			return res
 		}
 	<@end>
 
 	return nil
 }
 
-// <@.ctx.after> is a method that is started by every handler function at the very end
+// after is a method that is started by every handler function at the very end
 // of their execution phase no matter what.
-func (t t<@.ctx.name>) <@.ctx.after>(c *contr.<@.ctx.name>, w http.ResponseWriter, r *http.Request) (h http.<@.ctx.actionInterface>) {
-	<@if .ctx.controller.After>
-		// Call magic <@.ctx.after> method of (<@.ctx.import>).<@.ctx.name>.
+func (t t<@.ctx.name>) after(c *contr.<@.ctx.controller.Name>, w http.ResponseWriter, r *http.Request) (res http.Handler) {
+	<@if .ctx.controller.After>// At the very end call magic After method of (<@.ctx.import>).<@.ctx.name>.
 		defer func() {
-			if h == nil {
-				h<@.ctx.controller.IgnoredArgs .ctx.controller.After> = c.<@.ctx.after>(<@range $i, $v := .ctx.controller.After.Params>
-					<@$.ctx.strconv.Render "strconv" "r.Form" $v>,
+			// If result was not returned by parent After methods, start <@.ctx.name>'s After.
+			if res == nil {
+				res<@.ctx.controller.IgnoredArgs .ctx.controller.After> = c.After(<@range $i, $p := .ctx.controller.After.Params>
+					<@$.ctx.strconv.Render "strconv" "r.Form" $p>,
 				<@end>)
 			}
 		}()
 	<@end>
-	<@if .ctx.parents>
-		// Execute magic <@.ctx.after> methods of embedded controllers.
-		<@range $i, $v := .ctx.parents>
-			if h = <@$v.Package "."><@$v.Name>.<@$.ctx.after>(c.<@$v.Name>, w, r); h != nil {
-				return h
-			}
-		<@end>
-	<@end>
+
+	<@if .ctx.parentControllers>// Execute magic After methods of embedded controllers.
+	<@range $i, $v := .ctx.parentControllers><@if and $v.Controller.After (not $v.Called)>if res<@$v.Controller.IgnoredArgs $v.Controller.After> := c.<@$v.Access>.After(<@range $i, $p := $v.Controller.After.Params>
+				<@$.ctx.strconv.Render "strconv" "r.Form" $p>,
+		<@end>); res != nil {
+			return res
+		}
+	<@end><@end><@end>
+
 	return
 }
 
 <@range $i, $f := .ctx.controller.Actions>
 	// <@$f.Name> is a handler that was generated automatically.
-	// It calls <@$.ctx.before>, <@$.ctx.after> methods, and <@$f.Name> action found at
-	// <@join $.ctx.import (base $f.File)>
-	// in appropriate order.<@template "printComments" dict (set "comments" $f.Comments)>
+	// It calls Before, <@$f.Name>, and After actions of a <@$.ctr.name> controller.
+	// <@$f.Name> action may be found in the "<@$.ctx.import>/<@$.ctx.controllerFileName>".<@template "printComments" dict (set "comments" $f.Comments)>
 	func (t t<@$.ctx.name>) <@$f.Name>(w http.ResponseWriter, r *http.Request) {
 		var h http.Handler
-		c := <@$.ctx.name>.New(w, r, "<@$.ctx.name>", "<@$f.Name>")
+		c := <@$.ctx.name>.newC(w, r, "<@$.ctx.controller.Name>", "<@$f.Name>")
 		defer func() {
+			// If one of the actions (Before, After or <@$f.Name>) returned
+			// a handler, apply it.
 			if h != nil {
 				h.ServeHTTP(w, r)
 			}
 		}()
-		defer <@$.ctx.name>.After(c, w, r)
-		if res := <@$.ctx.name>.Before(c, w, r); res != nil {
+		defer <@$.ctx.name>.after(c, w, r) // Call this at the very end, but before applying result.
+		if res := <@$.ctx.name>.before(c, w, r); res != nil {
 			h = res
 			return
 		}
@@ -111,53 +119,11 @@ func (t t<@.ctx.name>) <@.ctx.after>(c *contr.<@.ctx.name>, w http.ResponseWrite
 			return
 		}
 	}
-
 <@end>
-
-<@if not .ctx.num>
-	// Init initializes controllers of "<@.ctx.import>",
-	// its parents, and returns a list of routes along
-	// with handler functions associated with them.
-	func Init() (routes []struct{
-		Method, Pattern, Label string
-		Handler                http.HandlerFunc
-	}){
-		<@range $name, $v := .ctx.controllers>
-			routes = append(routes, init<@$name>()...)
-		<@end>
-		<@if .ctx.initFunc>
-			contr.Init(context)
-		<@end>
-		return
-	}
-<@end>
-
-func init<@.ctx.name>() (rs []struct{
-		Method, Pattern, Label string
-		Handler                http.HandlerFunc
-	}){<@range $i, $v := .ctx.parents><@if $v.Import>
-		rs = append(rs, <@$v.Package ".">Init()...)
-	<@end><@end><@range $i, $f := .ctx.controller.Actions>
-		context.Add("<@$.ctx.name>", "<@$f.Name>")
-	<@end><@if .ctx.controller.Routes>rs = append(rs, []struct{
-		Method, Pattern, Label string
-		Handler                http.HandlerFunc
-	}{<@range $i, $v := .ctx.controller.Routes><@range $j, $sv := $v>
-		{
-			Method:  "<@$sv.Method>",
-			Pattern: "<@$sv.Pattern>",
-			Label:   "<@$sv.Label>",
-			Handler: <@$sv.HandlerName>,
-		},
-	<@end><@end>}...)<@end>
-	return
-}
 
 func init() {
 	_ = strconv.MeaningOfLife
 }
-
-<@/*Below are subtemplates that are used by handlers.go.template.*/>
 
 <@/*Get a slice of strings and print it (every one on a new line).*/>
 <@define "printComments"><@if .comments>
