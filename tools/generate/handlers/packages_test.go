@@ -2,6 +2,7 @@ package handlers
 
 import (
 	r "reflect"
+	"sort"
 	"testing"
 
 	"github.com/colegion/goal/internal/log"
@@ -43,16 +44,24 @@ func TestProcessPackage(t *testing.T) {
 	assertDeepEqualPkgs(ps, psR)
 }
 
-func assertDeepEqualRoutes(r1, r2 [][]routes.Route) {
+func assertDeepEqualRoutes(r1, r2 []routes.Route) {
 	if len(r1) != len(r2) {
 		log.Error.Panicf(`Routes %v and %v are of different lengths: %d != %d.`, r1, r2, len(r1), len(r2))
 	}
+	sort.Sort(ByHandler(r1))
+	sort.Sort(ByHandler(r2))
 	for i := range r1 {
 		if !r.DeepEqual(r1[i], r2[i]) {
 			log.Error.Panicf(`Routes of %dth action are different: %v and %v.`, i, r1, r2)
 		}
 	}
 }
+
+type ByHandler []routes.Route
+
+func (rs ByHandler) Len() int           { return len(rs) }
+func (rs ByHandler) Swap(i, j int)      { rs[i], rs[j] = rs[j], rs[i] }
+func (rs ByHandler) Less(i, j int) bool { return rs[i].HandlerName < rs[j].HandlerName }
 
 func assertDeepEqualPkgs(ps1, ps2 packages) {
 	if len(ps1) != len(ps2) {
@@ -127,7 +136,7 @@ var ps = packages{
 						},
 					},
 					{
-						Comments: []string{"// Index is a sample action."},
+						Comments: []string{"// Index is a sample action.", "//@post /subpackage/index"},
 						File:     "init.go",
 						Name:     "Index",
 						Params: []reflect.Arg{
@@ -156,10 +165,9 @@ var ps = packages{
 					},
 				},
 
-				Routes: [][]routes.Route{
-					{
-						{Method: "GET", Pattern: "/App/HelloWorld", HandlerName: "App.HelloWorld"},
-					},
+				Routes: []routes.Route{
+					{Method: "GET", Pattern: "/App/HelloWorld", HandlerName: "App.HelloWorld"},
+					{Method: "POST", Pattern: "/subpackage/index", HandlerName: "App.Index"},
 				},
 				Comments: []string{
 					"// App is a sample controller.",
@@ -371,14 +379,12 @@ var ps = packages{
 					},
 				},
 
-				Routes: [][]routes.Route{
+				Routes: []routes.Route{
 					{
-						{
-							Method:      "POST",
-							Pattern:     "/subpackage/index",
-							Label:       "someindexlabel",
-							HandlerName: "Controller.Index",
-						},
+						Method:      "POST",
+						Pattern:     "/subpackage/index",
+						Label:       "someindexlabel",
+						HandlerName: "Controller.Index",
 					},
 				},
 				Parents: parents{

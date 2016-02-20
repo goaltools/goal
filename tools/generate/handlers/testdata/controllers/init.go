@@ -40,6 +40,7 @@ func (c Controller) index(page int) h.Handler {
 }
 
 // Index is a sample action.
+//@post /subpackage/index
 func (c *App) Index(page int) h.Handler {
 	return nil
 }
