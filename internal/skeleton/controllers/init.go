@@ -3,6 +3,8 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/colegion/contrib/controllers/errors"
+	"github.com/colegion/contrib/controllers/global"
 	"github.com/colegion/contrib/controllers/requests"
 	"github.com/colegion/contrib/controllers/sessions"
 	"github.com/colegion/contrib/controllers/static"
@@ -12,10 +14,18 @@ import (
 // Controllers is a struct that should be embedded into every controller
 // of your app to make methods and fields provided by standard controllers available.
 type Controllers struct {
+	*global.Global
 	*requests.Requests
-	*templates.Templates
 	*sessions.Sessions
+
 	*static.Static `@get:"/"`
+	*errors.Errors `@route:"/errors"`
+
+	// Templates controller is responsible for rendering templates.
+	// It must be located after all other controllers that may use
+	// template rendering. When trying to render a template that doesn't
+	// exist, a panic is thrown that must be caught by router.
+	*templates.Templates
 }
 
 // Before is a magic action that is executed on every request
