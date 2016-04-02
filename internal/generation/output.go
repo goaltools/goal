@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	"github.com/colegion/goal/internal/log"
@@ -51,6 +52,9 @@ func NewType(pkg, templatePath string) Type {
 	if err != nil {
 		log.Error.Panicf(`Cannot open template file "%s". Error: %v.`, templatePath, err)
 	}
+	s := strings.Replace(string(f), "\\\n", "", -1)
+	s = strings.Replace(s, "\\\r\n", "", -1)
+	s = strings.Replace(s, ":\t", "", -1)
 
 	// Allocate a new type, initialize template, then return.
 	// Use <@ and > as delimiters, add template helper functions.

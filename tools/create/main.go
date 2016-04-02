@@ -53,9 +53,18 @@ func main(hs []tool.Handler, i int, args tool.Data) {
 	if err != nil {
 		log.Error.Panic(err)
 	}
+
 	dest, err := path.ImportToAbsolute(destImp)
 	if err != nil {
-		log.Error.Panic(err)
+		if !path.IsRelativePath(p) {
+			log.Error.Panic(err)
+		}
+
+		// Get rid of trailing slashes.
+		dest, err = filepath.Abs(p)
+		if err != nil {
+			log.Error.Panic(err)
+		}
 	}
 
 	// Make sure the requested import path (dest) does not exist yet.

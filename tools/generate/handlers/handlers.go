@@ -31,7 +31,17 @@ func start() {
 	handlersImport, err := path.CleanImport(*output)
 	assertNil(err)
 	handlersDir, err := path.ImportToAbsolute(handlersImport)
-	assertNil(err)
+	if err != nil {
+		if !path.IsRelativePath(*output) {
+			log.Error.Panic(err)
+		}
+
+		// Get rid of trailing slashes.
+		handlersDir, err = filepath.Abs(*output)
+		if err != nil {
+			log.Error.Panic(err)
+		}
+	}
 
 	log.Trace.Printf(`Processing "%s" package...`, controllersImport)
 	ps.processPackage(controllersImport, routes.NewPrefixes())
