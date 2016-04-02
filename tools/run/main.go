@@ -59,7 +59,15 @@ func main(hs []tool.Handler, i int, args tool.Data) {
 	}
 	dir, err := path.ImportToAbsolute(imp)
 	if err != nil {
-		log.Error.Panic(err)
+		if !path.IsRelativePath(p) {
+			log.Error.Panic(err)
+		}
+
+		// Get rid of trailing slashes.
+		dir, err = filepath.Abs(p)
+		if err != nil {
+			log.Error.Panic(err)
+		}
 	}
 
 	// Prepare a path of configuration file.
