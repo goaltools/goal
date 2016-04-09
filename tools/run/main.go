@@ -78,7 +78,7 @@ func main(hs []tool.Handler, i int, args tool.Data) {
 			action: "exit",
 		}
 		<-stopped
-		log.Trace.Panicln("Application has been terminated.")
+		log.Trace.Fatalln("Application has been terminated.")
 	}()
 
 	// Execute all commands from the requested directory.

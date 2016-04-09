@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"fmt"
+	"sort"
+	"strings"
 )
 
 // parents represents a set of relative controllers.
@@ -100,14 +102,15 @@ func (pcs parentControllers) Reverse() (res parentControllers) {
 //	uniqueName1 "some/import/path/2"
 //	...
 func (pcs parentControllers) Imports() string {
-	res := ""
+	results := make([]string, 0, len(pcs))
 	for i := range pcs {
 		// Ignore repeated packages and the main one (with empty accessor).
 		if pcs[i].instance == "" && pcs[i].Accessor != "" {
-			res += fmt.Sprintf(`%s "%s"%s`, pcs[i].Accessor, pcs[i].Controller.Parents.childImport, "\n")
+			results = append(results, fmt.Sprintf(`%s "%s"`, pcs[i].Accessor, pcs[i].Controller.Parents.childImport))
 		}
 	}
-	return res
+	sort.Strings(results)
+	return strings.Join(results, "\n") + "\n"
 }
 
 // All returns all parent controllers of a controller including
