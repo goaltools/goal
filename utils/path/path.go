@@ -85,11 +85,6 @@ func ImportToAbsolute(imp string) (string, error) {
 		return filepath.Clean(abs), nil
 	}
 
-	// Make sure the input import path is not relative.
-	if filepath.IsAbs(imp) {
-		return imp, nil
-	}
-
 	// Replace the "/" by the platform specific separators.
 	p := filepath.FromSlash(filepath.ToSlash(imp))
 
@@ -117,6 +112,9 @@ func ImportToAbsolute(imp string) (string, error) {
 // CleanImport gets a package import path and returns it as is if it is absolute.
 // Otherwise, it tryes to convert it to an absolute form.
 func CleanImport(imp string) (string, error) {
+	if "" == imp {
+		return "", nil
+	}
 	// If the path is not relative, return it as is.
 	if IsRelativePath(imp) {
 		// Find a full absolute path to the requested import.
@@ -127,13 +125,16 @@ func CleanImport(imp string) (string, error) {
 		return AbsoluteToImport(filepath.Join(abs, imp))
 	}
 
-	// Find a full absolute path to the requested import.
-	abs, err := filepath.Abs(imp)
+	if filepath.IsAbs(imp) {
+		// Extract package's import from it.
+		return AbsoluteToImport(imp)
+	}
+
+	abs, err := ImportToAbsolute(imp)
 	if err != nil {
 		return "", err
 	}
 
-	// Extract package's import from it.
 	return AbsoluteToImport(abs)
 }
 

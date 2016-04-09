@@ -8,6 +8,8 @@ import (
 )
 
 func TestAbsoluteToImport(t *testing.T) {
+	gopath := filepath.SplitList(build.Default.GOPATH)[0]
+
 	for _, v := range []struct {
 		abs string
 		exp string
@@ -22,15 +24,15 @@ func TestAbsoluteToImport(t *testing.T) {
 			exE: true,
 		},
 		{
-			abs: filepath.Join(build.Default.GOPATH, "src/github.com/revel/revel"),
+			abs: filepath.Join(gopath, "src/github.com/revel/revel"),
 			exp: "github.com/revel/revel",
 		},
 		{
-			abs: filepath.Join(build.Default.GOPATH, "src/github.com/revel/revel/"),
+			abs: filepath.Join(gopath, "src/github.com/revel/revel/"),
 			exp: "github.com/revel/revel",
 		},
 		{
-			abs: filepath.Join(build.Default.GOPATH, "src"),
+			abs: filepath.Join(gopath, "src"),
 			exp: "",
 		},
 		{
@@ -49,6 +51,8 @@ func TestAbsoluteToImport(t *testing.T) {
 }
 
 func TestImportToAbsolute(t *testing.T) {
+	gopath := filepath.SplitList(build.Default.GOPATH)[0]
+
 	for _, v := range []struct {
 		imp string
 		exp string
@@ -56,7 +60,7 @@ func TestImportToAbsolute(t *testing.T) {
 	}{
 		{
 			imp: "",
-			exp: filepath.Join(build.Default.GOPATH, "src"),
+			exp: filepath.Join(gopath, "src"),
 		},
 		{
 			imp: value(os.Getwd()).(string), // use already valid abs path as input.
@@ -64,7 +68,7 @@ func TestImportToAbsolute(t *testing.T) {
 		},
 		{
 			imp: "github.com/colegion/goal",
-			exp: filepath.Join(build.Default.GOPATH, "src", "github.com/colegion/goal"),
+			exp: filepath.Join(gopath, "src", "github.com/colegion/goal"),
 		},
 		{
 			imp: "..",

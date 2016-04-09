@@ -39,8 +39,8 @@ func TestCopyFile(t *testing.T) {
 		t.FailNow()
 	}
 
-	exp := "package test\n"
-	if r := string(d); r != exp {
+	exp := "package test"
+	if r := string(d); r != (exp+"\n") && r != (exp+"\r\n") {
 		t.Errorf("Incorrect content of the copied file. Expected `%s`, got `%s`.", exp, r)
 	}
 
@@ -92,8 +92,8 @@ func TestCopyModifiedFile(t *testing.T) {
 		t.FailNow()
 	}
 
-	exp := "package somethingCool\n"
-	if r := string(d); r != exp {
+	exp := "package somethingCool"
+	if r := string(d); r != (exp+"\n") && r != (exp+"\r\n") {
 		t.Errorf("Incorrect content of the copied file. Expected `%s`, got `%s`.", exp, r)
 	}
 
