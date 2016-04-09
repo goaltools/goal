@@ -1,0 +1,32 @@
+// Package <@.ctx.package> is generated automatically by "goal generate handlers" tool.
+// Please, do not edit it manually.
+package <@.ctx.package>
+
+import (
+	"net/http"
+	"net/url"
+	<@range $i, $v := .ctx.inits>
+	<@$v.Accessor> "<@$v.Import>"<@end>
+)
+
+// controllers stores names of all controllers and actions of the application.
+var controllers = url.Values{}
+
+// routes were extracted from controllers of the application.
+var routes = []struct{
+	Method, Pattern, Label string
+	Handler                http.HandlerFunc
+}{<@range $i, $v := .ctx.routes>
+	{"<@$v.Method>", "<@$v.Pattern>", "<@$v.Label>", <@$v.HandlerName>},<@end>
+}
+
+// Init initializes controllers of "<@.ctx.controllersImport>",
+// its parents, and returns a list of routes along
+// with handler functions associated with them.
+func Init() []struct{
+	Method, Pattern, Label string
+	Handler                http.HandlerFunc
+}{<@range $i, $v := .ctx.inits>
+	<@$v.Accessor>.Init(controllers)<@end>
+	return routes
+}

@@ -1,14 +1,37 @@
 package handlers
 
 import (
-	"path/filepath"
 	r "reflect"
+	"sort"
 	"testing"
 
 	"github.com/colegion/goal/internal/log"
 	"github.com/colegion/goal/internal/reflect"
 	"github.com/colegion/goal/internal/routes"
 )
+
+func TestPackagesAllInits(t *testing.T) {
+	ifs := ps.AllInits("github.com/colegion/goal/tools/generate/handlers/testdata/controllers")
+	p := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"]
+	p1 := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage"]
+	p2 := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/x"]
+	expIfs := []initFunc{ // Order matters.
+		{"c1", "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/x", *p2.init},
+		{"c2", "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage", *p1.init},
+		{"c3", "github.com/colegion/goal/tools/generate/handlers/testdata/controllers", *p.init},
+	}
+	if len(ifs) != len(expIfs) {
+		t.Fail()
+	}
+	for i := range ifs {
+		if expIfs[i].Accessor != ifs[i].Accessor {
+			t.Errorf(`Incorrect accessor of an init. Expected "%s", got "%s".`, expIfs[i].Accessor, ifs[i].Accessor)
+		}
+		if err := reflect.AssertEqualFunc(&expIfs[i].Fn, &ifs[i].Fn); err != nil {
+			t.Error(err)
+		}
+	}
+}
 
 func TestProcessPackage(t *testing.T) {
 	psR := packages{}
@@ -21,79 +44,12 @@ func TestProcessPackage(t *testing.T) {
 	assertDeepEqualPkgs(ps, psR)
 }
 
-func TestParentPackage(t *testing.T) {
-	p := parent{}
-	s := p.Package()
-	if s != "" {
-		// E.g. if we are using it for generation of:
-		//	uniquePkgName.Application.Index.
-		// In case the Application is local (i.e. its import is empty) we need:
-		//	Application.Index.
-		// I.e. the method must return empty string.
-		t.Errorf("Packages with empty imports must have no names.")
-	}
-	p = parent{
-		ID:     1,
-		Import: "net/http",
-		Name:   "Request",
-	}
-	s = p.Package(".XXX")
-	if s != "c1.XXX" {
-		t.Errorf(`Incorrect package name. Expected "c1.XXX", got "%s".`, s)
-	}
-}
-
-func TestControllerIgnoredArgs(t *testing.T) {
-	c := controller{}
-	a := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"].data["App"].Actions[0]
-	exp := ", _, _"
-	if r := c.IgnoredArgs(&a); r != exp {
-		t.Errorf(`Incorrect IgnoreArgs result. Expected "%s", got "%s".`, exp, r)
-	}
-}
-
-func assertDeepEqualController(c1, c2 *controller) {
-	if c1 == nil || c2 == nil {
-		if c1 != c2 {
-			log.Error.Panicf(
-				"One of the controllers is equal to nil while another is not: %#v != %#v.", c1, c2,
-			)
-		}
-		return
-	}
-	if filepath.Base(c1.File) != filepath.Base(c2.File) {
-		log.Error.Panicf("Controllers are from different files: %s != %s.", c1.File, c2.File)
-	}
-	if !r.DeepEqual(c1.Comments, c2.Comments) {
-		log.Error.Panicf("Controllers have different comments: %#v != %#v.", c1.Comments, c2.Comments)
-	}
-	if !r.DeepEqual(c1.Parents, c2.Parents) {
-		log.Error.Panicf("Controllers have different parent controllers: %#v != %#v.", c1.Parents, c2.Parents)
-	}
-	log.Trace.Println("Actions...")
-	if err := reflect.AssertEqualFuncs(c1.Actions, c2.Actions); err != nil {
-		log.Error.Panic(err)
-	}
-	log.Trace.Println("Before...")
-	if err := reflect.AssertEqualFunc(c1.Before, c2.Before); err != nil {
-		log.Error.Panic(err)
-	}
-	log.Trace.Println("After...")
-	if err := reflect.AssertEqualFunc(c1.After, c2.After); err != nil {
-		log.Error.Panic(err)
-	}
-	log.Trace.Println("Fields...")
-	if !r.DeepEqual(c1.Fields, c2.Fields) {
-		log.Error.Panicf(`Fields %v and %v are not equal.`, c1.Fields, c2.Fields)
-	}
-	log.Trace.Println("Routes...")
-	assertDeepEqualRoutes(c1.Routes, c2.Routes)
-}
-
-func assertDeepEqualRoutes(r1, r2 [][]routes.Route) {
+func assertDeepEqualRoutes(r1, r2 []routes.Route) {
 	if len(r1) != len(r2) {
 		log.Error.Panicf(`Routes %v and %v are of different lengths: %d != %d.`, r1, r2, len(r1), len(r2))
 	}
+	sort.Sort(ByHandler(r1))
+	sort.Sort(ByHandler(r2))
 	for i := range r1 {
 		if !r.DeepEqual(r1[i], r2[i]) {
 			log.Error.Panicf(`Routes of %dth action are different: %v and %v.`, i, r1, r2)
@@ -101,22 +57,11 @@ func assertDeepEqualRoutes(r1, r2 [][]routes.Route) {
 	}
 }
 
-func assertDeepEqualControllers(cs1, cs2 controllers) {
-	if len(cs1.data) != len(cs2.data) {
-		log.Error.Panicf(
-			"controllers maps %#v and %#v have different length: %d != %d",
-			cs1.data, cs2.data, len(cs1.data), len(cs2.data),
-		)
-	}
-	if err := reflect.AssertEqualFunc(cs1.init, cs2.init); err != nil {
-		log.Error.Panic(err)
-	}
-	for k := range cs1.data {
-		c1 := cs1.data[k]
-		c2 := cs2.data[k]
-		assertDeepEqualController(&c1, &c2)
-	}
-}
+type ByHandler []routes.Route
+
+func (rs ByHandler) Len() int           { return len(rs) }
+func (rs ByHandler) Swap(i, j int)      { rs[i], rs[j] = rs[j], rs[i] }
+func (rs ByHandler) Less(i, j int) bool { return rs[i].HandlerName < rs[j].HandlerName }
 
 func assertDeepEqualPkgs(ps1, ps2 packages) {
 	if len(ps1) != len(ps2) {
@@ -132,8 +77,23 @@ func assertDeepEqualPkgs(ps1, ps2 packages) {
 
 var ps = packages{
 	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers": controllers{
-		data: map[string]controller{
-			"App": {
+		accessor: "c3",
+		init: &reflect.Func{
+			Comments: []string{"// Init ..."},
+			File:     "smth.go",
+			Name:     "Init",
+			Params: []reflect.Arg{
+				{
+					Type: &reflect.Type{
+						Name:    "Values",
+						Package: "url",
+					},
+				},
+			},
+		},
+		list: []*controller{
+			{
+				Name: "App",
 				Actions: []reflect.Func{
 					{
 						Comments: []string{
@@ -176,7 +136,7 @@ var ps = packages{
 						},
 					},
 					{
-						Comments: []string{"// Index is a sample action."},
+						Comments: []string{"// Index is a sample action.", "//@post /subpackage/index"},
 						File:     "init.go",
 						Name:     "Index",
 						Params: []reflect.Arg{
@@ -205,28 +165,25 @@ var ps = packages{
 					},
 				},
 
-				Routes: [][]routes.Route{
-					{
-						{Method: "GET", Pattern: "/App/HelloWorld", HandlerName: "App.HelloWorld"},
-					},
+				Routes: []routes.Route{
+					{Method: "GET", Pattern: "/App/HelloWorld", HandlerName: "App.HelloWorld"},
+					{Method: "POST", Pattern: "/subpackage/index", HandlerName: "App.Index"},
 				},
 				Comments: []string{
 					"// App is a sample controller.",
 				},
 				File: "app.go",
-				Parents: []parent{
-					{
-						Name: "Controller",
-					},
-					{
-						Name: "NotController",
-					},
-					{
-						Name: "NotController1",
+				Parents: parents{
+					"github.com/colegion/goal/tools/generate/handlers/testdata/controllers",
+					[]parent{
+						{"github.com/colegion/goal/tools/generate/handlers/testdata/controllers", "Controller"},
+						{"github.com/colegion/goal/tools/generate/handlers/testdata/controllers", "NotController"},
+						{"github.com/colegion/goal/tools/generate/handlers/testdata/controllers", "NotController1"},
 					},
 				},
 			},
-			"Controller": {
+			{
+				Name: "Controller",
 				After: &reflect.Func{
 					Comments: []string{"// After is a magic method that is executed after every request."},
 					File:     "init.go",
@@ -307,20 +264,28 @@ var ps = packages{
 					"// of your app to make methods provided by middleware controllers available.",
 				},
 				File: "init.go",
-				Parents: []parent{
-					{
-						Import: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage",
-						Name:   "Controller",
-					},
-					{
-						Import: "github.com/naoina/denco",
-						Name:   "Param",
+				Parents: parents{
+					"github.com/colegion/goal/tools/generate/handlers/testdata/controllers",
+					[]parent{
+						{
+							Import: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage",
+							Name:   "Controller",
+						},
+						{
+							Import: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage",
+							Name:   "SubSubPackage",
+						},
+						{
+							Import: "github.com/naoina/denco",
+							Name:   "Param",
+						},
 					},
 				},
 			},
 		},
 	},
 	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage": controllers{
+		accessor: "c2",
 		init: &reflect.Func{
 			Comments: []string{"// Init ..."},
 			File:     "app.go",
@@ -335,8 +300,9 @@ var ps = packages{
 				},
 			},
 		},
-		data: map[string]controller{
-			"Controller": {
+		list: []*controller{
+			{
+				Name: "Controller",
 				Actions: []reflect.Func{
 					{
 						Comments: []string{"// Index is a sample action.", "//@post index someindexlabel"},
@@ -413,13 +379,24 @@ var ps = packages{
 					},
 				},
 
-				Routes: [][]routes.Route{
+				Routes: []routes.Route{
 					{
+						Method:      "POST",
+						Pattern:     "/subpackage/index",
+						Label:       "someindexlabel",
+						HandlerName: "Controller.Index",
+					},
+				},
+				Parents: parents{
+					"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage",
+					[]parent{
 						{
-							Method:      "POST",
-							Pattern:     "/subpackage/index",
-							Label:       "someindexlabel",
-							HandlerName: "Controller.Index",
+							Import: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage",
+							Name:   "SubSubPackage",
+						},
+						{
+							Import: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/x",
+							Name:   "X",
 						},
 					},
 				},
@@ -427,6 +404,95 @@ var ps = packages{
 					"// Controller is some controller.",
 				},
 				File: "app.go",
+			},
+		},
+	},
+	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage": controllers{
+		accessor: "c0",
+		list: []*controller{
+			{
+				Name: "SubSubPackage",
+				Before: &reflect.Func{
+					Comments: []string{
+						"// Before does nothing.",
+					},
+					File:   "subsubpackage.go",
+					Name:   "Before",
+					Params: []reflect.Arg{},
+					Recv: &reflect.Arg{
+						Name: "c",
+						Type: &reflect.Type{
+							Name: "SubSubPackage",
+							Star: true,
+						},
+					},
+					Results: []reflect.Arg{
+						{
+							Type: &reflect.Type{
+								Name:    "Handler",
+								Package: "http",
+							},
+						},
+					},
+				},
+				Parents: parents{
+					childImport: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage",
+				},
+				Comments: []string{
+					"// SubSubPackage is a controller.",
+				},
+				File: "subsubpackage.go",
+			},
+		},
+	},
+	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/x": controllers{
+		accessor: "c1",
+		init: &reflect.Func{
+			Comments: []string{"// Init ..."},
+			File:     "x.go",
+			Name:     "Init",
+			Params: []reflect.Arg{
+				{
+					Type: &reflect.Type{
+						Name:    "Values",
+						Package: "url",
+					},
+				},
+			},
+		},
+		list: []*controller{
+			{
+				Name: "X",
+				Before: &reflect.Func{
+					Comments: []string{
+						"// Before ...",
+					},
+					File:   "x.go",
+					Name:   "Before",
+					Params: []reflect.Arg{},
+					Recv: &reflect.Arg{
+						Name: "c",
+						Type: &reflect.Type{
+							Name: "X",
+							Star: true,
+						},
+					},
+					Results: []reflect.Arg{
+						{
+							Type: &reflect.Type{
+								Name:    "Handler",
+								Package: "http",
+							},
+						},
+					},
+				},
+				Parents: parents{
+					childImport: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/x",
+				},
+				Comments: []string{
+					"// X ...",
+				},
+				File: "x.go",
 			},
 		},
 	},

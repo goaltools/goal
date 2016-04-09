@@ -3,6 +3,7 @@
 package handlers
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -25,99 +26,89 @@ func start() {
 
 	// Start processing of controllers.
 	ps := packages{}
-	absInput, err := path.ImportToAbsolute(*input)
-	if err != nil {
-		log.Error.Panic(err)
-	}
-	absImport, err := path.AbsoluteToImport(absInput)
-	if err != nil {
-		log.Error.Panic(err)
-	}
-	absOutput, err := path.ImportToAbsolute(*output)
-	if err != nil {
-		log.Error.Panic(err)
-	}
-	absImportOut, err := path.AbsoluteToImport(absOutput)
-	if err != nil {
-		log.Error.Panic(err)
-	}
-	log.Trace.Printf(`Processing "%s" package...`, absImport)
-	ps.processPackage(absImport, routes.NewPrefixes())
+	controllersImport, err := path.CleanImport(*input)
+	assertNil(err)
+	handlersImport, err := path.CleanImport(*output)
+	assertNil(err)
+	handlersDir, err := path.ImportToAbsolute(handlersImport)
+	assertNil(err)
 
-	// Start generation of handler packages.
-	tpl, err := path.ImportToAbsolute("github.com/colegion/goal/tools/generate/handlers/handlers.go.template")
-	if err != nil {
-		log.Error.Panic(err)
-	}
-	t := generation.NewType("", tpl)
+	log.Trace.Printf(`Processing "%s" package...`, controllersImport)
+	ps.processPackage(controllersImport, routes.NewPrefixes())
+
+	// Start generation of the handlers package.
+	tplInit, err := path.ImportToAbsolute("github.com/colegion/goal/tools/generate/handlers/init.go.template")
+	assertNil(err)
+	tplHandlers, err := path.ImportToAbsolute("github.com/colegion/goal/tools/generate/handlers/handlers.go.template")
+	assertNil(err)
+	t := generation.NewType("", tplInit)
 	t.Extension = ".go" // Save generated files as a .go source.
 
-	// Iterate through all available packages and generate handlers for them.
+	// Create a new directory for the package (the old one should be removed).
 	log.Trace.Printf(`Starting generation of "%s" package...`, *pkg)
-	for imp := range ps {
-		// Check whether current package is the main one
-		// and should be stored at the root directory or it is a subpackage.
-		//
-		// I.e. if --input is "./controllers" and --output is "./assets/handlers",
-		// we are saving processed "./controllers" package to "./assets/handlers"
-		// and some "github.com/colegion/smth" to "./assets/handlers/github.com/colegion/smth".
-		out := *output
-		if imp != absImport {
-			out = filepath.Join(out, imp)
-		}
-		t.CreateDir(out)
+	t.CreateDir(handlersDir)
 
-		// Iterate over all available controllers, generate handlers package on
-		// every of them.
-		n := 0
-		for name := range ps[imp].data {
-			// Find parent controllers of this controller.
-			cs := []parent{}
-			for i, p := range ps[imp].data[name].Parents {
-				// Make sure it is a controller rather than just some embedded struct.
-				check := p.Import
-				if check == "" { // Embedded parent is a local structure.
-					check = absImport
-				}
-				if _, ok := ps[check]; !ok { // Such package is not in the list of scanned ones.
-					continue
-				}
-				if _, ok := ps[check].data[p.Name]; !ok { // There is no such controller.
-					continue
-				}
+	// Generate an init file.
+	n := "Init"
+	check := map[string]bool{
+		n: true,
+	}
+	t.Package = strings.ToLower(n)
+	t.Context = map[string]interface{}{
+		"package": *pkg,
+		"inits":   ps.AllInits(controllersImport),
+		"routes":  ps.AllRoutes(),
+	}
+	t.Generate()
 
-				// It is a valid parent controller, add it to the list.
-				cs = append(cs, parent{
-					ID:     i,
-					Import: p.Import,
-					Name:   p.Name,
-				})
+	// Iterate over all available controllers, generate a file for every of them.
+	index := 0
+	t = generation.NewType("", tplHandlers)
+	t.Path = handlersDir
+	t.Extension = ".go" // Save generated files as a .go source.
+	for k := range ps {
+		for i := range ps[k].list {
+			// Use controller's name as a file name if it is unique.
+			// Add an integer suffix otherwise.
+			n = ps[k].list[i].Name
+			if _, ok := check[n]; ok {
+				n = fmt.Sprintf("%s%d", n, index)
 			}
+			check[n] = true
 
-			// Initialize parameters and generate a package.
-			t.Package = strings.ToLower(name)
+			// Set a name of the file. It is a lowercased controller name.
+			t.Package = strings.ToLower(n)
+
+			// Prepare parent controllers.
+			pcs := ps[k].list[i].Parents.All(ps, "", newContext())
+
+			// Set context variables.
 			t.Context = map[string]interface{}{
-				"after":  action.MethodAfter,
-				"before": action.MethodBefore,
+				"package": *pkg,
 
-				"controller":   ps[imp].data[name],
-				"controllers":  ps[imp].data,
-				"import":       imp,
-				"input":        input,
-				"name":         name,
-				"outputImport": absImportOut,
-				"output":       output,
-				"package":      pkg,
-				"parents":      cs,
-				"initFunc":     ps[imp].init,
-				"num":          n,
+				"controllers": ps[k].list,
 
-				"actionImport":    action.InterfaceImport,
-				"actionInterface": action.Interface,
-				"strconv":         action.StrconvContext,
+				"controller": ps[k].list[i],
+				"import":     k,
+
+				"name":               n,
+				"controllerFileName": filepath.Base(ps[k].list[i].File),
+
+				"inits":             ps.AllInits(controllersImport),
+				"parentControllers": pcs,
+
+				"index":   index,
+				"strconv": action.StrconvContext,
 			}
 			t.Generate()
-			n++
+			index++
 		}
+	}
+}
+
+// assertNil makes sure an error is nil. It panics otherwise.
+func assertNil(err error) {
+	if err != nil {
+		log.Error.Panic(err)
 	}
 }

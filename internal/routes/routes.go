@@ -51,32 +51,32 @@ type Route struct {
 func (ps Prefixes) ParseRoutes(controller string, f *r.Func) (rs []Route) {
 	for i := range f.Comments {
 		// Skip comments that do not contain routes.
-		m, p, l, ok := parseComment(f.Comments[i])
+		method, pattern, label, ok := parseComment(f.Comments[i])
 		if !ok {
 			continue
 		}
 
 		// If no pattern specified, use controller's and action's names.
-		if p == "" {
-			p = path.Join("/", controller, f.Name)
+		if pattern == "" {
+			pattern = path.Join("/", controller, f.Name)
 		}
 
 		// Concatenate route with every of the prefixes
 		// if their methods match.
 		for j := range ps {
 			// Ignore prefixes which's methods do not match and they are not wildcard.
-			if ps[j].Method != m && ps[j].Method != wildcardRoute {
+			if ps[j].Method != method && ps[j].Method != wildcardRoute {
 				continue
 			}
 
 			// Concatenate all other prefixes and add to the list.
-			ms := realMethods(m)
+			ms := realMethods(method)
 			for k := range ms {
 				r := Route{
 					Method:      ms[k],
-					Pattern:     path.Join(ps[j].Pattern, p),
+					Pattern:     path.Join(ps[j].Pattern, pattern),
 					HandlerName: controller + "." + f.Name,
-					Label:       l,
+					Label:       label,
 				}
 				log.Trace.Printf(
 					`Detected route "%s" "%s" "%s" ("%s")`, r.Method, r.Pattern, r.HandlerName, r.Label,
