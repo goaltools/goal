@@ -12,10 +12,10 @@ func TestParentControllerCalled(t *testing.T) {
 	pcs := c.Parents.All(ps, "", newContext())
 	// Result (App): SubSubPackage, X, SubPackage, SubSubPackage, Controller
 	exp := []bool{
-		false,
-		false,
-		false,
 		true,
+		false,
+		false,
+		false,
 		false,
 	}
 	if len(pcs) != len(exp) {
@@ -23,7 +23,7 @@ func TestParentControllerCalled(t *testing.T) {
 	}
 	for i := range exp {
 		if res := pcs[i].Called(); res != exp[i] {
-			t.Errorf(`Expected: "%v", got "%v".`, exp[i], res)
+			t.Errorf(`[%v] Expected: "%v", got "%v".`, i, exp[i], res)
 		}
 	}
 }
@@ -34,10 +34,10 @@ func TestParentControllerAllocate(t *testing.T) {
 	pcs := c.Parents.All(ps, "", newContext())
 	// Result (App): SubSubPackage, X, SubPackage, SubSubPackage, Controller
 	exp := []string{
-		"&c0.SubSubPackage",
+		"c.Controller.SubSubPackage",
 		"&c1.X",
 		"&c2.Controller",
-		"c.Controller.Controller.SubSubPackage",
+		"&c0.SubSubPackage",
 		"&customPackageName.Controller",
 	}
 	if len(pcs) != len(exp) {
@@ -45,7 +45,7 @@ func TestParentControllerAllocate(t *testing.T) {
 	}
 	for i := range exp {
 		if res := pcs[i].Allocate("c", "customPackageName"); res != exp[i] {
-			t.Errorf(`Incorrect allocation. Expected: "%s", got "%s".`, exp[i], res)
+			t.Errorf(`[%v]Incorrect allocation. Expected: "%s", got "%s".`, i, exp[i], res)
 		}
 	}
 }
@@ -76,10 +76,12 @@ func TestParentControllersImports(t *testing.T) {
 	p := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"]
 	c := p.list[0]
 	pcs := c.Parents.All(ps, "", newContext())
-	exp := `c0 "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage"
-c1 "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/x"
-c2 "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage"
-`
+
+	exp_c0 := `c0 "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/subsubpackage"`
+	exp_c1 := `c1 "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage/x"`
+	exp_c2 := `c2 "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage"`
+	exp := exp_c0 + "\n" + exp_c1 + "\n" + exp_c2 + "\n"
+
 	if imp := pcs.Imports(); imp != exp {
 		t.Errorf("Incorrect imports. Expected: `%s`, got `%s`.", exp, imp)
 	}
@@ -106,7 +108,7 @@ func TestParentAll(t *testing.T) {
 		{ // subsubpackage.SubSubPackage that embeds nothing.
 			Accessor:   "c0",
 			Prefix:     "Controller.Controller.", // The second Controller is of type subpackage.Controller.
-			instance:   "",
+			instance:   "Controller.SubSubPackage",
 			Controller: p2.list[0],
 		},
 		{ // x.X that embeds nothing.
@@ -124,7 +126,7 @@ func TestParentAll(t *testing.T) {
 		{ // subsubpackage.SubSubPackage that embeds nothing.
 			Accessor:   "c0", // The same accessor as has the "subsubpackage" above.
 			Prefix:     "Controller.",
-			instance:   "Controller.Controller.SubSubPackage", // The second Controller is of type subpackage.Controller.
+			instance:   "", // The second Controller is of type subpackage.Controller.
 			Controller: p2.list[0],
 		},
 		{ // Controller that embeds nothing.
@@ -142,7 +144,7 @@ func assertDeepEqualParentControllers(pcs1, pcs2 parentControllers) {
 		log.Error.Panicf("Different number of parent controllers: %d != %d.", len(pcs1), len(pcs2))
 	}
 	for i := range pcs1 {
-		log.Trace.Printf(`Comparing "%s" and "%s".`, pcs1[i].Controller.Name, pcs2[i].Controller.Name)
+		log.Info.Printf(`[%v] Comparing "%s" and "%s".`, i, pcs1[i].Controller.Name, pcs2[i].Controller.Name)
 		assertDeepEqualController(pcs1[i].Controller, pcs2[i].Controller)
 		if pcs1[i].Accessor != pcs2[i].Accessor {
 			log.Error.Panicf(`Expected accessor: "%s". Got: "%s".`, pcs1[i].Accessor, pcs2[i].Accessor)

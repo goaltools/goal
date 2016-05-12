@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"fmt"
+	"sort"
+	"strings"
 )
 
 // parents represents a set of relative controllers.
@@ -100,14 +102,15 @@ func (pcs parentControllers) Reverse() (res parentControllers) {
 //	uniqueName1 "some/import/path/2"
 //	...
 func (pcs parentControllers) Imports() string {
-	res := ""
+	results := make([]string, 0, len(pcs))
 	for i := range pcs {
 		// Ignore repeated packages and the main one (with empty accessor).
 		if pcs[i].instance == "" && pcs[i].Accessor != "" {
-			res += fmt.Sprintf(`%s "%s"%s`, pcs[i].Accessor, pcs[i].Controller.Parents.childImport, "\n")
+			results = append(results, fmt.Sprintf(`%s "%s"`, pcs[i].Accessor, pcs[i].Controller.Parents.childImport))
 		}
 	}
-	return res
+	sort.Strings(results)
+	return strings.Join(results, "\n") + "\n"
 }
 
 // All returns all parent controllers of a controller including
@@ -116,7 +119,7 @@ func (pcs parentControllers) Imports() string {
 // and their special actions must be called.
 // I.e. grandparents first, then parents, then children.
 func (ps parents) All(pkgs packages, prefix string, ctx *context) (pcs parentControllers) {
-	// Iterate over all available parents. Check parents of their parents recursively.
+	// Iterate over all available parents. Register a new instance of the controller if one doesn't already exist.
 	for i := range ps.list {
 		// Make sure current parent is a controller rather than
 		// some embedded struct.
@@ -129,9 +132,26 @@ func (ps parents) All(pkgs packages, prefix string, ctx *context) (pcs parentCon
 			continue // This parent is from a package with controllers but not a controller, skip it.
 		}
 
-		// Add parents' parents to the top of results ("grandparents first" rule).
-		// Use old prefix + current controller's name as a new prefix.
-		pcs = append(c.Parents.All(pkgs, prefix+c.Name+".", ctx), pcs...)
+		// Register a new instance of the controller if one doesn't already exist.
+		n := fmt.Sprintf("(%s).%s", c.Parents.childImport, c.Name)
+		_, ok = ctx.instances[n]
+		if !ok {
+			ctx.instances[n] = prefix + c.Name // Instance is equal to prefix + current controller name.
+		}
+	}
+
+	// Iterate over all available parents. Check parents of their parents recursively.
+	for i := range ps.list {
+		// Make sure current parent is a controller rather than
+		// some embedded struct.
+		pkg, ok := pkgs[ps.list[i].Import] // Make sure it's from the package with controllers.
+		if !ok {
+			continue // Controllers were not detected in the package of this parent, skip it.
+		}
+		c := pkg.Controller(ps.list[i].Name) // Make sure it is a controller, not some struct.
+		if c == nil {
+			continue // This parent is from a package with controllers but not a controller, skip it.
+		}
 
 		// Defining the accessor of the controller package.
 		// Local packages must have empty accessors, the same packages must have
@@ -150,6 +170,13 @@ func (ps parents) All(pkgs packages, prefix string, ctx *context) (pcs parentCon
 		instance, ok := ctx.instances[n]
 		if !ok {
 			ctx.instances[n] = prefix + c.Name // Instance is equal to prefix + current controller name.
+		} else if instance == prefix+c.Name {
+
+			// Add parents' parents to the top of results ("grandparents first" rule).
+			// Use old prefix + current controller's name as a new prefix.
+			pcs = append(c.Parents.All(pkgs, prefix+c.Name+".", ctx), pcs...)
+
+			instance = ""
 		}
 
 		// Add current controller to the bottom.
