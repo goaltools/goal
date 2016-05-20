@@ -80,8 +80,8 @@ func (t tStatic) Serve(w http.ResponseWriter, r *http.Request) {
 // its parents, and returns a list of routes along
 // with handler functions associated with them.
 func Init() (routes []struct {
-	Method, Pattern string
-	Handler         http.HandlerFunc
+	Method, Pattern, Label string
+	Handler                http.HandlerFunc
 }) {
 
 	routes = append(routes, initStatic()...)
@@ -90,17 +90,18 @@ func Init() (routes []struct {
 }
 
 func initStatic() (rs []struct {
-	Method, Pattern string
-	Handler         http.HandlerFunc
+	Method, Pattern, Label string
+	Handler                http.HandlerFunc
 }) {
 	context.Add("Static", "Serve")
 	rs = append(rs, []struct {
-		Method, Pattern string
-		Handler         http.HandlerFunc
+		Method, Pattern, Label string
+		Handler                http.HandlerFunc
 	}{
 		{
 			Method:  "GET",
 			Pattern: "/*filepath",
+			Label:   "",
 			Handler: Static.Serve,
 		},
 	}...)

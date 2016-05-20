@@ -149,8 +149,8 @@ func (t tTemplates) Redirect(w http.ResponseWriter, r *http.Request) {
 // its parents, and returns a list of routes along
 // with handler functions associated with them.
 func Init() (routes []struct {
-	Method, Pattern string
-	Handler         http.HandlerFunc
+	Method, Pattern, Label string
+	Handler                http.HandlerFunc
 }) {
 
 	routes = append(routes, initTemplates()...)
@@ -161,8 +161,8 @@ func Init() (routes []struct {
 }
 
 func initTemplates() (rs []struct {
-	Method, Pattern string
-	Handler         http.HandlerFunc
+	Method, Pattern, Label string
+	Handler                http.HandlerFunc
 }) {
 	context.Add("Templates", "RenderTemplate")
 

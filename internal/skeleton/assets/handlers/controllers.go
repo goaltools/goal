@@ -4,6 +4,7 @@ package handlers
 
 import (
 	"net/http"
+	"net/url"
 
 	c0 "github.com/colegion/goal/internal/skeleton/assets/handlers/github.com/colegion/contrib/controllers/requests"
 	c2 "github.com/colegion/goal/internal/skeleton/assets/handlers/github.com/colegion/contrib/controllers/sessions"
@@ -21,6 +22,9 @@ import (
 // Controllers is a struct that should be embedded into every controller
 // of your app to make methods and fields provided by standard controllers available.
 var Controllers tControllers
+
+// context stores names of all controllers and packages of the app.
+var context = url.Values{}
 
 // tControllers is a type with handler methods of Controllers controller.
 type tControllers struct {
@@ -90,9 +94,24 @@ func (t tControllers) After(c *contr.Controllers, w http.ResponseWriter, r *http
 	return
 }
 
+// Init initializes controllers of "github.com/colegion/goal/internal/skeleton/controllers",
+// its parents, and returns a list of routes along
+// with handler functions associated with them.
+func Init() (routes []struct {
+	Method, Pattern, Label string
+	Handler                http.HandlerFunc
+}) {
+
+	routes = append(routes, initApp()...)
+
+	routes = append(routes, initControllers()...)
+
+	return
+}
+
 func initControllers() (rs []struct {
-	Method, Pattern string
-	Handler         http.HandlerFunc
+	Method, Pattern, Label string
+	Handler                http.HandlerFunc
 }) {
 	rs = append(rs, c0.Init()...)
 

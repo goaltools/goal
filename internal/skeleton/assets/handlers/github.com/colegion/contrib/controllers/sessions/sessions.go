@@ -69,8 +69,8 @@ func (t tSessions) After(c *contr.Sessions, w http.ResponseWriter, r *http.Reque
 // its parents, and returns a list of routes along
 // with handler functions associated with them.
 func Init() (routes []struct {
-	Method, Pattern string
-	Handler         http.HandlerFunc
+	Method, Pattern, Label string
+	Handler                http.HandlerFunc
 }) {
 
 	routes = append(routes, initSessions()...)
@@ -81,8 +81,8 @@ func Init() (routes []struct {
 }
 
 func initSessions() (rs []struct {
-	Method, Pattern string
-	Handler         http.HandlerFunc
+	Method, Pattern, Label string
+	Handler                http.HandlerFunc
 }) {
 	return
 }

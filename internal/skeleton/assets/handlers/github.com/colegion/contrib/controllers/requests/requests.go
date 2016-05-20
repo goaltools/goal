@@ -60,8 +60,8 @@ func (t tRequests) After(c *contr.Requests, w http.ResponseWriter, r *http.Reque
 // its parents, and returns a list of routes along
 // with handler functions associated with them.
 func Init() (routes []struct {
-	Method, Pattern string
-	Handler         http.HandlerFunc
+	Method, Pattern, Label string
+	Handler                http.HandlerFunc
 }) {
 
 	routes = append(routes, initRequests()...)
@@ -70,8 +70,8 @@ func Init() (routes []struct {
 }
 
 func initRequests() (rs []struct {
-	Method, Pattern string
-	Handler         http.HandlerFunc
+	Method, Pattern, Label string
+	Handler                http.HandlerFunc
 }) {
 	return
 }
