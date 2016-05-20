@@ -37,79 +37,10 @@ thanks to good defaults.
   * [`goal generate handlers`](https://colegion.github.io/goal/manual/handlers/index.html) - generate HTTP handler functions
     * [Actions](https://colegion.github.io/goal/manual/handlers/actions.html)
     * [Controllers](https://colegion.github.io/goal/manual/handlers/controllers.html)
-  * `goal generate listing` - generate a list of file paths
+    * [Routes](https://colegion.github.io/goal/manual/handlers/routes.html) - a slice of routes and handler functions associated with them
+  * `goal generate listing` - ~~generate a list of file paths~~ (deprecated)
 
 All `goal generate *` tools may be used with [`go generate`](https://blog.golang.org/generate).
-
-### Overview
-
-#### Controllers and Actions
-
-```go
-// Profiles is a sample controller.
-type Profiles struct {
-	*Controllers
-}
-
-// List is an action that renders a page with some profiles.
-func (c *Profiles) List(page int) http.Handler {
-	c.Context["profiles"] = models.PaginatedProfiles(page)
-	return c.Render()
-}
-```
-Value of `page` will be automatically binded from Form or URL.
-
-#### Routes
-
-```go
-//@get /greet/:name
-func (c *App) Greet(name string) http.Handler {
-	c.Context["name"] = name
-	return c.Render()
-}
-```
-A slice of routes associated with their handler functions will be generated
-out of this. The result can be used with any router.
-
-#### Magic Actions
-
-Magic actions are the actions that are run automatically before or after requests.
-```go
-type ParentController struct {
-	*Controllers
-}
-
-func (c *ParentController) Before() http.Handler {
-	println("parent: Before")
-	return nil
-}
-
-type AppController struct {
-	*ParentController
-}
-
-func (c *AppController) Before() http.Handler {
-	println("app: Before")
-	return nil
-}
-
-func (c *AppController) Index() http.Handler {
-	println("app: Index Action")
-	return c.Render()
-}
-
-func (c *AppController) After() http.Handler {
-	println("app: After")
-	return nil
-}
-```
-On every request the code above will print:
-```
-parent: Before
-app: Before
-app: Index Action
-app: After
-```
 
 ### Status
 
