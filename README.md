@@ -41,6 +41,74 @@ thanks to good defaults.
 
 All `goal generate *` tools may be used with [`go generate`](https://blog.golang.org/generate).
 
+### Overview
+
+#### Controllers and Actions
+
+```go
+// Profiles is a sample controller.
+type Profiles struct {
+	*Controllers
+}
+
+// List is an action that renders a page with some profiles.
+func (c *Profiles) List(page int) http.Handler {
+	c.Context["profiles"] = models.PaginatedProfiles(page)
+	return c.Render()
+}
+```
+Value of `page` will be automatically binded from Form or URL.
+
+#### Routes
+
+```go
+//@get /greet/:name
+func (c *App) Greet(name string) http.Handler {
+	c.Context["name"] = name
+	return c.Render()
+}
+```
+
+#### Magic Actions
+
+Magic actions are the actions that are run automatically before or after requests.
+```go
+type ParentController struct {
+	*Controllers
+}
+
+func (c *ParentController) Before() http.Handler {
+	println("parent: Before")
+	return nil
+}
+
+type AppController struct {
+	*ParentController
+}
+
+func (c *AppController) Before() http.Handler {
+	println("app: Before")
+	return nil
+}
+
+func (c *AppController) Index() http.Handler {
+	println("app: Index Action")
+	return c.Render()
+}
+
+func (c *AppController) After() http.Handler {
+	println("app: After")
+	return nil
+}
+```
+On every request the code above will print:
+```
+parent: Before
+app: Before
+app: Index Action
+app: After
+```
+
 ### Status
 
 **Proof of Concept**: not ready for use in the wild.
