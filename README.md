@@ -68,6 +68,8 @@ func (c *App) Greet(name string) http.Handler {
 	return c.Render()
 }
 ```
+A slice of routes associated with their handler functions will be generated
+out of this. The result can be used with any router.
 
 #### Magic Actions
 
