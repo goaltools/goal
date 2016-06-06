@@ -16,8 +16,8 @@ import (
 
 var trace = flag.Bool("trace", false, "show stack trace in case of runtime errors")
 
-// tools is a stores information about the registered subcommands (tools)
-// the framework supports.
+// tools stores information about the registered subcommands (tools)
+// the toolkit supports.
 var tools = tool.NewContext(
 	create.Handler,
 	run.Handler,
