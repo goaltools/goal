@@ -4,8 +4,11 @@
 package main
 
 import (
+	"bytes"
 	"flag"
+	"fmt"
 	"os"
+	"runtime"
 
 	"github.com/colegion/goal/internal/log"
 	"github.com/colegion/goal/tools/create"
@@ -14,7 +17,7 @@ import (
 	"github.com/colegion/goal/utils/tool"
 )
 
-var trace = flag.Bool("trace", false, "show stack trace in case of runtime errors")
+var trace = flag.Bool("trace", true, "show stack trace in case of runtime errors")
 
 // tools is a stores information about the registered subcommands (tools)
 // the framework supports.
@@ -31,7 +34,22 @@ func main() {
 	defer func() {
 		if err := recover(); err != nil {
 			if *trace {
-				log.Warn.Fatalf("TRACE: %v.", err)
+				var buffer bytes.Buffer
+				buffer.WriteString(fmt.Sprintf("[panic]%v", err))
+				for i := 1; ; i += 1 {
+					pc, file, line, ok := runtime.Caller(i)
+					if !ok {
+						break
+					}
+					funcinfo := runtime.FuncForPC(pc)
+					if nil != funcinfo {
+						buffer.WriteString(fmt.Sprintf("    %s:%d %s\r\n", file, line, funcinfo.Name()))
+					} else {
+						buffer.WriteString(fmt.Sprintf("    %s:%d\r\n", file, line))
+					}
+				}
+
+				log.Warn.Fatalf("TRACE: %v.", buffer.String())
 			}
 			os.Exit(0)
 		}
