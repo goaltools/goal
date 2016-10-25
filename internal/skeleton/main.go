@@ -10,7 +10,7 @@ import (
 
 	"github.com/colegion/contrib/routers/denco"
 	"github.com/colegion/contrib/servers/grace"
-	"github.com/goaltools/iniflag"
+	"github.com/conveyer/xflag"
 )
 
 var addr = flag.String("http.addr", ":9000", "HTTP address the app must listen on")
@@ -20,7 +20,7 @@ var addr = flag.String("http.addr", ":9000", "HTTP address the app must listen o
 // of the automatically generated package, and starts a new server.
 func main() {
 	// Parse configuration files and flags.
-	err := iniflag.Parse("config/app.ini")
+	err := xflag.Parse("config/app.ini")
 	assertNil(err)
 
 	// Initialize and build routes.
