@@ -44,7 +44,8 @@ All `goal generate *` tools may be used with [`go generate`](https://blog.golang
 
 ### Status
 
-**Proof of Concept**: not ready for use in the wild.
+**Proof of Concept**: not ready for use in the wild. **Working on**: splitting the project into
+independent repos.
 
 [![GoDoc](https://godoc.org/github.com/colegion/goal?status.svg)](https://godoc.org/github.com/colegion/goal)
 [![Build Status](https://travis-ci.org/colegion/goal.svg?branch=master)](https://travis-ci.org/colegion/goal)
