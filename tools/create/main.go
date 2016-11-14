@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/colegion/goal/utils/path"
 	"github.com/goaltools/goal/internal/log"
 	"github.com/goaltools/goal/utils/tool"
 
@@ -51,11 +50,11 @@ func main(hs []tool.Handler, i int, args tool.Data) {
 	if err != nil {
 		log.Error.Panic(err)
 	}
-	destImp, err := path.CleanImport(p)
+	destImp, err := importpath.ToImport(p)
 	if err != nil {
 		log.Error.Panic(err)
 	}
-	dest, err := path.ImportToAbsolute(destImp)
+	dest, err := importpath.ToPath(destImp)
 	if err != nil {
 		log.Error.Panic(err)
 	}
