@@ -5,13 +5,13 @@ import (
 	"os/exec"
 	"testing"
 
-	"github.com/colegion/goal/utils/tool"
+	"github.com/goaltools/goal/utils/tool"
 )
 
 func TestStart(t *testing.T) {
 	main(handlers, 0, tool.Data{})
 
-	cmd := exec.Command("go", "install", "github.com/colegion/goal/tools/generate/handlers/testdata/assets/handlers")
+	cmd := exec.Command("go", "install", "github.com/goaltools/goal/tools/generate/handlers/testdata/assets/handlers")
 	cmd.Stderr = os.Stderr // Show the output of the program we run.
 	if err := cmd.Run(); err != nil {
 		t.Errorf(`There are problems with generated handlers, error: "%s".`, err)

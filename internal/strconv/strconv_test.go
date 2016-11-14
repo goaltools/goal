@@ -3,7 +3,7 @@ package strconv
 import (
 	"testing"
 
-	r "github.com/colegion/goal/internal/reflect"
+	r "github.com/goaltools/goal/internal/reflect"
 )
 
 func TestRender(t *testing.T) {

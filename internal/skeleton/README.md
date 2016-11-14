@@ -1,4 +1,4 @@
-## github.com/colegion/goal/internal/skeleton
+## github.com/goaltools/goal/internal/skeleton
 
 ### Install and run
 After installation and start, the app will be available on [localhost:9000](http://localhost:9000/).
@@ -6,10 +6,10 @@ After installation and start, the app will be available on [localhost:9000](http
 #### Quick start for evaluation
 ```bash
 # Download it.
-go get -d github.com/colegion/goal/internal/skeleton
+go get -d github.com/goaltools/goal/internal/skeleton
 
 # Change your current directory to the root of the project.
-cd $GOPATH/src/github.com/colegion/goal/internal/skeleton
+cd $GOPATH/src/github.com/goaltools/goal/internal/skeleton
 
 # Run it as a regular Go application.
 go run main.go
@@ -18,16 +18,16 @@ go run main.go
 #### Development install
 ```bash
 # Install Goal toolkit.
-go get -u github.com/colegion/goal
+go get -u github.com/goaltools/goal
 
 # Download the app.
-go get github.com/colegion/goal/internal/skeleton
+go get github.com/goaltools/goal/internal/skeleton
 
 # Run it in development mode.
-goal run github.com/colegion/goal/internal/skeleton
+goal run github.com/goaltools/goal/internal/skeleton
 
 # Start making changes to the code that is located at
-# $GOPATH/src/github.com/colegion/goal/internal/skeleton
+# $GOPATH/src/github.com/goaltools/goal/internal/skeleton
 ```
 
 ### Contents

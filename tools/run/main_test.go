@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/colegion/goal/utils/path"
-	"github.com/colegion/goal/utils/tool"
+	"github.com/goaltools/goal/utils/path"
+	"github.com/goaltools/goal/utils/tool"
 )
 
 var mu sync.Mutex
@@ -45,7 +45,7 @@ func TestMain_TestData2(t *testing.T) {
 		time.Sleep(time.Second * 4)
 		notify <- syscall.SIGTERM
 	}()
-	main(handlers, 0, tool.Data{"github.com/colegion/goal/tools/run/testdata/configs"})
+	main(handlers, 0, tool.Data{"github.com/goaltools/goal/tools/run/testdata/configs"})
 }
 
 func TestMain_IncorrectConfig(t *testing.T) {
@@ -62,11 +62,11 @@ func TestMain(t *testing.T) {
 		time.Sleep(time.Second * 4)
 		notify <- syscall.SIGTERM
 	}()
-	main(handlers, 0, tool.Data{"github.com/colegion/goal/internal/skeleton"})
+	main(handlers, 0, tool.Data{"github.com/goaltools/goal/internal/skeleton"})
 }
 
 func createConfig(t *testing.T) []byte {
-	p, _ := path.ImportToAbsolute("github.com/colegion/goal/tools/run")
+	p, _ := path.ImportToAbsolute("github.com/goaltools/goal/tools/run")
 
 	bs, err := ioutil.ReadFile(
 		filepath.Join(p, "./testdata/configs/goal.src.yml"),

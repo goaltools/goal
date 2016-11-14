@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/colegion/goal/internal/action"
-	"github.com/colegion/goal/internal/generation"
-	"github.com/colegion/goal/internal/log"
-	"github.com/colegion/goal/internal/routes"
-	"github.com/colegion/goal/utils/path"
+	"github.com/goaltools/goal/internal/action"
+	"github.com/goaltools/goal/internal/generation"
+	"github.com/goaltools/goal/internal/log"
+	"github.com/goaltools/goal/internal/routes"
+	"github.com/goaltools/goal/utils/path"
 )
 
 // start is an entry point of the generate handlers command.
@@ -45,7 +45,7 @@ func start() {
 	ps.processPackage(absImport, routes.NewPrefixes())
 
 	// Start generation of handler packages.
-	tpl, err := path.ImportToAbsolute("github.com/colegion/goal/tools/generate/handlers/handlers.go.template")
+	tpl, err := path.ImportToAbsolute("github.com/goaltools/goal/tools/generate/handlers/handlers.go.template")
 	if err != nil {
 		log.Error.Panic(err)
 	}
@@ -60,7 +60,7 @@ func start() {
 		//
 		// I.e. if --input is "./controllers" and --output is "./assets/handlers",
 		// we are saving processed "./controllers" package to "./assets/handlers"
-		// and some "github.com/colegion/smth" to "./assets/handlers/github.com/colegion/smth".
+		// and some "github.com/goaltools/smth" to "./assets/handlers/github.com/goaltools/smth".
 		out := *output
 		if imp != absImport {
 			out = filepath.Join(out, imp)

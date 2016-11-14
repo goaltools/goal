@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/colegion/goal/internal/log"
+	"github.com/goaltools/goal/internal/log"
 )
 
 func TestStructsFilter(t *testing.T) {
@@ -120,16 +120,16 @@ func TestProcessImportDecl(t *testing.T) {
 
 				"./example"
 
-				"github.com/colegion/goal"
-				l "github.com/colegion/goal/log"
+				"github.com/goaltools/goal"
+				l "github.com/goaltools/goal/log"
 			)
 		`,
 	)
 	expRes := map[string]string{
 		"strings": "strings",
 		"example": "./example",
-		"goal":    "github.com/colegion/goal",
-		"l":       "github.com/colegion/goal/log",
+		"goal":    "github.com/goaltools/goal",
+		"l":       "github.com/goaltools/goal/log",
 	}
 	genDecl, _ := pkg.Decls[0].(*ast.GenDecl)
 	imps := processImportDecl(genDecl)
@@ -181,16 +181,16 @@ func TestProcessTypeSpec(t *testing.T) {
 func TestProcessImportSpec(t *testing.T) {
 	pkg := getPackage(t, `package test
 			import(
-				"github.com/colegion/goal"
-				l "github.com/colegion/goal/log"
+				"github.com/goaltools/goal"
+				l "github.com/goaltools/goal/log"
 				"./example"
 				"strings"
 			)
 		`,
 	)
 	expRes := map[string]string{
-		"goal":    "github.com/colegion/goal",
-		"l":       "github.com/colegion/goal/log",
+		"goal":    "github.com/goaltools/goal",
+		"l":       "github.com/goaltools/goal/log",
 		"example": "./example",
 		"strings": "strings",
 	}

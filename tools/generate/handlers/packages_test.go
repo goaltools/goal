@@ -5,14 +5,14 @@ import (
 	r "reflect"
 	"testing"
 
-	"github.com/colegion/goal/internal/log"
-	"github.com/colegion/goal/internal/reflect"
-	"github.com/colegion/goal/internal/routes"
+	"github.com/goaltools/goal/internal/log"
+	"github.com/goaltools/goal/internal/reflect"
+	"github.com/goaltools/goal/internal/routes"
 )
 
 func TestProcessPackage(t *testing.T) {
 	psR := packages{}
-	psR.processPackage("github.com/colegion/goal/tools/generate/handlers/testdata/controllers", routes.Prefixes{
+	psR.processPackage("github.com/goaltools/goal/tools/generate/handlers/testdata/controllers", routes.Prefixes{
 		{
 			Method:  "ROUTE",
 			Pattern: "",
@@ -45,7 +45,7 @@ func TestParentPackage(t *testing.T) {
 
 func TestControllerIgnoredArgs(t *testing.T) {
 	c := controller{}
-	a := ps["github.com/colegion/goal/tools/generate/handlers/testdata/controllers"].data["App"].Actions[0]
+	a := ps["github.com/goaltools/goal/tools/generate/handlers/testdata/controllers"].data["App"].Actions[0]
 	exp := ", _, _"
 	if r := c.IgnoredArgs(&a); r != exp {
 		t.Errorf(`Incorrect IgnoreArgs result. Expected "%s", got "%s".`, exp, r)
@@ -131,7 +131,7 @@ func assertDeepEqualPkgs(ps1, ps2 packages) {
 }
 
 var ps = packages{
-	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers": controllers{
+	"github.com/goaltools/goal/tools/generate/handlers/testdata/controllers": controllers{
 		data: map[string]controller{
 			"App": {
 				Actions: []reflect.Func{
@@ -309,7 +309,7 @@ var ps = packages{
 				File: "init.go",
 				Parents: []parent{
 					{
-						Import: "github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage",
+						Import: "github.com/goaltools/goal/tools/generate/handlers/testdata/controllers/subpackage",
 						Name:   "Controller",
 					},
 					{
@@ -320,7 +320,7 @@ var ps = packages{
 			},
 		},
 	},
-	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage": controllers{
+	"github.com/goaltools/goal/tools/generate/handlers/testdata/controllers/subpackage": controllers{
 		init: &reflect.Func{
 			Comments: []string{"// Init ..."},
 			File:     "app.go",

@@ -10,7 +10,7 @@ import (
 	<@if $v.Import><@$v.Package> "<@joinImp $.ctx.outputImport $v.Import>"<@end><@end>
 	contr "<@.ctx.import>"
 
-	"github.com/colegion/goal/strconv"
+	"github.com/goaltools/goal/strconv"
 )
 
 // <@.ctx.name> is an insance of t<@.ctx.name> that is automatically generated from <@.ctx.name> controller

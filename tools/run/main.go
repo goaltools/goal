@@ -12,10 +12,10 @@ import (
 	"path/filepath"
 	"syscall"
 
-	"github.com/colegion/goal/internal/log"
-	"github.com/colegion/goal/internal/watcher"
-	"github.com/colegion/goal/utils/path"
-	"github.com/colegion/goal/utils/tool"
+	"github.com/goaltools/goal/internal/log"
+	"github.com/goaltools/goal/internal/watcher"
+	"github.com/goaltools/goal/utils/path"
+	"github.com/goaltools/goal/utils/tool"
 
 	"github.com/tsuru/config"
 	"gopkg.in/fsnotify.v1"

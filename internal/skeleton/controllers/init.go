@@ -3,10 +3,10 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/colegion/contrib/controllers/requests"
-	"github.com/colegion/contrib/controllers/sessions"
-	"github.com/colegion/contrib/controllers/static"
-	"github.com/colegion/contrib/controllers/templates"
+	"github.com/goaltools/contrib/controllers/requests"
+	"github.com/goaltools/contrib/controllers/sessions"
+	"github.com/goaltools/contrib/controllers/static"
+	"github.com/goaltools/contrib/controllers/templates"
 )
 
 // Controllers is a struct that should be embedded into every controller

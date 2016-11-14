@@ -8,9 +8,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/colegion/goal/internal/log"
-	"github.com/colegion/goal/utils/path"
-	"github.com/colegion/goal/utils/tool"
+	"github.com/goaltools/goal/internal/log"
+	"github.com/goaltools/goal/utils/path"
+	"github.com/goaltools/goal/utils/tool"
 )
 
 // Handler is an instance of "new" subcommand (tool).
@@ -32,9 +32,9 @@ or alternatively:
 Moreover, it is required to be located inside "$GOPATH/src".
 
 Examples:
-	cli new github.com/colegion/sample
+	cli new github.com/goaltools/sample
 	cli new ./sample
-	cli new ../colegion/sample
+	cli new ../goaltools/sample
 `,
 }
 
@@ -45,7 +45,7 @@ func main(hs []tool.Handler, i int, args tool.Data) {
 	p := args.GetDefault(0, "")
 
 	// Prepare source and destination directory paths.
-	src, err := path.ImportToAbsolute("github.com/colegion/goal/internal/skeleton")
+	src, err := path.ImportToAbsolute("github.com/goaltools/goal/internal/skeleton")
 	if err != nil {
 		log.Error.Panic(err)
 	}
@@ -88,7 +88,7 @@ func main(hs []tool.Handler, i int, args tool.Data) {
 		copyModifiedFile(
 			res.srcs[i].absolute, filepath.Join(dest, res.srcs[i].relative), [][][]byte{
 				{
-					[]byte("github.com/colegion/goal/internal/skeleton"),
+					[]byte("github.com/goaltools/goal/internal/skeleton"),
 					[]byte(destImp),
 				},
 			},

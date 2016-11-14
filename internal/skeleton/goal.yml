@@ -1,8 +1,8 @@
 # goal.yml is a configuration file of "goal run" file watcher / task runner.
 init:
   # Commands of this section will be executed once per start of `goal run`.
-  - /echo "Starting work on 'github.com/colegion/goal/internal/skeleton'"
-  - go get -d github.com/colegion/goal/internal/skeleton/...
+  - /echo "Starting work on 'github.com/goaltools/goal/internal/skeleton'"
+  - go get -d github.com/goaltools/goal/internal/skeleton/...
   - /run genHandlers
   - /run buildApp
   - /single startApp
@@ -23,10 +23,10 @@ watch:
     - /run buildApp
     - /single startApp
 buildApp:
-  - go build -o ./bin/run:EXT github.com/colegion/goal/internal/skeleton
+  - go build -o ./bin/run:EXT github.com/goaltools/goal/internal/skeleton
 getAssets:
   # Getting dependencies for correct work of autocomplete in editors and IDEs.
-  - go get github.com/colegion/goal/internal/skeleton/assets/...
+  - go get github.com/goaltools/goal/internal/skeleton/assets/...
 startApp:
   - ./bin/run:EXT
 genHandlers:

@@ -7,8 +7,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/colegion/goal/internal/log"
-	r "github.com/colegion/goal/internal/reflect"
+	"github.com/goaltools/goal/internal/log"
+	r "github.com/goaltools/goal/internal/reflect"
 )
 
 const wildcardRoute = "ROUTE"

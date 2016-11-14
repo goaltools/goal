@@ -3,7 +3,7 @@
 package handlers
 
 import (
-	"github.com/colegion/goal/utils/tool"
+	"github.com/goaltools/goal/utils/tool"
 )
 
 // Handler is an instance of "generate handlers" subcommand (tool).

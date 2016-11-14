@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/colegion/goal/internal/log"
+	"github.com/goaltools/goal/internal/log"
 )
 
 func TestImportsValue(t *testing.T) {
@@ -19,12 +19,12 @@ func TestImportsValue(t *testing.T) {
 
 	t2 := Imports{
 		"sample.go": {
-			"l": "github.com/colegion/goal/internal/log",
+			"l": "github.com/goaltools/goal/internal/log",
 		},
 	}
 	v, ok = t2.Value("sample.go", "l")
-	if v != "github.com/colegion/goal/internal/log" || ok != true {
-		t.Errorf("Incorrect imports value. Expected 'github.com/colegion/goal/internal/log', true. Got '%s', %v.", v, ok)
+	if v != "github.com/goaltools/goal/internal/log" || ok != true {
+		t.Errorf("Incorrect imports value. Expected 'github.com/goaltools/goal/internal/log', true. Got '%s', %v.", v, ok)
 	}
 
 	v, ok = t2.Value("sample.go", "key_that_does_not_exist")
@@ -35,16 +35,16 @@ func TestImportsValue(t *testing.T) {
 
 func TestImportsName(t *testing.T) {
 	var t1 Imports
-	v, ok := t1.Name("somefile.go", "github.com/colegion/goal")
+	v, ok := t1.Name("somefile.go", "github.com/goaltools/goal")
 	if v != "" || ok != false {
 		t.Errorf("Incorrect import name value. Expected '', false. Got '%s', %v.", v, ok)
 	}
 
 	t2 := Imports{
 		"sample.go": {
-			"action":  "github.com/colegion/goal/action",
-			"example": "github.com/colegion/goal/example",
-			"l":       "github.com/colegion/goal/internal/log",
+			"action":  "github.com/goaltools/goal/action",
+			"example": "github.com/goaltools/goal/example",
+			"l":       "github.com/goaltools/goal/internal/log",
 		},
 	}
 	v, ok = t2.Name("sample.go", "goal/example")
@@ -139,11 +139,11 @@ func TestParseDir(t *testing.T) {
 		Imports: map[string]map[string]string{
 			"testdata/sample1.go": {
 				"fmt":     "fmt",
-				"l":       "github.com/colegion/goal/internal/log",
-				"reflect": "github.com/colegion/goal/internal/reflect",
+				"l":       "github.com/goaltools/goal/internal/log",
+				"reflect": "github.com/goaltools/goal/internal/reflect",
 			},
 			"testdata/sample2.go": {
-				"log": "github.com/colegion/goal/internal/log",
+				"log": "github.com/goaltools/goal/internal/log",
 			},
 		},
 	}
@@ -158,8 +158,8 @@ func TestProcessDecls(t *testing.T) {
 
 				"./example"
 
-				"github.com/colegion/goal"
-				l "github.com/colegion/goal/internal/log"
+				"github.com/goaltools/goal"
+				l "github.com/goaltools/goal/internal/log"
 			)
 
 			import "fmt"
@@ -225,8 +225,8 @@ func TestProcessDecls(t *testing.T) {
 			"sample.go": {
 				"strings": "strings",
 				"example": "./example",
-				"goal":    "github.com/colegion/goal",
-				"l":       "github.com/colegion/goal/internal/log",
+				"goal":    "github.com/goaltools/goal",
+				"l":       "github.com/goaltools/goal/internal/log",
 				"fmt":     "fmt",
 			},
 		},

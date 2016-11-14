@@ -3,7 +3,7 @@ package action
 import (
 	"testing"
 
-	"github.com/colegion/goal/internal/reflect"
+	"github.com/goaltools/goal/internal/reflect"
 )
 
 func TestFunc(t *testing.T) {

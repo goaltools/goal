@@ -7,11 +7,11 @@ import (
 	"flag"
 	"os"
 
-	"github.com/colegion/goal/internal/log"
-	"github.com/colegion/goal/tools/create"
-	"github.com/colegion/goal/tools/generate/handlers"
-	"github.com/colegion/goal/tools/run"
-	"github.com/colegion/goal/utils/tool"
+	"github.com/goaltools/goal/internal/log"
+	"github.com/goaltools/goal/tools/create"
+	"github.com/goaltools/goal/tools/generate/handlers"
+	"github.com/goaltools/goal/tools/run"
+	"github.com/goaltools/goal/utils/tool"
 )
 
 var trace = flag.Bool("trace", false, "show stack trace in case of runtime errors")

@@ -4,7 +4,7 @@ import (
 	h "net/http"
 	"testing"
 
-	"github.com/colegion/goal/tools/generate/handlers/testdata/controllers/subpackage"
+	"github.com/goaltools/goal/tools/generate/handlers/testdata/controllers/subpackage"
 
 	"github.com/naoina/denco"
 )

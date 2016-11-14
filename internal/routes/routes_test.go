@@ -6,7 +6,7 @@ import (
 	"sort"
 	"testing"
 
-	r "github.com/colegion/goal/internal/reflect"
+	r "github.com/goaltools/goal/internal/reflect"
 )
 
 func TestParseRoutes(t *testing.T) {

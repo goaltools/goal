@@ -6,11 +6,11 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/colegion/goal/internal/skeleton/assets/handlers"
+	"github.com/goaltools/goal/internal/skeleton/assets/handlers"
 
-	"github.com/colegion/contrib/routers/denco"
-	"github.com/colegion/contrib/servers/grace"
-	"github.com/conveyer/xflag"
+	"github.com/goaltools/contrib/routers/denco"
+	"github.com/goaltools/contrib/servers/grace"
+	"github.com/goaltools/xflag"
 )
 
 var addr = flag.String("http.addr", ":9000", "HTTP address the app must listen on")

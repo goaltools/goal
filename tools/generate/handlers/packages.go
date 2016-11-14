@@ -6,11 +6,11 @@ import (
 	r "reflect"
 	"strings"
 
-	a "github.com/colegion/goal/internal/action"
-	"github.com/colegion/goal/internal/log"
-	"github.com/colegion/goal/internal/reflect"
-	"github.com/colegion/goal/internal/routes"
-	"github.com/colegion/goal/utils/path"
+	a "github.com/goaltools/goal/internal/action"
+	"github.com/goaltools/goal/internal/log"
+	"github.com/goaltools/goal/internal/reflect"
+	"github.com/goaltools/goal/internal/routes"
+	"github.com/goaltools/goal/utils/path"
 )
 
 // packages represents packages of controllers. The format is the following:
@@ -35,7 +35,7 @@ type parents []parent
 // actions and magic methods.
 type parent struct {
 	ID     int    // Unique number that is used for generation of import names.
-	Import string // Import path of the structure, e.g. "github.com/colegion/goal/template" or "".
+	Import string // Import path of the structure, e.g. "github.com/goaltools/goal/template" or "".
 	Name   string // Name of the structure, e.g. "Template".
 }
 

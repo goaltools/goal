@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/colegion/goal/internal/log"
+	"github.com/goaltools/goal/internal/log"
 )
 
 var (
