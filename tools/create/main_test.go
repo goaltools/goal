@@ -16,6 +16,11 @@ func TestMain_ExistingDir(t *testing.T) {
 	main(handlers, 0, tool.Data{"./testdata/existingDir"})
 }
 
+func TestMain_ExistingDir_AbsoluteImport(t *testing.T) {
+	defer expectPanic("Creation of a project in an existing directory should cause a panic.")
+	main(handlers, 0, tool.Data{"github.com/goaltools/goal/utils"})
+}
+
 func TestStart(t *testing.T) {
 	dst := "./testdata/project"
 	main(handlers, 0, tool.Data{dst})

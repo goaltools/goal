@@ -50,7 +50,7 @@ func main(hs []tool.Handler, i int, args tool.Data) {
 	if err != nil {
 		log.Error.Panic(err)
 	}
-	destImp, err := importpath.ToImport(p)
+	destImp, err := importpath.Clean(p)
 	if err != nil {
 		log.Error.Panic(err)
 	}
