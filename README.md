@@ -20,24 +20,24 @@ thanks to good defaults.
 
         go get -u github.com/goaltools/goal
 
-2. Create a [new skeleton application](https://goaltools.github.io/goal/manual/new/index.html):
+2. Create a [new skeleton application](https://goaltools.github.io/manual/new/index.html):
 
         goal new github.com/$username/$project
 
-3. Start a [watcher / task runner](https://goaltools.github.io/goal/manual/run/index.html):
+3. Start a [watcher / task runner](https://goaltools.github.io/manual/run/index.html):
 
         goal run github.com/$username/$project
 
 ### Documentation
 
-* **[goaltools.github.io/goal](https://goaltools.github.io/goal)**
-  * [Introduction](https://goaltools.github.io/goal/manual/index.html)
-  * [`goal new`](https://goaltools.github.io/goal/manual/new/index.html) - generate skeleton application
-  * [`goal run`](https://goaltools.github.io/goal/manual/run/index.html) - start watcher / task runner
-  * [`goal generate handlers`](https://goaltools.github.io/goal/manual/handlers/index.html) - generate HTTP handler functions
-    * [Actions](https://goaltools.github.io/goal/manual/handlers/actions.html)
-    * [Controllers](https://goaltools.github.io/goal/manual/handlers/controllers.html)
-    * [Routes](https://goaltools.github.io/goal/manual/handlers/routes.html) - a slice of routes and handler functions associated with them
+* **[goaltools.github.io](https://goaltools.github.io)**
+  * [Introduction](https://goaltools.github.io/manual/index.html)
+  * [`goal new`](https://goaltools.github.io/manual/new/index.html) - generate skeleton application
+  * [`goal run`](https://goaltools.github.io/manual/run/index.html) - start watcher / task runner
+  * [`goal generate handlers`](https://goaltools.github.io/manual/handlers/index.html) - generate HTTP handler functions
+    * [Actions](https://goaltools.github.io/manual/handlers/actions.html)
+    * [Controllers](https://goaltools.github.io/manual/handlers/controllers.html)
+    * [Routes](https://goaltools.github.io/manual/handlers/routes.html) - a slice of routes and handler functions associated with them
   * `goal generate listing` - ~~generate a list of file paths~~ (deprecated)
 
 All `goal generate *` tools may be used with [`go generate`](https://blog.golang.org/generate).
@@ -49,7 +49,7 @@ independent repos.
 
 [![GoDoc](https://godoc.org/github.com/goaltools/goal?status.svg)](https://godoc.org/github.com/goaltools/goal)
 [![Build Status](https://travis-ci.org/goaltools/goal.svg?branch=master)](https://travis-ci.org/goaltools/goal)
-[![Coverage Status](https://coveralls.io/repos/goaltools/goal/badge.svg?branch=master)](https://coveralls.io/r/goaltools/goal?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/goaltools/goal/badge.svg?branch=master)](https://coveralls.io/github/goaltools/goal?branch=master)
 [![Go Report Card](http://goreportcard.com/badge/goaltools/goal?t=3)](http:/goreportcard.com/report/goaltools/goal)
 
 ### License
