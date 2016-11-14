@@ -8,7 +8,8 @@ import (
 	"go/ast"
 
 	"github.com/goaltools/goal/internal/reflect"
-	"github.com/goaltools/goal/utils/path"
+
+	"github.com/goaltools/importpath"
 )
 
 // ErrUnsupportedType is an error that indicates that there is no conversion
@@ -51,7 +52,7 @@ func (m FnMap) Render(pkgName, vsName string, a reflect.Arg) (string, error) {
 // 3. They return 1 argument.
 // This is useful for code generation.
 func Context() FnMap {
-	p, _ := path.ImportToAbsolute("github.com/goaltools/goal/strconv")
+	p, _ := importpath.ToPath("github.com/goaltools/goal/strconv")
 	fs := FnMap{}
 	pkg := reflect.ParseDir(p, false)
 	for i := range pkg.Funcs {
