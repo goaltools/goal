@@ -14,9 +14,9 @@ import (
 
 	"github.com/goaltools/goal/internal/log"
 	"github.com/goaltools/goal/internal/watcher"
-	"github.com/goaltools/goal/utils/path"
 	"github.com/goaltools/goal/utils/tool"
 
+	"github.com/goaltools/importpath"
 	"github.com/tsuru/config"
 	"gopkg.in/fsnotify.v1"
 )
@@ -53,11 +53,11 @@ func main(hs []tool.Handler, i int, args tool.Data) {
 	p := args.GetDefault(0, "")
 
 	// Determine import path and absolute path of the project to run.
-	imp, err := path.CleanImport(p)
+	imp, err := importpath.Clean(p)
 	if err != nil {
 		log.Error.Panic(err)
 	}
-	dir, err := path.ImportToAbsolute(imp)
+	dir, err := importpath.ToPath(imp)
 	if err != nil {
 		log.Error.Panic(err)
 	}
