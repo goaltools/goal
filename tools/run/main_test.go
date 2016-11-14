@@ -9,8 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/goaltools/goal/utils/path"
 	"github.com/goaltools/goal/utils/tool"
+
+	"github.com/goaltools/importpath"
 )
 
 var mu sync.Mutex
@@ -36,9 +37,11 @@ func TestMain_TestData(t *testing.T) {
 }
 
 func TestMain_TestData2(t *testing.T) {
-	createConfig(t)
-
 	defer expectPanic(`Application was terminated, panic expected.`)
+
+	createConfig(t)
+	time.Sleep(time.Second * 1)
+
 	go func() {
 		createConfig(t)
 
@@ -66,16 +69,16 @@ func TestMain(t *testing.T) {
 }
 
 func createConfig(t *testing.T) []byte {
-	p, _ := path.ImportToAbsolute("github.com/goaltools/goal/tools/run")
+	p, _ := importpath.ToPath("github.com/goaltools/goal/tools/run")
 
 	bs, err := ioutil.ReadFile(
-		filepath.Join(p, "./testdata/configs/goal.src.yml"),
+		filepath.Join(p, filepath.FromSlash("./testdata/configs/goal.src.yml")),
 	)
 	if err != nil {
 		t.Error(err)
 	}
 	err = ioutil.WriteFile(
-		filepath.Join(p, "./testdata/configs/goal.yml"), bs, 0666,
+		filepath.Join(p, filepath.FromSlash("./testdata/configs/goal.yml")), bs, 0666,
 	)
 	if err != nil {
 		t.Error(err)
