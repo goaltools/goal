@@ -7,16 +7,16 @@ before_install:
 install:
   - export PATH=$PATH:${GOPATH%%:*}/bin:${GOPATH##:*}/bin
 
-  - go get -t github.com/colegion/goal/... # Getting the dependencies for the repo.
-  - go test -v -race github.com/colegion/goal/...
+  - go get -t github.com/goaltools/goal/... # Getting the dependencies for the repo.
+  - go test -v -race github.com/goaltools/goal/...
 
   # Trying to create a sample project and start it.
-  - goal new github.com/colegion/sample # Creating a project.
+  - goal new github.com/goaltools/sample # Creating a project.
   - sleep 4 && killall goal & # Making sure we'll stop all instances of goal.
-  - goal run github.com/colegion/sample # Run the sample app.
+  - goal run github.com/goaltools/sample # Run the sample app.
 
   # Running tests of a sample application.
-  - go test github.com/colegion/sample/... -v
+  - go test github.com/goaltools/sample/... -v
 script:
-  - cd ${GOPATH%%:*}/src/github.com/colegion/goal
+  - cd ${GOPATH%%:*}/src/github.com/goaltools/goal
   - COVERALLS="-service=travis-ci -repotoken $COVERALLS_TOKEN" ./coverage.sh
