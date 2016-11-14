@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"net/url"
 
-	contr "github.com/colegion/contrib/controllers/templates"
+	contr "github.com/goaltools/contrib/controllers/templates"
 
-	"github.com/colegion/goal/strconv"
+	"github.com/goaltools/goal/strconv"
 )
 
 // Templates is an insance of tTemplates that is automatically generated from Templates controller
-// being found at "github.com/colegion/contrib/controllers/templates/templates.go",
+// being found at "github.com/goaltools/contrib/controllers/templates/templates.go",
 // and contains methods to be used as handler functions.
 //
 // Templates is a controller that provides support of HTML result
@@ -28,7 +28,7 @@ var context = url.Values{}
 type tTemplates struct {
 }
 
-// New allocates (github.com/colegion/contrib/controllers/templates).Templates controller,
+// New allocates (github.com/goaltools/contrib/controllers/templates).Templates controller,
 // then returns it.
 func (t tTemplates) New(w http.ResponseWriter, r *http.Request, ctr, act string) *contr.Templates {
 	c := &contr.Templates{
@@ -44,7 +44,7 @@ func (t tTemplates) New(w http.ResponseWriter, r *http.Request, ctr, act string)
 // of their execution phase no matter what.
 func (t tTemplates) Before(c *contr.Templates, w http.ResponseWriter, r *http.Request) http.Handler {
 
-	// Call magic Before action of (github.com/colegion/contrib/controllers/templates).Before.
+	// Call magic Before action of (github.com/goaltools/contrib/controllers/templates).Before.
 	if h := c.Before(); h != nil {
 		return h
 	}
@@ -61,7 +61,7 @@ func (t tTemplates) After(c *contr.Templates, w http.ResponseWriter, r *http.Req
 
 // RenderTemplate is a handler that was generated automatically.
 // It calls Before, After methods, and RenderTemplate action found at
-// github.com/colegion/contrib/controllers/templates/templates.go
+// github.com/goaltools/contrib/controllers/templates/templates.go
 // in appropriate order.
 //
 // RenderTemplate is an action that gets a path to template
@@ -89,12 +89,12 @@ func (t tTemplates) RenderTemplate(w http.ResponseWriter, r *http.Request) {
 
 // Render is a handler that was generated automatically.
 // It calls Before, After methods, and Render action found at
-// github.com/colegion/contrib/controllers/templates/templates.go
+// github.com/goaltools/contrib/controllers/templates/templates.go
 // in appropriate order.
 //
 // Render is an equivalent of the following:
 //	RenderTemplate(CurrentController + "/" + CurrentAction + ".html")
-// The default path pattern may be overriden by adding the following
+// The default path pattern may be overridden by adding the following
 // line to your configuration file:
 //	[templates]
 //	default.pattern = %s/%s.tpl
@@ -119,7 +119,7 @@ func (t tTemplates) Render(w http.ResponseWriter, r *http.Request) {
 
 // Redirect is a handler that was generated automatically.
 // It calls Before, After methods, and Redirect action found at
-// github.com/colegion/contrib/controllers/templates/templates.go
+// github.com/goaltools/contrib/controllers/templates/templates.go
 // in appropriate order.
 //
 // Redirect gets a URI or URN (e.g. "https://si.te/smt or "/users")
@@ -145,7 +145,7 @@ func (t tTemplates) Redirect(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Init initializes controllers of "github.com/colegion/contrib/controllers/templates",
+// Init initializes controllers of "github.com/goaltools/contrib/controllers/templates",
 // its parents, and returns a list of routes along
 // with handler functions associated with them.
 func Init() (routes []struct {

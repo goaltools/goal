@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"net/url"
 
-	contr "github.com/colegion/contrib/controllers/sessions"
+	contr "github.com/goaltools/contrib/controllers/sessions"
 
-	"github.com/colegion/goal/strconv"
+	"github.com/goaltools/goal/strconv"
 )
 
 // Sessions is an insance of tSessions that is automatically generated from Sessions controller
-// being found at "github.com/colegion/contrib/controllers/sessions/sessions.go",
+// being found at "github.com/goaltools/contrib/controllers/sessions/sessions.go",
 // and contains methods to be used as handler functions.
 //
 // Sessions is a controller that makes Session field
@@ -27,7 +27,7 @@ var context = url.Values{}
 type tSessions struct {
 }
 
-// New allocates (github.com/colegion/contrib/controllers/sessions).Sessions controller,
+// New allocates (github.com/goaltools/contrib/controllers/sessions).Sessions controller,
 // then returns it.
 func (t tSessions) New(w http.ResponseWriter, r *http.Request, ctr, act string) *contr.Sessions {
 	c := &contr.Sessions{
@@ -43,7 +43,7 @@ func (t tSessions) New(w http.ResponseWriter, r *http.Request, ctr, act string) 
 // of their execution phase no matter what.
 func (t tSessions) Before(c *contr.Sessions, w http.ResponseWriter, r *http.Request) http.Handler {
 
-	// Call magic Before action of (github.com/colegion/contrib/controllers/sessions).Before.
+	// Call magic Before action of (github.com/goaltools/contrib/controllers/sessions).Before.
 	if h := c.Before(); h != nil {
 		return h
 	}
@@ -55,7 +55,7 @@ func (t tSessions) Before(c *contr.Sessions, w http.ResponseWriter, r *http.Requ
 // of their execution phase no matter what.
 func (t tSessions) After(c *contr.Sessions, w http.ResponseWriter, r *http.Request) (h http.Handler) {
 
-	// Call magic After method of (github.com/colegion/contrib/controllers/sessions).Sessions.
+	// Call magic After method of (github.com/goaltools/contrib/controllers/sessions).Sessions.
 	defer func() {
 		if h == nil {
 			h = c.After()
@@ -65,7 +65,7 @@ func (t tSessions) After(c *contr.Sessions, w http.ResponseWriter, r *http.Reque
 	return
 }
 
-// Init initializes controllers of "github.com/colegion/contrib/controllers/sessions",
+// Init initializes controllers of "github.com/goaltools/contrib/controllers/sessions",
 // its parents, and returns a list of routes along
 // with handler functions associated with them.
 func Init() (routes []struct {

@@ -6,17 +6,17 @@ import (
 	"net/http"
 	"net/url"
 
-	c0 "github.com/colegion/goal/internal/skeleton/assets/handlers/github.com/colegion/contrib/controllers/requests"
-	c2 "github.com/colegion/goal/internal/skeleton/assets/handlers/github.com/colegion/contrib/controllers/sessions"
-	c3 "github.com/colegion/goal/internal/skeleton/assets/handlers/github.com/colegion/contrib/controllers/static"
-	c1 "github.com/colegion/goal/internal/skeleton/assets/handlers/github.com/colegion/contrib/controllers/templates"
-	contr "github.com/colegion/goal/internal/skeleton/controllers"
+	c0 "github.com/goaltools/goal/internal/skeleton/assets/handlers/github.com/goaltools/contrib/controllers/requests"
+	c2 "github.com/goaltools/goal/internal/skeleton/assets/handlers/github.com/goaltools/contrib/controllers/sessions"
+	c3 "github.com/goaltools/goal/internal/skeleton/assets/handlers/github.com/goaltools/contrib/controllers/static"
+	c1 "github.com/goaltools/goal/internal/skeleton/assets/handlers/github.com/goaltools/contrib/controllers/templates"
+	contr "github.com/goaltools/goal/internal/skeleton/controllers"
 
-	"github.com/colegion/goal/strconv"
+	"github.com/goaltools/goal/strconv"
 )
 
 // Controllers is an insance of tControllers that is automatically generated from Controllers controller
-// being found at "github.com/colegion/goal/internal/skeleton/controllers/init.go",
+// being found at "github.com/goaltools/goal/internal/skeleton/controllers/init.go",
 // and contains methods to be used as handler functions.
 //
 // Controllers is a struct that should be embedded into every controller
@@ -30,7 +30,7 @@ var context = url.Values{}
 type tControllers struct {
 }
 
-// New allocates (github.com/colegion/goal/internal/skeleton/controllers).Controllers controller,
+// New allocates (github.com/goaltools/goal/internal/skeleton/controllers).Controllers controller,
 // initializes its parents; then returns the controller.
 func (t tControllers) New(w http.ResponseWriter, r *http.Request, ctr, act string) *contr.Controllers {
 	c := &contr.Controllers{}
@@ -61,7 +61,7 @@ func (t tControllers) Before(c *contr.Controllers, w http.ResponseWriter, r *htt
 		return h
 	}
 
-	// Call magic Before action of (github.com/colegion/goal/internal/skeleton/controllers).Before.
+	// Call magic Before action of (github.com/goaltools/goal/internal/skeleton/controllers).Before.
 	if h := c.Before(); h != nil {
 		return h
 	}
@@ -94,7 +94,7 @@ func (t tControllers) After(c *contr.Controllers, w http.ResponseWriter, r *http
 	return
 }
 
-// Init initializes controllers of "github.com/colegion/goal/internal/skeleton/controllers",
+// Init initializes controllers of "github.com/goaltools/goal/internal/skeleton/controllers",
 // its parents, and returns a list of routes along
 // with handler functions associated with them.
 func Init() (routes []struct {

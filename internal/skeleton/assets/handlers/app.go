@@ -5,13 +5,13 @@ package handlers
 import (
 	"net/http"
 
-	contr "github.com/colegion/goal/internal/skeleton/controllers"
+	contr "github.com/goaltools/goal/internal/skeleton/controllers"
 
-	"github.com/colegion/goal/strconv"
+	"github.com/goaltools/goal/strconv"
 )
 
 // App is an insance of tApp that is automatically generated from App controller
-// being found at "github.com/colegion/goal/internal/skeleton/controllers/app.go",
+// being found at "github.com/goaltools/goal/internal/skeleton/controllers/app.go",
 // and contains methods to be used as handler functions.
 //
 // App is a sample controller.
@@ -21,7 +21,7 @@ var App tApp
 type tApp struct {
 }
 
-// New allocates (github.com/colegion/goal/internal/skeleton/controllers).App controller,
+// New allocates (github.com/goaltools/goal/internal/skeleton/controllers).App controller,
 // initializes its parents; then returns the controller.
 func (t tApp) New(w http.ResponseWriter, r *http.Request, ctr, act string) *contr.App {
 	c := &contr.App{}
@@ -37,7 +37,7 @@ func (t tApp) Before(c *contr.App, w http.ResponseWriter, r *http.Request) http.
 		return h
 	}
 
-	// Call magic Before action of (github.com/colegion/goal/internal/skeleton/controllers).Before.
+	// Call magic Before action of (github.com/goaltools/goal/internal/skeleton/controllers).Before.
 	if h := c.Before(); h != nil {
 		return h
 	}
@@ -60,7 +60,7 @@ func (t tApp) After(c *contr.App, w http.ResponseWriter, r *http.Request) (h htt
 
 // Index is a handler that was generated automatically.
 // It calls Before, After methods, and Index action found at
-// github.com/colegion/goal/internal/skeleton/controllers/app.go
+// github.com/goaltools/goal/internal/skeleton/controllers/app.go
 // in appropriate order.
 //
 // Index is an action that renders a home page.

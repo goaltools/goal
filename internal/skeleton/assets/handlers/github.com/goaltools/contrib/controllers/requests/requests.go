@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"net/url"
 
-	contr "github.com/colegion/contrib/controllers/requests"
+	contr "github.com/goaltools/contrib/controllers/requests"
 
-	"github.com/colegion/goal/strconv"
+	"github.com/goaltools/goal/strconv"
 )
 
 // Requests is an insance of tRequests that is automatically generated from Requests controller
-// being found at "github.com/colegion/contrib/controllers/requests/requests.go",
+// being found at "github.com/goaltools/contrib/controllers/requests/requests.go",
 // and contains methods to be used as handler functions.
 //
 // Requests is a controller that does two things:
@@ -27,7 +27,7 @@ var context = url.Values{}
 type tRequests struct {
 }
 
-// New allocates (github.com/colegion/contrib/controllers/requests).Requests controller,
+// New allocates (github.com/goaltools/contrib/controllers/requests).Requests controller,
 // then returns it.
 func (t tRequests) New(w http.ResponseWriter, r *http.Request, ctr, act string) *contr.Requests {
 	c := &contr.Requests{
@@ -41,7 +41,7 @@ func (t tRequests) New(w http.ResponseWriter, r *http.Request, ctr, act string) 
 // of their execution phase no matter what.
 func (t tRequests) Before(c *contr.Requests, w http.ResponseWriter, r *http.Request) http.Handler {
 
-	// Call magic Before action of (github.com/colegion/contrib/controllers/requests).Before.
+	// Call magic Before action of (github.com/goaltools/contrib/controllers/requests).Before.
 	if h := c.Before(); h != nil {
 		return h
 	}
@@ -56,7 +56,7 @@ func (t tRequests) After(c *contr.Requests, w http.ResponseWriter, r *http.Reque
 	return
 }
 
-// Init initializes controllers of "github.com/colegion/contrib/controllers/requests",
+// Init initializes controllers of "github.com/goaltools/contrib/controllers/requests",
 // its parents, and returns a list of routes along
 // with handler functions associated with them.
 func Init() (routes []struct {

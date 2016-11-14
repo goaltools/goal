@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"net/url"
 
-	contr "github.com/colegion/contrib/controllers/static"
+	contr "github.com/goaltools/contrib/controllers/static"
 
-	"github.com/colegion/goal/strconv"
+	"github.com/goaltools/goal/strconv"
 )
 
 // Static is an insance of tStatic that is automatically generated from Static controller
-// being found at "github.com/colegion/contrib/controllers/static/static.go",
+// being found at "github.com/goaltools/contrib/controllers/static/static.go",
 // and contains methods to be used as handler functions.
 //
 // Static is a controller that brings static
@@ -26,7 +26,7 @@ var context = url.Values{}
 type tStatic struct {
 }
 
-// New allocates (github.com/colegion/contrib/controllers/static).Static controller,
+// New allocates (github.com/goaltools/contrib/controllers/static).Static controller,
 // then returns it.
 func (t tStatic) New(w http.ResponseWriter, r *http.Request, ctr, act string) *contr.Static {
 	c := &contr.Static{}
@@ -49,7 +49,7 @@ func (t tStatic) After(c *contr.Static, w http.ResponseWriter, r *http.Request) 
 
 // Serve is a handler that was generated automatically.
 // It calls Before, After methods, and Serve action found at
-// github.com/colegion/contrib/controllers/static/static.go
+// github.com/goaltools/contrib/controllers/static/static.go
 // in appropriate order.
 //
 // Serve is a wrapper around Go's standard FileServer
@@ -76,7 +76,7 @@ func (t tStatic) Serve(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Init initializes controllers of "github.com/colegion/contrib/controllers/static",
+// Init initializes controllers of "github.com/goaltools/contrib/controllers/static",
 // its parents, and returns a list of routes along
 // with handler functions associated with them.
 func Init() (routes []struct {

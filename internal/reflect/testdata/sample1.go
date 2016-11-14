@@ -3,8 +3,8 @@ package sample
 import (
 	"fmt"
 
-	l "github.com/colegion/goal/internal/log"
-	"github.com/colegion/goal/internal/reflect"
+	l "github.com/goaltools/goal/internal/log"
+	"github.com/goaltools/goal/internal/reflect"
 )
 
 // Test is a type.
