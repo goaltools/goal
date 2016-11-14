@@ -11,7 +11,8 @@ import (
 	"github.com/goaltools/goal/internal/generation"
 	"github.com/goaltools/goal/internal/log"
 	"github.com/goaltools/goal/internal/routes"
-	"github.com/goaltools/goal/utils/path"
+
+	"github.com/goaltools/importpath"
 )
 
 // start is an entry point of the generate handlers command.
@@ -25,19 +26,11 @@ func start() {
 
 	// Start processing of controllers.
 	ps := packages{}
-	absInput, err := path.ImportToAbsolute(*input)
+	absImport, err := importpath.ToImport(*input)
 	if err != nil {
 		log.Error.Panic(err)
 	}
-	absImport, err := path.AbsoluteToImport(absInput)
-	if err != nil {
-		log.Error.Panic(err)
-	}
-	absOutput, err := path.ImportToAbsolute(*output)
-	if err != nil {
-		log.Error.Panic(err)
-	}
-	absImportOut, err := path.AbsoluteToImport(absOutput)
+	absImportOut, err := importpath.ToImport(*output)
 	if err != nil {
 		log.Error.Panic(err)
 	}
@@ -45,7 +38,7 @@ func start() {
 	ps.processPackage(absImport, routes.NewPrefixes())
 
 	// Start generation of handler packages.
-	tpl, err := path.ImportToAbsolute("github.com/goaltools/goal/tools/generate/handlers/handlers.go.template")
+	tpl, err := importpath.ToPath("github.com/goaltools/goal/tools/generate/handlers/handlers.go.template")
 	if err != nil {
 		log.Error.Panic(err)
 	}
@@ -53,6 +46,7 @@ func start() {
 	t.Extension = ".go" // Save generated files as a .go source.
 
 	// Iterate through all available packages and generate handlers for them.
+	// TODO: refactor this fragment. Consider use of fmt.Sprintf instead of html/template.
 	log.Trace.Printf(`Starting generation of "%s" package...`, *pkg)
 	for imp := range ps {
 		// Check whether current package is the main one
@@ -60,10 +54,10 @@ func start() {
 		//
 		// I.e. if --input is "./controllers" and --output is "./assets/handlers",
 		// we are saving processed "./controllers" package to "./assets/handlers"
-		// and some "github.com/goaltools/smth" to "./assets/handlers/github.com/goaltools/smth".
+		// and some it imports "github.com/goaltools/smth" to "./assets/handlers/github.com/goaltools/smth".
 		out := *output
 		if imp != absImport {
-			out = filepath.Join(out, imp)
+			out = filepath.Join(out, filepath.FromSlash(imp))
 		}
 		t.CreateDir(out)
 

@@ -10,7 +10,8 @@ import (
 	"github.com/goaltools/goal/internal/log"
 	"github.com/goaltools/goal/internal/reflect"
 	"github.com/goaltools/goal/internal/routes"
-	"github.com/goaltools/goal/utils/path"
+
+	"github.com/goaltools/importpath"
 )
 
 // packages represents packages of controllers. The format is the following:
@@ -97,7 +98,7 @@ func (c controller) IgnoredArgs(f *reflect.Func) (s string) {
 // extracts controllers + actions.
 func (ps packages) processPackage(importPath string, prefs routes.Prefixes) {
 	log.Trace.Printf(`Parsing "%s"...`, importPath)
-	dir, err := path.ImportToAbsolute(importPath)
+	dir, err := importpath.ToPath(importPath)
 	if err != nil {
 		log.Error.Panic(err)
 	}
@@ -200,8 +201,7 @@ func (ps packages) scanFields(pkg *reflect.Package, i int) (fs []field, prs []pa
 		}
 
 		// Add the field to the list of results.
-		imp, _ := pkg.Imports.Value(pkg.Structs[i].File, pkg.Structs[i].Fields[j].Type.Package)
-		p, _ := path.CleanImport(imp)
+		p, _ := pkg.Imports.Value(pkg.Structs[i].File, pkg.Structs[i].Fields[j].Type.Package)
 		prs = append(prs, parent{
 			Import: p,
 			Name:   pkg.Structs[i].Fields[j].Type.Name,
@@ -209,7 +209,7 @@ func (ps packages) scanFields(pkg *reflect.Package, i int) (fs []field, prs []pa
 
 		// Check whether this import has already been processed.
 		// If not, do it now.
-		if _, ok := ps[imp]; imp != "" && !ok {
+		if _, ok := ps[p]; p != "" && !ok {
 			ps.processPackage(p, routes.ParseTag(pkg.Structs[i].Fields[j].Tag))
 		}
 	}
