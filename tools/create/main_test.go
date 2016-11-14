@@ -6,8 +6,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/goaltools/goal/utils/path"
 	"github.com/goaltools/goal/utils/tool"
+
+	"github.com/goaltools/importpath"
 )
 
 func TestMain_ExistingDir(t *testing.T) {
@@ -22,7 +23,7 @@ func TestStart(t *testing.T) {
 	rs1, fn1 := walkFunc(dst)
 	filepath.Walk(dst, fn1)
 
-	p, err := path.ImportToAbsolute("github.com/goaltools/goal/internal/skeleton")
+	p, err := importpath.ToPath("github.com/goaltools/goal/internal/skeleton")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

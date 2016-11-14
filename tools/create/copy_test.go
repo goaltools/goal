@@ -8,6 +8,7 @@ import (
 func TestCopyFile_DoesNotExist(t *testing.T) {
 	defer expectPanic("File does not exist, panic expected.")
 	copyFile("fileThatDoesNotExist", "./xxx")
+	defer os.Remove("./xxx")
 }
 
 func TestCopyFile(t *testing.T) {
@@ -57,6 +58,7 @@ func TestCopyFile(t *testing.T) {
 func TestCopyModifiedFile_DoesNotExist(t *testing.T) {
 	defer expectPanic("File does not exist, panic expected.")
 	copyModifiedFile("fileThatDoesNotExist", "./xxx", [][][]byte{})
+	defer os.Remove("./xxx")
 }
 
 func TestCopyModifiedFile(t *testing.T) {

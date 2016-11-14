@@ -8,9 +8,11 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/colegion/goal/utils/path"
 	"github.com/goaltools/goal/internal/log"
-	"github.com/goaltools/goal/utils/path"
 	"github.com/goaltools/goal/utils/tool"
+
+	"github.com/goaltools/importpath"
 )
 
 // Handler is an instance of "new" subcommand (tool).
@@ -45,7 +47,7 @@ func main(hs []tool.Handler, i int, args tool.Data) {
 	p := args.GetDefault(0, "")
 
 	// Prepare source and destination directory paths.
-	src, err := path.ImportToAbsolute("github.com/goaltools/goal/internal/skeleton")
+	src, err := importpath.ToPath("github.com/goaltools/goal/internal/skeleton")
 	if err != nil {
 		log.Error.Panic(err)
 	}
