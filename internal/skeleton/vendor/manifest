@@ -1,0 +1,29 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/conveyer/config",
+			"repository": "https://github.com/conveyer/config",
+			"vcs": "git",
+			"revision": "adf5aaa28662380bd4c5e748c4448f01ce24e93b",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/conveyer/ini",
+			"repository": "https://github.com/conveyer/ini",
+			"vcs": "git",
+			"revision": "796899bdee1b1a936871bd3713e0ef453b1c2edb",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/conveyer/xflag",
+			"repository": "https://github.com/conveyer/xflag",
+			"vcs": "git",
+			"revision": "9ccf5d2cfab29473d8818b1f0c9d9a0591d753ba",
+			"branch": "master",
+			"notests": true
+		}
+	]
+}
