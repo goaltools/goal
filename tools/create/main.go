@@ -11,7 +11,7 @@ import (
 	"github.com/goaltools/goal/internal/log"
 	"github.com/goaltools/goal/utils/tool"
 
-	"github.com/goaltools/importpath"
+	"github.com/conveyer/importpath"
 )
 
 // Handler is an instance of "new" subcommand (tool).

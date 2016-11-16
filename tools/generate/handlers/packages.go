@@ -11,7 +11,7 @@ import (
 	"github.com/goaltools/goal/internal/reflect"
 	"github.com/goaltools/goal/internal/routes"
 
-	"github.com/goaltools/importpath"
+	"github.com/conveyer/importpath"
 )
 
 // packages represents packages of controllers. The format is the following:

@@ -8,7 +8,7 @@ import (
 
 	"github.com/goaltools/goal/utils/tool"
 
-	"github.com/goaltools/importpath"
+	"github.com/conveyer/importpath"
 )
 
 func TestMain_ExistingDir(t *testing.T) {

@@ -12,7 +12,7 @@ import (
 	"github.com/goaltools/goal/internal/log"
 	"github.com/goaltools/goal/internal/routes"
 
-	"github.com/goaltools/importpath"
+	"github.com/conveyer/importpath"
 )
 
 // start is an entry point of the generate handlers command.

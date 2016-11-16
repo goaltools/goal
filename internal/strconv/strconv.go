@@ -9,7 +9,7 @@ import (
 
 	"github.com/goaltools/goal/internal/reflect"
 
-	"github.com/goaltools/importpath"
+	"github.com/conveyer/importpath"
 )
 
 // ErrUnsupportedType is an error that indicates that there is no conversion

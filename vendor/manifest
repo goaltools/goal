@@ -1,0 +1,39 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/conveyer/importpath",
+			"repository": "https://github.com/conveyer/importpath",
+			"vcs": "git",
+			"revision": "f184fc380c52032c9bf620c42d92fa00c6134226",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/kylelemons/go-gypsy/yaml",
+			"repository": "https://github.com/kylelemons/go-gypsy",
+			"vcs": "git",
+			"revision": "08cad365cd28a7fba23bb1e57aa43c5e18ad8bb8",
+			"branch": "master",
+			"path": "/yaml",
+			"notests": true
+		},
+		{
+			"importpath": "golang.org/x/sys/unix",
+			"repository": "https://go.googlesource.com/sys",
+			"vcs": "git",
+			"revision": "b699b7032584f0953262cb2788a0ca19bb494703",
+			"branch": "master",
+			"path": "/unix",
+			"notests": true
+		},
+		{
+			"importpath": "gopkg.in/fsnotify.v1",
+			"repository": "https://gopkg.in/fsnotify.v1",
+			"vcs": "git",
+			"revision": "629574ca2a5df945712d3079857300b5e4da0236",
+			"branch": "master",
+			"notests": true
+		}
+	]
+}
