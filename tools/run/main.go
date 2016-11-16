@@ -16,8 +16,7 @@ import (
 	"github.com/goaltools/goal/internal/watcher"
 	"github.com/goaltools/goal/utils/tool"
 
-	"github.com/goaltools/importpath"
-	"github.com/tsuru/config"
+	"github.com/conveyer/importpath"
 	"gopkg.in/fsnotify.v1"
 )
 
@@ -117,9 +116,9 @@ func configDaemon(imp, file string) {
 		// Closing old watchers to create new ones.
 		closeWatchers()
 
-		// Trying to read a configuration file..
-		err := config.ReadConfigFile(file)
-		if err != nil {
+		// Make sure configuration file does exist.
+		_, err := os.Stat(file)
+		if err != nil || os.IsNotExist(err) {
 			log.Error.Printf(
 				`Are you sure "%s" is a path of goal project?
 "%s" file is missing.`, imp, file,
